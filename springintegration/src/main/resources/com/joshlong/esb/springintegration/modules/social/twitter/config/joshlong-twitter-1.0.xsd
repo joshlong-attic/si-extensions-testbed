@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.springframework.org/schema/integration/file"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            xmlns:integration="http://www.springframework.org/schema/integration"
+            targetNamespace="http://www.springframework.org/schema/integration/file"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool"/>
+    <xsd:import namespace="http://www.springframework.org/schema/integration"
+                schemaLocation="http://www.springframework.org/schema/integration/spring-integration-1.0.xsd"/>
+
+   <!--
+    This defines the beans we have for working with Twitter
+    -->
+
+    <xsd:element name="inbound-channel-adapter">
+         <xsd:annotation>
+            <xsd:documentation>
+                Configures an inbound channel adapter that consumes mesages from twitter and sends Messages whose payloads are Tweet objects.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="integration:poller" minOccurs="0" maxOccurs="1"/>
+            </xsd:sequence>
+            <xsd:attribute name="id" type="xsd:string"/>
+            <xsd:attribute name="channel" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="username" type="xsd:string" use="required"/>
+            <xsd:attribute name="password" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+
+</xsd:schema>
