@@ -21,25 +21,14 @@ public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
         @Override
         protected String parseSource(Element element, ParserContext parserContext) {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.FileReadingMessageSourceFactoryBean");
-            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "comparator");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "directory");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-create-directory");
-       //     String filterBeanName = this.registerFileListFilter(element, parserContext);
-         //   builder.addPropertyReference("filter", filterBeanName);
+                    PACKAGE_NAME + ".config.TwitterMessageSourceFactoryBean");
+
+
+            //IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "comparator");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
-
         }
 
-        /*   @Override
-        protected void doParse(Element element, BeanDefinitionBuilder builder) {
-
-        }
-
-        @Override
-        protected Class getBeanClass(Element element) {
-         return TwitterMessageSourceFactoryBean.class ; 
-        }*/
-
-    }
+     }
 }

@@ -8,7 +8,7 @@ public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<Twitte
 
     private String username;
     private String password;
-
+    private String channel     ;
     public String getUsername() {
         return username;
     }
@@ -33,7 +33,7 @@ public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<Twitte
         this.channel = channel;
     }
 
-    private String channel;
+;
 
     @Override
     public Class<? extends TwitterMessageSource> getObjectType() {

@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:twitter="http://www.joshlong.com/schema/beans/twitter"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.joshlong.com/schema/beans/twitter http://www.joshlong.com/schema/beans/twitter/twitter-beans.xsd
+<beans:beans
+        xmlns="http://www.springframework.org/schema/integration"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:twitter="http://www.joshlong.com/schema/beans/twitter"
+        xmlns:tool="http://www.springframework.org/schema/tool"
+        xmlns:lang="http://www.springframework.org/schema/lang"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
+					 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+					    http://www.joshlong.com/schema/beans/twitter http://www.joshlong.com/schema/beans/twitter/joshlong-twitter-1.0.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+						http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool-3.0.xsd
+						http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
 
-       ">
-
-
-    <twitter:inbound-channel-adapter username="myuser" password="mypassword" channel ="mychannel" />
-
-
-  
-
-</beans>
+    <context:component-scan base-package="com.joshlong.esb.springintegration.modules.social.twitter.test"/>
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:location="test.properties" p:ignoreUnresolvablePlaceholders="true"/>
+    <channel id="inboundTweets"/>
+    <twitter:inbound-channel-adapter username="${twitter.userId}" password="${twitter.password}" channel="inboundTweets"/>
+    <service-activator input-channel="inboundTweets" ref="twitterAnnouncer"/>
+</beans:beans>

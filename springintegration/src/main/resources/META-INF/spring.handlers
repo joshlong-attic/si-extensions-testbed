@@ -1,0 +1,1 @@
+http\://www.joshlong.com/schema/beans/twitter=com.joshlong.esb.springintegration.modules.social.twitter.config.TwitterNamespaceHandler
