@@ -1,5 +1,6 @@
-package com.joshlong.esb.springintegration.modules.social.twitter;
+package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
+import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageSource;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<TwitterMessageSource> {
