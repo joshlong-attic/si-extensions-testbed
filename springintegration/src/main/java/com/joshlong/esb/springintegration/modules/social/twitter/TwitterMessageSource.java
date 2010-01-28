@@ -35,6 +35,16 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     private volatile String password;
     private volatile Twitter twitter;
     private volatile long lastStatusIdRetreived = -1;
+
+    public int getPagingCount() {
+        return pagingCount;
+    }
+
+    public void setPagingCount(int pagingCount) {
+        this.pagingCount = pagingCount;
+    }
+
+    private int pagingCount = 10;
     private TwitterMessageSourceType twitterMessageSourceType = TwitterMessageSourceType.FRIENDS;
 
     public TwitterMessageSourceType getTwitterMessageSourceType() {
@@ -58,7 +68,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
 
         if (cachedStatuses.peek() == null) {
             Paging paging = new Paging();
-            paging.setCount(20);
+            paging.setCount(getPagingCount());
             if (-1 != lastStatusIdRetreived) {
                 paging.sinceId(lastStatusIdRetreived);
             }
