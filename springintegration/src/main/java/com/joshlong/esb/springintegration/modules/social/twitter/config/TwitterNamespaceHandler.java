@@ -23,8 +23,6 @@ public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
                     PACKAGE_NAME + ".config.TwitterMessageSourceFactoryBean");
 
-
-            //IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "comparator");
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());

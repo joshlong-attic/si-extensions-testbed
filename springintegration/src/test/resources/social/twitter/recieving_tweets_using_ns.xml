@@ -20,6 +20,10 @@
     <context:component-scan base-package="com.joshlong.esb.springintegration.modules.social.twitter.test"/>
     <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
     <channel id="inboundTweets"/>
-    <twitter:inbound-channel-adapter username="${twitter.userId}" password="${twitter.password}" channel="inboundTweets"/>
+    <twitter:inbound-channel-adapter username="${twitter.userId}" password="${twitter.password}" channel="inboundTweets">
+        <poller>
+            <interval-trigger interval="10"/>
+        </poller>
+    </twitter:inbound-channel-adapter>
     <service-activator input-channel="inboundTweets" ref="twitterAnnouncer"/>
 </beans:beans>

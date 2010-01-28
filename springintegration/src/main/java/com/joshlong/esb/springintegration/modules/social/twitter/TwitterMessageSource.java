@@ -96,7 +96,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     }
 
     public void afterPropertiesSet() throws Exception {
-
+               System.out.println( "after properties set for TwitterMessageSource!!");
         if (twitter == null) {
             Assert.state(!StringUtils.isEmpty(userId));
             Assert.state(!StringUtils.isEmpty(password));

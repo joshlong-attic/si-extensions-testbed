@@ -1,6 +1,7 @@
 package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageSource;
+import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageSourceType;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<TwitterMessageSource> {
@@ -8,7 +9,6 @@ public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<Twitte
 
     private String username;
     private String password;
-    private String channel     ;
     public String getUsername() {
         return username;
     }
@@ -24,16 +24,7 @@ public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<Twitte
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
-;
+  
 
     @Override
     public Class<? extends TwitterMessageSource> getObjectType() {
@@ -42,6 +33,13 @@ public class TwitterMessageSourceFactoryBean  extends AbstractFactoryBean<Twitte
 
     @Override
     protected TwitterMessageSource createInstance() throws Exception {
-        return null;
+
+        TwitterMessageSource twitterMessageSource = new TwitterMessageSource();
+        twitterMessageSource.setPassword(this.password);
+        twitterMessageSource.setUserId(this.username);
+        twitterMessageSource.setTwitterMessageSourceType(TwitterMessageSourceType.FRIENDS);
+        twitterMessageSource.afterPropertiesSet(); 
+
+        return twitterMessageSource;
     }
 }
