@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.springframework.org/schema/beans" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="beans" type="bean:beansType" xmlns:bean="http://www.springframework.org/schema/beans"/>
-  <xs:complexType name="beansType">
-    <xs:sequence>
-      <xs:element ref="twit:inbound-channel-adapter" xmlns:twit="http://www.joshlong.com/schema/beans/twitter"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:schema>
