@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:twitter="http://www.joshlong.com/schema/beans/twitter"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.joshlong.com/schema/beans/twitter http://www.joshlong.com/schema/beans/twitter/twitter-beans.xsd
+
+       ">
 
 
-    <!--
-     this 
-    -->
+    <twitter:inbound-channel-adapter username="myuser" password="mypassword" channel ="mychannel" />
 
+
+  
 
 </beans>
