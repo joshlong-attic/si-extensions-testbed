@@ -7,9 +7,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class TwitterAnnouncer {
 
+    private Tweet lastRecievedTweet ;
+
+    public Tweet getLastRecievedTweet() {
+        return lastRecievedTweet;
+    }
+
     @ServiceActivator
     public void announce(Tweet t){
 
+        this.lastRecievedTweet= t;
         System.out.println ( "I just recieved a tweet :: "+t.getMessage());
     }
 }
