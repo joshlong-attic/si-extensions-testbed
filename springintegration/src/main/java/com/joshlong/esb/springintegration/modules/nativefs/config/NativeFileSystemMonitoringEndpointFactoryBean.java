@@ -33,6 +33,15 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
     private transient String directory;
 
     private transient Resource directoryResource;
+    private transient boolean autoCreateDirectory;
+
+    public boolean isAutoCreateDirectory() {
+        return autoCreateDirectory;
+    }
+
+    public void setAutoCreateDirectory(boolean autoCreateDirectory) {
+        this.autoCreateDirectory = autoCreateDirectory;
+    }
 
     private transient ResourceLoader resourceLoader;
 
@@ -72,10 +81,15 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
 
         ResourceEditor editor = new ResourceEditor(this.resourceLoader);
         editor.setAsText(this.directory);
-
+        this.directoryResource = (Resource) editor.getValue();
         NativeFileSystemMonitoringEndpoint nativeFileSystemMonitoringEndpoint = new NativeFileSystemMonitoringEndpoint();
-        nativeFileSystemMonitoringEndpoint.setDirectory((Resource) editor.getValue());
+        nativeFileSystemMonitoringEndpoint.setDirectory(this.directoryResource);
         nativeFileSystemMonitoringEndpoint.setRequestChannel(this.requestChannel);
+        nativeFileSystemMonitoringEndpoint.setAutoCreateDirectory(this.autoCreateDirectory);
+
+        // todo add support for a filter 
+        // todo add support for an 'auto-startup' boolean
+        nativeFileSystemMonitoringEndpoint.start();
 
         return nativeFileSystemMonitoringEndpoint;
     }
