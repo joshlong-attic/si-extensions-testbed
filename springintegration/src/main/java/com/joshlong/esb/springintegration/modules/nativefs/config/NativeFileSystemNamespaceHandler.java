@@ -21,6 +21,7 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.integration.config.xml.AbstractPollingInboundChannelAdapterParser;
+import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
 public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
@@ -38,10 +39,11 @@ public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
                     PACKAGE_NAME + ".config.NativeFileSystemMonitoringEndpointFactoryBean");
 
-            /*  BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.TwitterMessageSourceFactoryBean");
+            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "directory","directory");
+            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel","requestChannel");
 
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
+            /*
+
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
             */
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
