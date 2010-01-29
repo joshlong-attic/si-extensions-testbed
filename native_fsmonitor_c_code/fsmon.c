@@ -41,6 +41,16 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
   printf("going to monitor %s", path);
   // todo make this path refer to the variable that was passed in!
   int wd = inotify_add_watch( fd, path, /*IN_MOVE*/ IN_MOVED_TO| IN_CLOSE_WRITE/*IN_CREATE*/);
+
+	
+// cache these
+	jclass cls = (*env)->GetObjectClass(env, obj);
+	jmethodID mid = (*env)->GetMethodID(env, cls, "nativeFileRecieved", "(Ljava/lang/String;)V");
+ 	/* to figure out method signature, i ran:  javap -s -p -classpath . com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitor  */
+	if( mid == 0 ) {
+	      printf( "method callback is not valid!") ;
+	      return ;
+    	}
   while(1>0){
     int length = 0;
     int i = 0;
@@ -55,20 +65,7 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
       struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ];
       if ( event->len ) {
 	if ( event->mask & IN_CLOSE_WRITE || event->mask & IN_MOVED_TO ) {
-	//  if ( event->mask & IN_ISDIR ) {
-	 //   printf( "The directory %s was created.\n", event->name );       
-	 // } // TODO -- we don't care for now...
-	  // else 
-	  // { 
-	    jclass cls = (*env)->GetObjectClass(env, obj);
-	    
-	    jmethodID mid = (*env)->GetMethodID(env, cls, "nativeFileRecieved", "(Ljava/lang/String;)V");
-	    // to figure out method signature, i ran: 
-	    // javap -s -p -classpath . com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitor 
-	    if( mid == 0 ) {
-	      printf( "method callback is not valid!") ;
-	      return ;
-	    }
+	 	
 	    char *name = event->name; 
 	    const int mlen = event->len;
 	    char nc[mlen];
@@ -77,8 +74,21 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
 	      char c  =(char) name[indx]; 
 	      nc[indx]=c;
 	    }
-	    jstring jpath = (*env)->NewStringUTF( env, (const char*) nc  ); 
-	    (*env)->CallVoidMethod(env, obj, mid, jpath );
+	
+// synchronize access 
+		    jstring jpath = (*env)->NewStringUTF( env, (const char*) nc  ); 
+
+		 if ((*env)->MonitorEnter(env, obj) != JNI_OK) {
+		 printf( "couldn't accquire lock!");
+		}
+
+		(*env)->CallVoidMethod(env, obj, mid, jpath );
+
+		if ((*env)->MonitorExit(env, obj) != JNI_OK) {
+		 	printf("couldn't release lock!"); /* error handling */
+		 };
+
+
 	}
       }
       i += EVENT_SIZE + event->len;
