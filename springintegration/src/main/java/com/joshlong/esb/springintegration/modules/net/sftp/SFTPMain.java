@@ -94,7 +94,7 @@ public class SFTPMain {
         JSch jSch = new JSch();
         File privateKeyFile = new File(SystemUtils.getUserHome(), "sftp_key.pub");
 
-        String passphrase = "cow", userName = "dgq9n6v6", pw = "Pass1234#", host = "safetrans-sit.wellsfargo.com";
+        String passphrase = "cow", userName = null , pw = null, host =  ;
         int port = 2022;
 
         InputStream in = new FileInputStream(privateKeyFile);

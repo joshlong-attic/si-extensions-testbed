@@ -27,7 +27,7 @@ import twitter4j.TwitterException;
 /* 
  *  @author Josh Long 
  * 
- *  Produces status updates on behalf of the user 
+ *  Produces status updates on behalf of the user.
  *   
  **/
 public class TwitterMessageProducer implements InitializingBean {
