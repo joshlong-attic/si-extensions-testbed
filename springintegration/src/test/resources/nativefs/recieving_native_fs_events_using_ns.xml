@@ -37,13 +37,13 @@
 
     <context:component-scan base-package="com.joshlong.esb.springintegration.modules.nativefs"/>
 
-    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
-
     <channel id="files" />
+
     <nativefs:native-fs-event-driven-endpoint directory="file:///home/jlong/Desktop/testFsEvents"
                                               auto-create-directory ="true"
                                               max-queued-value="1000"
                                               channel = "files" />
+    
     <service-activator input-channel="files" ref="nativeFsEventAnnouncer"/>
 
 

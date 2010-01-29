@@ -17,10 +17,9 @@
 package com.joshlong.esb.springintegration.modules.nativefs.config;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
+import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.integration.config.xml.AbstractPollingInboundChannelAdapterParser;
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
@@ -32,17 +31,31 @@ public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("native-fs-event-driven-endpoint", new NativeFileSystemMonitoringEndpointParser());
     }
 
-    private static class NativeFileSystemMonitoringEndpointParser extends AbstractPollingInboundChannelAdapterParser {
+    private static class NativeFileSystemMonitoringEndpointParser extends AbstractSingleBeanDefinitionParser{
         @Override
-        protected String parseSource(Element element, ParserContext parserContext) {
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.NativeFileSystemMonitoringEndpointFactoryBean");
+	protected boolean shouldGenerateId() {
+		return false;
+	}
+
+	@Override
+	protected boolean shouldGenerateIdAsFallback() {
+		return true;
+	} 
+        @Override
+        protected String getBeanClassName(Element element) {
+        return   PACKAGE_NAME + ".config.NativeFileSystemMonitoringEndpointFactoryBean";
+        }
+
+        @Override
+        protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+         
             IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "directory" );
             IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "auto-create-directory");
             IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "max-queued-value");
             IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel","requestChannel");
-            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
+
         }
+
 
     }
 }

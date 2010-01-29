@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.integration.channel.MessageChannelTemplate;
 import org.springframework.integration.core.MessageChannel;
+import org.springframework.integration.endpoint.AbstractEndpoint;
 import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
@@ -30,7 +31,7 @@ import java.io.File;
  * TODO this should be a drop-in replacement for the polling version
  * TODO this should throw a unholy fit if we detect that java.library.path isn't set since this (clearly) won't work without it.
  */
-public class NativeFileSystemMonitoringEndpoint {
+public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint{
 
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitoringEndpoint.class);
 
@@ -79,25 +80,35 @@ public class NativeFileSystemMonitoringEndpoint {
         this.nativeFileSystemMonitor = nativeFileSystemMonitor;
     }
 
-    public void start() {
+    public void begin() {
 
         try {
             nativeFileSystemMonitor = new NativeFileSystemMonitor(this.directory.getFile());
             nativeFileSystemMonitor.setAutoCreateDirectory(isAutoCreateDirectory());
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
-            nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
-                public void fileAdded(File dir, String fn) {
-
-                    // todo make this send all the same headers as the polling one does
-                    File file = new File(dir, fn);
-                    channelTemplate.send(MessageBuilder.withPayload(file).build(), requestChannel);
-                }
-            });
 
         } catch (Throwable th) {
             throw new RuntimeException(th);
         }
+    }
+
+    @Override
+    protected void doStart() {
+        nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
+                     public void fileAdded(File dir, String fn) {
+
+                         // todo make this send all the same headers as the polling one does
+                         File file = new File(dir, fn);
+                         channelTemplate.send(MessageBuilder.withPayload(file).build(), requestChannel);
+                     }
+                 });
+      
+    }
+
+    @Override
+    protected void doStop() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
 }

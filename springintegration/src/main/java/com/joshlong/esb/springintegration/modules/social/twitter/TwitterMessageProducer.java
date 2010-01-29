@@ -37,7 +37,7 @@ public class TwitterMessageProducer implements InitializingBean {
         try {
             ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext(
                     "08-2-adaptingexternalsystemstothebus.xml");
-            classPathXmlApplicationContext.start();
+            classPathXmlApplicationContext.begin();
             DirectChannel channel = (DirectChannel) classPathXmlApplicationContext
                     .getBean("outboundTweets");
             Message<String> helloWorldMessage = MessageBuilder.withPayload(

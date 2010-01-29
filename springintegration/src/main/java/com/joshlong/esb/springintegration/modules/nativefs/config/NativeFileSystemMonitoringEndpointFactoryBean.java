@@ -94,7 +94,7 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
 
         // todo add support for a filter 
         // todo add support for an 'auto-startup' boolean
-        nativeFileSystemMonitoringEndpoint.start();
+        nativeFileSystemMonitoringEndpoint.begin();
 
         return nativeFileSystemMonitoringEndpoint;
     }
