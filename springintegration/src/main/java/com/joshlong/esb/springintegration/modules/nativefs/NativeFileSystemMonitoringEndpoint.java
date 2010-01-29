@@ -88,9 +88,7 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
             nativeFileSystemMonitor.setAutoCreateDirectory(isAutoCreateDirectory());
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
-
             channelTemplate.afterPropertiesSet();
-
         } catch (Throwable th) {
             throw new RuntimeException(th);
         }
@@ -99,14 +97,17 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     @Override
     protected void doStart() {
         try {
-            nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
+          new Thread( new Runnable(){
+              public void run() {
+                     nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
                 public void fileAdded(File dir, String fn) {
                     File file = new File(dir, fn);
                     Message<File> fileMsg = MessageBuilder.withPayload(file).build();
-
                     channelTemplate.send(fileMsg,requestChannel);
                 }
             });
+              }
+          }).start();
         } catch (Throwable th) {
             throw new RuntimeException(th);
         }

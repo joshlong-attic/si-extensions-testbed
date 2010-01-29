@@ -20,8 +20,10 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
 
     @Autowired
     private ApplicationContext applicationContext;
+
     @Autowired
     private NativeFsEventAnnouncer nativeFsEventAnnouncer;
+
     @Resource(name = "fileSystemResource")
     private FileSystemResource fileSystemResource;
 

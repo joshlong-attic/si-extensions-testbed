@@ -17,10 +17,8 @@ public class NativeFsEventAnnouncer {
     }
 
     @ServiceActivator
-    public void announceIncomingFile( File file)
-    {
-
-        System.out.println("new file=" +file.getAbsolutePath());
+    public void announceIncomingFile(File file) {
+        System.out.println("new file=" + file.getAbsolutePath());
         files.add(file);
 
     }

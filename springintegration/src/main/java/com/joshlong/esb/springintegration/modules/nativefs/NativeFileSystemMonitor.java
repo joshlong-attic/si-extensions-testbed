@@ -47,9 +47,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Josh Long
  */
 public class NativeFileSystemMonitor {
-    static{
-        
-        System.loadLibrary("sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
+    static{        
+    System.loadLibrary("sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
     }
     static interface FileAddedListener {
         void fileAdded(File dir, String fn);
@@ -129,9 +128,9 @@ public class NativeFileSystemMonitor {
             public void run() {
                 do {
                     try {
-                        System.out.println( "runnn..");
+                      //  System.out.println( "running..");
                         fal.fileAdded(nFile, additions.take());
-                        System.out.println( "runnn..");
+                       // System.out.println( "runnn..");
                     Thread.sleep(1000);
                     } catch ( Throwable e) {
                         e.printStackTrace();
