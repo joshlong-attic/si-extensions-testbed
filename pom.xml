@@ -10,7 +10,7 @@
 	<description>
 		this is a testbed for various things that could one day be integrated into the Spring Integration Extensions project, assuming we do a good-enough job!
 	</description>
-    <properties>
+    <properties> <maven.test.skip>true</maven.test.skip>
         <spring.version>3.0.0.RELEASE</spring.version>
         <junit.version>3.8.2</junit.version>
         <spring.integration.version>1.0.3.RELEASE</spring.integration.version>
