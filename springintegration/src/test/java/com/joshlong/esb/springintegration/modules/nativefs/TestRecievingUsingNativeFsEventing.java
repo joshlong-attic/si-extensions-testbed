@@ -1,7 +1,7 @@
 package com.joshlong.esb.springintegration.modules.nativefs;
 
+import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,8 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
         Assert.assertTrue(fsfile.exists());
 
         for (int i = 0; i < 10; i++)
-            write(i + ".txt", "now is the time for " + i);
+            write(i + ".txt", "now is the time for " + i); 
+
 
         System.in.read();
 
