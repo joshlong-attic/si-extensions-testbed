@@ -19,6 +19,7 @@ package com.joshlong.esb.springintegration.modules.nativefs;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.integration.channel.MessageChannelTemplate;
+import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageChannel;
 import org.springframework.integration.endpoint.AbstractEndpoint;
 import org.springframework.integration.message.MessageBuilder;
@@ -31,7 +32,7 @@ import java.io.File;
  * TODO this should be a drop-in replacement for the polling version
  * TODO this should throw a unholy fit if we detect that java.library.path isn't set since this (clearly) won't work without it.
  */
-public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint{
+public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
 
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitoringEndpoint.class);
 
@@ -40,7 +41,7 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint{
     private transient Resource directory;
     private transient boolean autoCreateDirectory;
     private transient MessageChannel requestChannel;
-    private transient int maxQueuedValue  ;
+    private transient int maxQueuedValue;
 
     public int getMaxQueuedValue() {
         return maxQueuedValue;
@@ -80,13 +81,15 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint{
         this.nativeFileSystemMonitor = nativeFileSystemMonitor;
     }
 
-    public void begin() {
-
+    @Override
+    protected void onInit() throws Exception {
         try {
             nativeFileSystemMonitor = new NativeFileSystemMonitor(this.directory.getFile());
             nativeFileSystemMonitor.setAutoCreateDirectory(isAutoCreateDirectory());
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
+
+            channelTemplate.afterPropertiesSet();
 
         } catch (Throwable th) {
             throw new RuntimeException(th);
@@ -95,20 +98,21 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint{
 
     @Override
     protected void doStart() {
-        nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
-                     public void fileAdded(File dir, String fn) {
+        try {
+            nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
+                public void fileAdded(File dir, String fn) {
+                    File file = new File(dir, fn);
+                    Message<File> fileMsg = MessageBuilder.withPayload(file).build();
 
-                         // todo make this send all the same headers as the polling one does
-                         File file = new File(dir, fn);
-                         channelTemplate.send(MessageBuilder.withPayload(file).build(), requestChannel);
-                     }
-                 });
-      
+                    channelTemplate.send(fileMsg,requestChannel);
+                }
+            });
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        }
     }
 
     @Override
     protected void doStop() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
-
 }

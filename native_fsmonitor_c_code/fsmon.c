@@ -28,13 +28,16 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
     // - each time we have a request, send it into the java class
     
     //   lets first work on getting inotify up and running from Java
-    printf("starting monitor");
+   
       int fd = inotify_init();
   if ( fd < 0 ) {
     perror( "inotify_init" );
   }
-  
-  char *path =(char*) (*env)->GetStringUTFChars(env, javaSpecifiedPath, 0);
+   char * path ;
+
+   path = (char *)(*env)->GetStringUTFChars( env, javaSpecifiedPath , NULL ) ;
+
+//  char *path =(char*) (*env)->GetStringUTFChars(env, javaSpecifiedPath, 0);
   printf("going to monitor %s", path);
   // todo make this path refer to the variable that was passed in!
   int wd = inotify_add_watch( fd, path, /*IN_MOVE*/ IN_MOVED_TO| IN_CLOSE_WRITE/*IN_CREATE*/);

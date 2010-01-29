@@ -30,22 +30,26 @@
                         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
 					 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-
                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 						http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool-3.0.xsd
 						http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
 
     <context:component-scan base-package="com.joshlong.esb.springintegration.modules.nativefs"/>
 
-    <channel id="files" />
+    <beans:bean class="org.springframework.core.io.FileSystemResource" id="fileSystemResource" >
+        <beans:constructor-arg value="file:///home/jlong/Desktop/testFsEvents"/>
+    </beans:bean>
 
-    <nativefs:native-fs-event-driven-endpoint directory="file:///home/jlong/Desktop/testFsEvents"
+    <channel id="inboundFilesChannel"  />
+
+    
+    <nativefs:native-fs-event-driven-endpoint directory="#{fileSystemResource.path}"
                                               auto-create-directory ="true"
                                               max-queued-value="1000"
-                                              channel = "files" />
+                                              channel = "inboundFilesChannel" />
     
-    <service-activator input-channel="files" ref="nativeFsEventAnnouncer"/>
 
+  <service-activator input-channel="inboundFilesChannel" ref="nativeFsEventAnnouncer"/>
 
 
 </beans:beans>

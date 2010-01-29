@@ -33,6 +33,15 @@ import java.io.File;
 public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFactoryBean<NativeFileSystemMonitoringEndpoint>
         implements ResourceLoaderAware, InitializingBean {
 
+
+    private transient boolean autoStartup = true;
+    private transient int maxQueuedValue;
+    private transient ResourceLoader resourceLoader;
+    private transient String directory;
+    private transient Resource directoryResource;
+    private transient boolean autoCreateDirectory;
+    private transient MessageChannel requestChannel;
+
     public int getMaxQueuedValue() {
         return maxQueuedValue;
     }
@@ -41,12 +50,15 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
         this.maxQueuedValue = maxQueuedValue;
     }
 
-    private transient int maxQueuedValue;
-    private transient ResourceLoader resourceLoader;
-    private transient String directory;
-    private transient Resource directoryResource;
-    private transient boolean autoCreateDirectory;
-    private transient MessageChannel requestChannel;
+
+    public boolean isAutoStartup() {
+        return autoStartup;
+    }
+
+    public void setAutoStartup(boolean autoStartup) {
+        this.autoStartup = autoStartup;
+    }
+
 
     public String getDirectory() {
         return directory;
@@ -81,7 +93,9 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
     protected NativeFileSystemMonitoringEndpoint createInstance() throws Exception {
 
         File f = new File(this.directory);
-        if (this.isAutoCreateDirectory()) f.mkdirs();
+        if (this.isAutoCreateDirectory())
+            if(!f.exists()&&!f.mkdirs())
+                throw new RuntimeException( "couldn't create directory '"+ this.directory + "'.");
 
         ResourceEditor editor = new ResourceEditor(this.resourceLoader);
         editor.setAsText(this.directory);
@@ -91,10 +105,12 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
         nativeFileSystemMonitoringEndpoint.setRequestChannel(this.requestChannel);
         nativeFileSystemMonitoringEndpoint.setAutoCreateDirectory(this.autoCreateDirectory);
         nativeFileSystemMonitoringEndpoint.setMaxQueuedValue(this.maxQueuedValue);
+        nativeFileSystemMonitoringEndpoint.setAutoStartup(this.isAutoStartup());
+        nativeFileSystemMonitoringEndpoint.afterPropertiesSet();
 
         // todo add support for a filter 
         // todo add support for an 'auto-startup' boolean
-        nativeFileSystemMonitoringEndpoint.begin();
+
 
         return nativeFileSystemMonitoringEndpoint;
     }

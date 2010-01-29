@@ -31,31 +31,31 @@ public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("native-fs-event-driven-endpoint", new NativeFileSystemMonitoringEndpointParser());
     }
 
-    private static class NativeFileSystemMonitoringEndpointParser extends AbstractSingleBeanDefinitionParser{
+    private static class NativeFileSystemMonitoringEndpointParser extends AbstractSingleBeanDefinitionParser {
         @Override
-	protected boolean shouldGenerateId() {
-		return false;
-	}
+        protected boolean shouldGenerateId() {
+            return false;
+        }
 
-	@Override
-	protected boolean shouldGenerateIdAsFallback() {
-		return true;
-	} 
+        @Override
+        protected boolean shouldGenerateIdAsFallback() {
+            return true;
+        }
+
         @Override
         protected String getBeanClassName(Element element) {
-        return   PACKAGE_NAME + ".config.NativeFileSystemMonitoringEndpointFactoryBean";
+            return PACKAGE_NAME + ".config.NativeFileSystemMonitoringEndpointFactoryBean";
         }
 
         @Override
         protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "directory");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-create-directory");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "max-queued-value");
+            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel", "requestChannel");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-startup");
+
          
-            IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "directory" );
-            IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "auto-create-directory");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "max-queued-value");
-            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel","requestChannel");
-
         }
-
-
     }
 }

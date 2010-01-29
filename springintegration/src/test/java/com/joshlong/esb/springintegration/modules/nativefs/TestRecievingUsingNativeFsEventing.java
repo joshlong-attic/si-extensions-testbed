@@ -16,43 +16,48 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 @ContextConfiguration(locations = {"/nativefs/recieving_native_fs_events_using_ns.xml"})
-public class TestRecievingUsingNativeFsEventing  extends AbstractJUnit4SpringContextTests {
+public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringContextTests {
 
-    @Autowired private ApplicationContext applicationContext ;
-    @Autowired private NativeFsEventAnnouncer nativeFsEventAnnouncer  ;
-    @Resource( name=  "fileSystemResource" ) private FileSystemResource fileSystemResource ;
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private NativeFsEventAnnouncer nativeFsEventAnnouncer;
+    @Resource(name = "fileSystemResource")
+    private FileSystemResource fileSystemResource;
 
-    private File fsfile ;
+    private File fsfile;
 
-    @Before public void setup() throws Throwable {
-        fsfile =  fileSystemResource.getFile() ;
+    @Before
+    public void setup() throws Throwable {
+        fsfile = fileSystemResource.getFile();
     }
 
-    void write(String fileName, String msg){
-        try{
+    void write(String fileName, String msg) {
+        try {
 
-        File nFile = new File( fsfile, fileName);
-        OutputStream outputStream = new FileOutputStream(nFile);
-        IOUtils.write(msg, outputStream);
-        IOUtils.closeQuietly( outputStream);
-        } catch (Throwable t){
-         // don't care
+            File nFile = new File(fsfile, fileName);
+            OutputStream outputStream = new FileOutputStream(nFile);
+            IOUtils.write(msg, outputStream);
+            IOUtils.closeQuietly(outputStream);
+        } catch (Throwable t) {
+            // don't care
         }
     }
 
     @Test
-    public void testHavingRecievedEvents(){
-        for(File f : fsfile.listFiles())
-            f.delete() ;
+    public void testHavingRecievedEvents() throws Throwable {
+        for (File f : fsfile.listFiles())
+            f.delete();
 
-        Assert.assertTrue(fsfile.list().length == 0 );
+        Assert.assertTrue(fsfile.list().length == 0);
 
-        Assert.assertTrue( fsfile.exists());
+        Assert.assertTrue(fsfile.exists());
 
-        for( int i=0;i < 10 ; i++ )
-            write( i+ ".txt" , "now is the time for "+ i );
+        for (int i = 0; i < 10; i++)
+            write(i + ".txt", "now is the time for " + i);
 
 
+        System.in.read();
 
     }
 }
