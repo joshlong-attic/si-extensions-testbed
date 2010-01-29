@@ -58,7 +58,6 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
         for (int i = 0; i < 10; i++)
             write(i + ".txt", "now is the time for " + i);
 
-
         System.in.read();
 
     }

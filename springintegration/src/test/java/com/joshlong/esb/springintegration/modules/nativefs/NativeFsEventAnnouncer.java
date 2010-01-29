@@ -10,16 +10,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class NativeFsEventAnnouncer {
 
     private transient ConcurrentLinkedQueue<File> files = new ConcurrentLinkedQueue<File>();
-
-
-    public ConcurrentLinkedQueue<File> getFiles() {
-        return files;
-    }
-
+    
     @ServiceActivator
     public void announceIncomingFile(File file) {
         System.out.println("new file=" + file.getAbsolutePath());
-        files.add(file);
-
     }
 }

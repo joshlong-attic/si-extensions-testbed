@@ -128,10 +128,9 @@ public class NativeFileSystemMonitor {
             public void run() {
                 do {
                     try {
-                      //  System.out.println( "running..");
+
                         fal.fileAdded(nFile, additions.take());
-                       // System.out.println( "runnn..");
-                    Thread.sleep(1000);
+
                     } catch ( Throwable e) {
                         e.printStackTrace();
                     }
