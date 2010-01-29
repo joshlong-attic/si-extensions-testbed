@@ -36,7 +36,7 @@ public class TestRecievingUsingNativeFsEventing  extends AbstractJUnit4SpringCon
         IOUtils.write(msg, outputStream);
         IOUtils.closeQuietly( outputStream);
         } catch (Throwable t){
-            // don't care
+         // don't care
         }
     }
 
