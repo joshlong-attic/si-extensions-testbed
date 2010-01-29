@@ -17,7 +17,7 @@ public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("inbound-channel-adapter", new TwitterMessageSourceBeanDefinitionParser());
     }
 
-    private class TwitterMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
+    private static class TwitterMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
         @Override
         protected String parseSource(Element element, ParserContext parserContext) {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
@@ -28,5 +28,5 @@ public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
         }
 
-     }
+    }
 }
