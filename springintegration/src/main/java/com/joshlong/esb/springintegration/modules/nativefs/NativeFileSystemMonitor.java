@@ -150,7 +150,7 @@ public class NativeFileSystemMonitor {
 
     public static void main(String[] args) throws Throwable {
 
-        File watchme = new File("/home/jlong/foo/");
+        File watchme = new File("/home/jlong/Desktop/foo/");
 
         NativeFileSystemMonitor nativeFileSystemMonitor = new NativeFileSystemMonitor(watchme);
         nativeFileSystemMonitor.setAutoCreateDirectory(true);
