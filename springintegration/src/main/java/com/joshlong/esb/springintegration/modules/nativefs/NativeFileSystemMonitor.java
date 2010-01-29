@@ -1,3 +1,19 @@
+/*
+ * Copyright 2010 the original author or authors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.springframework.util.Assert;
@@ -144,7 +160,7 @@ public class NativeFileSystemMonitor {
             public void fileAdded(File dir, String fn) {
                 try {
                     final File absFile = new File(dir, fn);
-                    String line = String.format("just noticed the addition of file %s with size: %s", absFile.getAbsolutePath(), absFile.length() );
+                    String line = String.format("just noticed the addition of file %s with size: %s", absFile.getAbsolutePath(), absFile.length());
                     System.out.println(line);
 
                     /*// i just want to see the file size a little bit later to see if it ever veers away
@@ -158,7 +174,6 @@ public class NativeFileSystemMonitor {
                            System.out.println( String.format("the file size of %s is now %s",absFile.getAbsolutePath(),absFile.length()));
                         }
                     }).start();*/
-
 
 
                 } catch (Throwable e) {
