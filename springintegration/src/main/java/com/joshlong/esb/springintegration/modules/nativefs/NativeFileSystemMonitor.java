@@ -47,7 +47,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Josh Long
  */
 public class NativeFileSystemMonitor {
-
+    static{
+        
+        System.loadLibrary("sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
+    }
     static interface FileAddedListener {
         void fileAdded(File dir, String fn);
     }
@@ -60,10 +63,9 @@ public class NativeFileSystemMonitor {
      */
     public native void monitor(String path);
 
-    static {
-        System.loadLibrary("sifsmon");
-        // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
-    }
+   public NativeFileSystemMonitor(){
+
+   }
 
     private transient LinkedBlockingQueue<String> additions;
     private int maxQueueValue;
@@ -74,13 +76,6 @@ public class NativeFileSystemMonitor {
         return directoryToMonitor;
     }
 
-    public void setDirectoryToMonitor(File directoryToMonitor) {
-        this.directoryToMonitor = directoryToMonitor;
-    }
-
-    public boolean isAutoCreateDirectory() {
-        return autoCreateDirectory;
-    }
 
     public void setAutoCreateDirectory(boolean autoCreateDirectory) {
         this.autoCreateDirectory = autoCreateDirectory;
@@ -91,9 +86,6 @@ public class NativeFileSystemMonitor {
 
     }
 
-    public int getMaxQueueValue() {
-        return maxQueueValue;
-    }
 
     public void setMaxQueueValue(int maxQueueValue) {
         this.maxQueueValue = maxQueueValue;
@@ -102,7 +94,7 @@ public class NativeFileSystemMonitor {
 
     public void init() {
 
-        additions = new LinkedBlockingQueue<String>(getMaxQueueValue());
+        additions = new LinkedBlockingQueue<String>(this.maxQueueValue);
 
         boolean goodDirToMonitor = (directoryToMonitor.isDirectory() && directoryToMonitor.exists());
         if (!goodDirToMonitor) {

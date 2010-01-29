@@ -1,1 +1,2 @@
 http\://www.joshlong.com/schema/integration/social/twitter=com.joshlong.esb.springintegration.modules.social.twitter.config.TwitterNamespaceHandler
+http\://www.joshlong.com/schema/integration/nativefs=com.joshlong.esb.springintegration.modules.nativefs.config.NativeFileSystemNamespaceHandler

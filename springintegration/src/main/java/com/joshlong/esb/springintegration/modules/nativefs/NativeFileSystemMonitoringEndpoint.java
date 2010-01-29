@@ -38,6 +38,8 @@ public class NativeFileSystemMonitoringEndpoint {
     private transient NativeFileSystemMonitor nativeFileSystemMonitor;
     private transient Resource directory;
     private transient boolean autoCreateDirectory;
+    private transient MessageChannel requestChannel;
+    private transient int maxQueuedValue  ;
 
     public int getMaxQueuedValue() {
         return maxQueuedValue;
@@ -46,8 +48,6 @@ public class NativeFileSystemMonitoringEndpoint {
     public void setMaxQueuedValue(int maxQueuedValue) {
         this.maxQueuedValue = maxQueuedValue;
     }
-
-    private transient int maxQueuedValue = 1000;
 
     public Resource getDirectory() {
         return directory;
@@ -59,6 +59,7 @@ public class NativeFileSystemMonitoringEndpoint {
 
     public void setRequestChannel(MessageChannel requestChannel) {
         this.channelTemplate.setDefaultChannel(requestChannel);
+        this.requestChannel = requestChannel;
     }
 
 
@@ -81,16 +82,16 @@ public class NativeFileSystemMonitoringEndpoint {
     public void start() {
 
         try {
-
             nativeFileSystemMonitor = new NativeFileSystemMonitor(this.directory.getFile());
             nativeFileSystemMonitor.setAutoCreateDirectory(isAutoCreateDirectory());
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
+            nativeFileSystemMonitor.init();
             nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
                 public void fileAdded(File dir, String fn) {
 
                     // todo make this send all the same headers as the polling one does
                     File file = new File(dir, fn);
-                    channelTemplate.send(MessageBuilder.withPayload(file).build());
+                    channelTemplate.send(MessageBuilder.withPayload(file).build(), requestChannel);
                 }
             });
 

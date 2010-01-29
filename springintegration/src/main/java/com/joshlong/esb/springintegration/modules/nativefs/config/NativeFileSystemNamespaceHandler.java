@@ -29,23 +29,18 @@ public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
     private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.nativefs";
 
     public void init() {
-        registerBeanDefinitionParser("inbound-channel-adapter", new NativeFileSystemMonitoringEndpointParser());
+        registerBeanDefinitionParser("native-fs-event-driven-endpoint", new NativeFileSystemMonitoringEndpointParser());
     }
 
     private static class NativeFileSystemMonitoringEndpointParser extends AbstractPollingInboundChannelAdapterParser {
         @Override
         protected String parseSource(Element element, ParserContext parserContext) {
-
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
                     PACKAGE_NAME + ".config.NativeFileSystemMonitoringEndpointFactoryBean");
-
-            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "directory","directory");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "directory" );
+            IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "auto-create-directory");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined( builder, element, "max-queued-value");
             IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel","requestChannel");
-
-            /*
-
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
-            */
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
         }
 

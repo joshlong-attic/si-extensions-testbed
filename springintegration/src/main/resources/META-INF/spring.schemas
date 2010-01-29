@@ -1,2 +1,3 @@
 http\://www.joshlong.com/schema/integration/social/twitter/joshlong-twitter-1.0.xsd=com/joshlong/esb/springintegration/modules/social/twitter/config/joshlong-twitter-1.0.xsd
-http\://www.joshlong.com/schema/integration/social/twitter/joshlong-twitter-1.0.xsd=com/joshlong/esb/springintegration/modules/nativefile/config/joshlong-nativefile-1.0.xsd
+http\://www.joshlong.com/schema/integration/nativefs/joshlong-nativefs-1.0.xsd=com/joshlong/esb/springintegration/modules/nativefs/config/joshlong-nativefs-1.0.xsd
+

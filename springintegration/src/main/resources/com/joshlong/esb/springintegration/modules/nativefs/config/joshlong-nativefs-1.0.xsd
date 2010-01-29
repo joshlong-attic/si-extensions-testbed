@@ -15,12 +15,12 @@
   ~    limitations under the License.
   -->
 
-<xsd:schema xmlns="http://www.joshlong.com/schema/integration/social/twitter"
+<xsd:schema xmlns="http://www.joshlong.com/schema/integration/nativefs"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
             xmlns:tool="http://www.springframework.org/schema/tool"
             xmlns:integration="http://www.springframework.org/schema/integration"
-            targetNamespace="http://www.joshlong.com/schema/integration/social/twitter"
+            targetNamespace="http://www.joshlong.com/schema/integration/nativefs"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
@@ -31,7 +31,39 @@
 
     <!--
     This defines the beans we have for working with Twitter
+
+    native-fs-event-driven-endpoint
     -->
+
+
+    <xsd:element name="native-fs-event-driven-endpoint">
+        <xsd:annotation>
+            <xsd:documentation>
+                Configures an endpoint that reacts to events emitted by underlying operating system's file system.
+                The main working implementation at the moment is linux. Our endpoint wraps the kernel-level inotify library.
+
+                inotify, for example, is what tail on linux uses to be updated when events change a file being tailed.
+
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            
+            <xsd:attribute name="id" type="xsd:string"/>
+            <xsd:attribute name="channel" use="required" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="directory" type="xsd:string" use="required"/>
+            <xsd:attribute name="max-queued-value" type="xsd:int" default="1000" use="optional"/>
+            <xsd:attribute name="auto-create-directory" type="xsd:boolean" />
+        </xsd:complexType>
+    </xsd:element>
+<!--
 
     <xsd:element name="inbound-channel-adapter">
         <xsd:annotation>
@@ -58,6 +90,7 @@
             <xsd:attribute name="password" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
+-->
 
 
 </xsd:schema>

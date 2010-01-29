@@ -17,6 +17,7 @@
 package com.joshlong.esb.springintegration.modules.nativefs.config;
 
 import com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitoringEndpoint;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
@@ -24,26 +25,28 @@ import org.springframework.core.io.ResourceEditor;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.core.MessageChannel;
 
+import java.io.File;
+
 /**
  * Creates a NativeFileSystemMonitoringEndpoint  that can be used to monitor the file system for new files and send them onto the bus.
  */
-public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFactoryBean<NativeFileSystemMonitoringEndpoint> implements ResourceLoaderAware {
+public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFactoryBean<NativeFileSystemMonitoringEndpoint>
+        implements ResourceLoaderAware, InitializingBean {
 
-    private final Object initializationMonitor = new Object(); // todo why is this here?
+    public int getMaxQueuedValue() {
+        return maxQueuedValue;
+    }
+
+    public void setMaxQueuedValue(int maxQueuedValue) {
+        this.maxQueuedValue = maxQueuedValue;
+    }
+
+    private transient int maxQueuedValue;
+    private transient ResourceLoader resourceLoader;
     private transient String directory;
-
     private transient Resource directoryResource;
     private transient boolean autoCreateDirectory;
-
-    public boolean isAutoCreateDirectory() {
-        return autoCreateDirectory;
-    }
-
-    public void setAutoCreateDirectory(boolean autoCreateDirectory) {
-        this.autoCreateDirectory = autoCreateDirectory;
-    }
-
-    private transient ResourceLoader resourceLoader;
+    private transient MessageChannel requestChannel;
 
     public String getDirectory() {
         return directory;
@@ -53,7 +56,13 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
         this.directory = directory;
     }
 
-    private MessageChannel requestChannel;
+    public boolean isAutoCreateDirectory() {
+        return autoCreateDirectory;
+    }
+
+    public void setAutoCreateDirectory(boolean autoCreateDirectory) {
+        this.autoCreateDirectory = autoCreateDirectory;
+    }
 
     public MessageChannel getRequestChannel() {
         return requestChannel;
@@ -61,14 +70,6 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
 
     public void setRequestChannel(MessageChannel requestChannel) {
         this.requestChannel = requestChannel;
-    }
-
-    public Resource getDirectoryResource() {
-        return directoryResource;
-    }
-
-    public void setDirectoryResource(Resource directoryResource) {
-        this.directoryResource = directoryResource;
     }
 
     @Override
@@ -79,6 +80,9 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
     @Override
     protected NativeFileSystemMonitoringEndpoint createInstance() throws Exception {
 
+        File f = new File(this.directory);
+        if (this.isAutoCreateDirectory()) f.mkdirs();
+
         ResourceEditor editor = new ResourceEditor(this.resourceLoader);
         editor.setAsText(this.directory);
         this.directoryResource = (Resource) editor.getValue();
@@ -86,6 +90,7 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
         nativeFileSystemMonitoringEndpoint.setDirectory(this.directoryResource);
         nativeFileSystemMonitoringEndpoint.setRequestChannel(this.requestChannel);
         nativeFileSystemMonitoringEndpoint.setAutoCreateDirectory(this.autoCreateDirectory);
+        nativeFileSystemMonitoringEndpoint.setMaxQueuedValue(this.maxQueuedValue);
 
         // todo add support for a filter 
         // todo add support for an 'auto-startup' boolean
