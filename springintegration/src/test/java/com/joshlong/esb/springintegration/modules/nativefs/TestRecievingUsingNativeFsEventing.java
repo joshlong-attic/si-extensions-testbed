@@ -42,9 +42,6 @@ public class TestRecievingUsingNativeFsEventing  extends AbstractJUnit4SpringCon
 
     @Test
     public void testHavingRecievedEvents(){
-           //Assert.assertTrue(fileSystemResource!=null);
-
-        //fsfile = fileSystemResource.getFile();
         for(File f : fsfile.listFiles())
             f.delete() ;
 
