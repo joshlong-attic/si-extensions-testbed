@@ -21,6 +21,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.integration.core.Message;
+import org.springframework.integration.core.MessageHeaders;
 import org.springframework.integration.message.MessageDeliveryException;
 import org.springframework.integration.message.MessageHandler;
 import org.springframework.integration.message.MessageHandlingException;
@@ -40,15 +41,31 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
     static private Logger logger = Logger.getLogger(TwitterTweetSendingMessageHandler.class);
 
     private volatile String username;
+    private volatile TwitterMessageType type;
     private volatile String password;
     private volatile Twitter twitter;
 
-    public void tweet(String tweet) {
+    public void tweet(MessageHeaders headers, String tweet) {
         try {
-            twitter.updateStatus(tweet);
+            String dmTarget = (String) headers.get(TwitterConstants.TWITTER_DM_TARGET_USER_ID);
+            if (type.equals(TwitterMessageType.FRIENDS))
+                twitter.updateStatus(tweet);
+            else if (type.equals(TwitterMessageType.DM) && !StringUtils.isEmpty(dmTarget))
+                twitter.sendDirectMessage(dmTarget, tweet);
+            else
+                throw new RuntimeException("can't send direct message without proper" +
+                        " message header for TwitterConstants.TWITTER_DM_TARGET_USER_ID!");
         } catch (TwitterException e) {
             logger.debug(ExceptionUtils.getFullStackTrace(e));
         }
+    }
+
+    public TwitterMessageType getType() {
+        return type;
+    }
+
+    public void setType(TwitterMessageType type) {
+        this.type = type;
     }
 
     public String getUsername() {
@@ -76,6 +93,10 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
     }
 
     public void afterPropertiesSet() throws Exception {
+
+
+        Assert.state(null != type);
+
         if (twitter == null) {
             Assert.state(!StringUtils.isEmpty(username));
             Assert.state(!StringUtils.isEmpty(password));
@@ -95,10 +116,10 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
         Object payload = message.getPayload();
         if (payload instanceof String) {
             String msg = (String) payload;
-            tweet(msg);
+            tweet(message.getHeaders(), msg);
         } else if (payload instanceof Tweet) {
             Tweet twt = (Tweet) payload;
-            tweet(twt.getMessage());
+            tweet(message.getHeaders(), twt.getMessage());
         } else
             throw new RuntimeException("Can't tweet! Payload was not a 'Tweet' or 'String'");
     }

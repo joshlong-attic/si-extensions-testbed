@@ -26,7 +26,7 @@ import java.util.Date;
 /**
  * @author Josh Long
  *         <p/>
- *         Simple struct/dto for a Tweet from users.
+ *         Simple struct/DTO for a Tweet from users.
  */
 public class Tweet implements Serializable, Comparable<Tweet> {
 

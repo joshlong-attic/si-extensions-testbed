@@ -16,7 +16,7 @@
 
 package com.joshlong.esb.springintegration.modules.social.twitter;
 
-public enum TwitterMessageSourceType {
+public enum TwitterMessageType {
     @Deprecated DM, // TODO not supported atm
     FRIENDS,
     MENTIONS

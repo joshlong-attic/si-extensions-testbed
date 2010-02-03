@@ -56,6 +56,21 @@
             </xsd:attribute>
             <xsd:attribute name="username" type="xsd:string" use="required"/>
             <xsd:attribute name="password" type="xsd:string" use="required"/>
+            <xsd:attribute name="type" default="friends">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+                    The type of tweet to recieve. Options include: 'friends', 'mentions', or 'direct-messages'
+					]]></xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:NMTOKEN">
+                        <xsd:enumeration value="direct-messages"/>
+                        <xsd:enumeration value="friends"/>
+                        <xsd:enumeration value="mentions"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
+
         </xsd:complexType>
     </xsd:element>
 
@@ -67,8 +82,22 @@
                 messages (it posts them). Currently, support is limited to publishing status updates
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType>
 
+        <xsd:complexType>
+            <xsd:attribute name="type" default="friends">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+                    The type of tweet to recieve. Options include: 'friends', 'mentions', or 'direct-messages'
+					]]></xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:NMTOKEN">
+                        <xsd:enumeration value="direct-messages"/>
+                        <xsd:enumeration value="friends"/>
+                        <xsd:enumeration value="mentions"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
             <xsd:attribute name="id" type="xsd:string"/>
             <xsd:attribute name="channel" type="xsd:string">
                 <xsd:annotation>

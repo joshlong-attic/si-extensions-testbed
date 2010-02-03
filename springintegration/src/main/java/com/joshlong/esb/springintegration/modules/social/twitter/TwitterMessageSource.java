@@ -51,6 +51,15 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     private volatile String password;
     private volatile Twitter twitter;
     private volatile long lastStatusIdRetreived = -1;
+    private TwitterMessageType twitterMessageType = TwitterMessageType.FRIENDS;
+
+    public TwitterMessageType getTwitterMessageType() {
+        return twitterMessageType;
+    }
+
+    public void setTwitterMessageType(TwitterMessageType twitterMessageType) {
+        this.twitterMessageType = twitterMessageType;
+    }
 
     public int getPagingCount() {
         return pagingCount;
@@ -61,15 +70,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     }
 
     private int pagingCount = 10;
-    private TwitterMessageSourceType twitterMessageSourceType = TwitterMessageSourceType.FRIENDS;
 
-    public TwitterMessageSourceType getTwitterMessageSourceType() {
-        return twitterMessageSourceType;
-    }
-
-    public void setTwitterMessageSourceType(TwitterMessageSourceType twitterMessageSourceType) {
-        this.twitterMessageSourceType = twitterMessageSourceType;
-    }
 
     private Tweet buildTweetFromStatus(Status firstPost) {
         Tweet tweet = new Tweet(firstPost.getId(), firstPost.getUser()
@@ -79,7 +80,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
 
     public Message<Tweet> receive() {
 
-        Assert.state(this.twitterMessageSourceType != null, "the twitterMessageSourceType can't be null!");
+        Assert.state(this.twitterMessageType != null, "the twitterMessageType can't be null!");
         Assert.state(cachedStatuses != null, "the cachedStatuses can't be null!");
 
         if (cachedStatuses.peek() == null) {
@@ -90,9 +91,9 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
             }
             try {
                 List<Status> statuses = new ArrayList<Status>();
-                switch (this.twitterMessageSourceType) {
+                switch (getTwitterMessageType()) {
                     case DM:
-                        throw new UnsupportedOperationException("we don't support recieving direct mentions yet!");
+                        throw new UnsupportedOperationException("we don't support receiving direct mentions yet!");
 
                     case FRIENDS:
                         statuses = twitter.getFriendsTimeline(paging);
@@ -156,6 +157,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     public void setPassword(String password) {
         this.password = password;
     }
+/*
 
     public Twitter getTwitter() {
         return twitter;
@@ -164,5 +166,6 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     public void setTwitter(Twitter twitter) {
         this.twitter = twitter;
     }
+*/
 
 }
