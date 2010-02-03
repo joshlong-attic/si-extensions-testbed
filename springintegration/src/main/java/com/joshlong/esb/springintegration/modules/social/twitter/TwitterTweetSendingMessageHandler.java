@@ -37,26 +37,7 @@ import twitter4j.TwitterException;
  * TODO what does <code>Ordered</code> buy us?
  **/
 public class TwitterTweetSendingMessageHandler implements InitializingBean, MessageHandler/*, Ordered */ {
-/*
-
-    public static void main(String[] args) throws Throwable {
-        try {
-            ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext(
-                    "08-2-adaptingexternalsystemstothebus.xml");
-            classPathXmlApplicationContext.begin();
-            DirectChannel channel = (DirectChannel) classPathXmlApplicationContext
-                    .getBean("outboundTweets");
-            Message<String> helloWorldMessage = MessageBuilder.withPayload(
-                    "I wonder...").build();
-            channel.send(helloWorldMessage);
-        } catch (Throwable th) {
-            logger.debug(ExceptionUtils.getFullStackTrace(th));
-        }
-    }
-*/
-
-    static private Logger logger = Logger
-            .getLogger(TwitterTweetSendingMessageHandler.class);
+    static private Logger logger = Logger.getLogger(TwitterTweetSendingMessageHandler.class);
 
     private volatile String username;
     private volatile String password;
