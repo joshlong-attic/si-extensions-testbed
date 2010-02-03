@@ -36,7 +36,7 @@
     <xsd:element name="inbound-channel-adapter">
         <xsd:annotation>
             <xsd:documentation>
-                Configures an inbound channel adapter that consumes mesages from twitter and sends Messages whose
+                Configures an inbound channel adapter that consumes messages from twitter and sends Messages whose
                 payloads are Tweet objects.
             </xsd:documentation>
         </xsd:annotation>
@@ -59,5 +59,29 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="outbound-channel-adapter">
+        <xsd:annotation>
+            <xsd:documentation>
+                Configures an outbound channel adapter that sends incoming Strings or
+                <code>Tweet</code>
+                messages (it posts them). Currently, support is limited to publishing status updates
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+
+            <xsd:attribute name="id" type="xsd:string"/>
+            <xsd:attribute name="channel" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="username" type="xsd:string" use="required"/>
+            <xsd:attribute name="password" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
 
 </xsd:schema>

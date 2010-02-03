@@ -20,6 +20,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.integration.core.Message;
+import org.springframework.integration.message.MessageDeliveryException;
+import org.springframework.integration.message.MessageHandler;
+import org.springframework.integration.message.MessageHandlingException;
+import org.springframework.integration.message.MessageRejectedException;
 import org.springframework.util.Assert;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -28,9 +33,10 @@ import twitter4j.TwitterException;
  *  @author Josh Long 
  * 
  *  Produces status updates on behalf of the user.
- *   
+ *
+ * TODO what does <code>Ordered</code> buy us?
  **/
-public class TwitterMessageProducer implements InitializingBean {
+public class TwitterTweetSendingMessageHandler implements InitializingBean, MessageHandler/*, Ordered */ {
 /*
 
     public static void main(String[] args) throws Throwable {
@@ -50,9 +56,9 @@ public class TwitterMessageProducer implements InitializingBean {
 */
 
     static private Logger logger = Logger
-            .getLogger(TwitterMessageProducer.class);
+            .getLogger(TwitterTweetSendingMessageHandler.class);
 
-    private volatile String userId;
+    private volatile String username;
     private volatile String password;
     private volatile Twitter twitter;
 
@@ -64,12 +70,12 @@ public class TwitterMessageProducer implements InitializingBean {
         }
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -90,18 +96,33 @@ public class TwitterMessageProducer implements InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         if (twitter == null) {
-            Assert.state(!StringUtils.isEmpty(userId));
+            Assert.state(!StringUtils.isEmpty(username));
             Assert.state(!StringUtils.isEmpty(password));
 
             twitter = new Twitter();
-            twitter.setUserId(userId);
+            twitter.setUserId(username);
             twitter.setPassword(password);
 
         } else { // it isnt null, in which case it becomes canonical memory
             setPassword(twitter.getPassword());
-            setUserId(twitter.getUserId());
+            setUsername(twitter.getUserId());
         }
 
     }
 
+    public void handleMessage(Message<?> message) throws MessageRejectedException, MessageHandlingException, MessageDeliveryException {
+        Object payload = message.getPayload();
+        if (payload instanceof String) {
+            String msg = (String) payload;
+            tweet(msg);
+        } else if (payload instanceof Tweet) {
+            Tweet twt = (Tweet) payload;
+            tweet(twt.getMessage());
+        } else
+            throw new RuntimeException("Can't tweet! Payload was not a 'Tweet' or 'String'");
+    }
+
+    /*   public int getOrder() {
+        return 0;
+    }*/
 }
