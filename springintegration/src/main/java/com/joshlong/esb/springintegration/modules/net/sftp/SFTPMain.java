@@ -89,7 +89,7 @@ public class SFTPMain {
     // TODO test with my joshlong.com site using the key i have (~/jlong.pem)
     public static void main(String[] args) throws Throwable {
 
-        for (ChannelSftp.LsEntry l : listRemoteSystemWithUserAndPassword("richelle", 22, "richelle", "starbucks", "."))
+        for (ChannelSftp.LsEntry l : listRemoteSystemWithUserAndPassword("jlong", 22, "jlong", "cowbell", "."))
             System.out.println("remote path: " + l.getFilename());
 
 /*
