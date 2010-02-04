@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+@SuppressWarnings("unchecked")
 @ContextConfiguration(locations = {"/nativefs/recieving_native_fs_events_using_ns.xml"})
 public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringContextTests {
 
@@ -46,20 +47,24 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
         }
     }
 
+    @SuppressWarnings("")
     @Test
     public void testHavingRecievedEvents() throws Throwable {
         for (File f : fsfile.listFiles())
-            f.delete();
+            if (!f.delete()) throw new RuntimeException(String.format("couldn't delete file %s!", f.getAbsolutePath()));
 
         Assert.assertTrue(fsfile.list().length == 0);
 
         Assert.assertTrue(fsfile.exists());
 
         for (int i = 0; i < 10; i++)
-            write(i + ".txt", "now is the time for " + i); 
+            write(i + ".txt", "now is the time for " + i);
 
 
-        System.in.read();
+        if (System.in.read() <= 0) {
+            logger.debug("returning after test");
+        }
+
 
     }
 }
