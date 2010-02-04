@@ -21,7 +21,9 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import java.util.Collection;
 
-
+/**
+ * this is just a test example. It will be destroyed when we have the full working integration up and running.
+ */
 /* Want to test the SFTP supor from Apache commons -vfs  */
 public class SFTPMain {
 

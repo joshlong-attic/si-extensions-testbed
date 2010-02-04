@@ -1,0 +1,11 @@
+basically, i'm modeling this after the work in the FTP inbound and outbound adapters:
+
+ - the inbound adapter will be two components: a synchronizer and a filemessagesource
+
+  the synchronizer reads a remote directory and, for eah file in the remote directory, if the file is a directory and there is either no equivalent or a different equivalent, it copies it to a local directory that we configure.
+  the synchornizer will write the files to a local directory that the user configures. then, the inbound adapter will have a regular File FileReadingMessageSource.
+  it will be configured to track all files in the local directory that match our glob (which, as is done n the ftp adpapter, is basically all files that DONT have the '.incomplete' suffix at the end thats added while theyre being downloaded by the synchronizer).
+  as each file is read itll be passed from our sftpfilesource as an event. so, basically, we cheat: periodically we dump and sync file systems and then use the file adapter to see new files locally.
+  
+
+
