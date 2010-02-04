@@ -27,7 +27,7 @@ import java.util.Collection;
 /* Want to test the SFTP supor from Apache commons -vfs  */
 public class SFTPMain {
 
-
+    @SuppressWarnings("unused")
     static private class MyUserInfo implements UserInfo {
 
         @Override
@@ -71,7 +71,7 @@ public class SFTPMain {
 
     }
 
-
+    @SuppressWarnings("unchecked")
     static private Collection<ChannelSftp.LsEntry> listRemoteSystemWithUserAndPassword(String host, int port, String usr, String pw, String remotePath)
             throws Throwable {
         JSch jSch = new JSch();
@@ -87,9 +87,10 @@ public class SFTPMain {
     }
 
     // TODO test with my joshlong.com site using the key i have (~/jlong.pem)
+
     public static void main(String[] args) throws Throwable {
 
-        for (ChannelSftp.LsEntry l : listRemoteSystemWithUserAndPassword("jlong", 22, "jlong", "cowbell", "."))
+        for (ChannelSftp.LsEntry l : listRemoteSystemWithUserAndPassword("jlong", 22, "jlong", "cowbell", "/home/jlong/remote_mount/"))
             System.out.println("remote path: " + l.getFilename());
 
 /*

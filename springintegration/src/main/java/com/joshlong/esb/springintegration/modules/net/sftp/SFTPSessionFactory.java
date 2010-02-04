@@ -1,10 +1,14 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 
 // todo support keys, and all that other stuff thats requited to connect via sftp
-public class SFTPSessionFactory implements FactoryBean<SFTPSession> {
-    volatile private int port;
+
+public class SFTPSessionFactory implements FactoryBean<SFTPSession>, InitializingBean {
+
+    volatile private int port = 22; // the default
     volatile private String user;
     volatile private String password;
     volatile private String remoteHost;
@@ -12,6 +16,7 @@ public class SFTPSessionFactory implements FactoryBean<SFTPSession> {
     public int getPort() {
         return port;
     }
+
     public void setPort(int port) {
         this.port = port;
     }
@@ -36,12 +41,7 @@ public class SFTPSessionFactory implements FactoryBean<SFTPSession> {
     /**
      * note that the client must still call <code>connect()</code> on the resulting SFTPSession.
      *
-     * 
-     *
      * @return a valid, connectable SFTPSession
-     *
-     *
-     *
      * @throws Exception
      */
     public SFTPSession getObject() throws Exception {
@@ -81,4 +81,12 @@ public class SFTPSessionFactory implements FactoryBean<SFTPSession> {
     }
 
 
+    public void afterPropertiesSet() throws Exception {
+        // for now were just working on the use case that u have a usr/pw/host combo
+        // TODO key based authentication
+        assert !StringUtils.isEmpty(this.remoteHost) : "remoteHost can't be empty!";
+        assert !StringUtils.isEmpty(this.user) : "user can't be empty!";
+        assert !StringUtils.isEmpty(this.password) : "password can't be empty!";
+        assert this.port >= 0 : "port must be a valid number! ";
+    }
 }
