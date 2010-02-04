@@ -38,7 +38,11 @@ public class Main {
     static public void main(String[] args) throws Throwable {
 
         // configuration
-        String host = "jlong", pw = "cowbell", usr = "jlong", remotePath = "/home/jlong/remote_mount", localPath = "local_mount";
+        String host = "jlong",
+                pw = "cowbell",
+                usr = "jlong",
+                remotePath = "/home/jlong/remote_mount",
+                localPath = "local_mount";
         int port = 22;
 
         // local path
