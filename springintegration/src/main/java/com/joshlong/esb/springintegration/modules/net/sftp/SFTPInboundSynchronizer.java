@@ -26,7 +26,11 @@ import java.util.Collection;
 public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ {
 
     public static void main(String [] args){
-         
+
+        // todo test running thsis synchronizer
+        // then test running it using an sessio obtained from the pool
+        // then test running it and then test using a native file reading message source (AND a SI core FileReadingMessageSource)
+
     }
 
     /**
