@@ -27,6 +27,7 @@ import java.io.File;
  * OSCONTRIB-5
  * <p/>
  * todo: threading (so that the synchronizer works with a thread to constantly work)
+ * todo investigate more effective ways of downloading (right now its an input strean, but hwo does that approach scale w/ 20gb files?)
  * todo : add in a MessageSource so that this can play well with Spring Integration.
  * Also, add in support for delivering newly minted files using one of the FileReadingMssageSource or my native filesystem message source.
  * this message source is ultimately what 'delivers' news of the files that have been synched from the remote server
