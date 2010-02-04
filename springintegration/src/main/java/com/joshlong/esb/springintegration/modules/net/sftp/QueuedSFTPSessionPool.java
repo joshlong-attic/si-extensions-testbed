@@ -1,3 +1,4 @@
+/** copyright */
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.log4j.Logger;
