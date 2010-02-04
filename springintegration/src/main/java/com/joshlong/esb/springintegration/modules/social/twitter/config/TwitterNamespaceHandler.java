@@ -28,6 +28,7 @@ import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
 
+@SuppressWarnings("unused")
 public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
     static public String DIRECT_MESSAGES = "direct-messages";
     static public String MENTIONS = "mentions";
