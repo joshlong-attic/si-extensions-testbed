@@ -90,7 +90,7 @@ public class Main {
         sftpInboundSynchronizer.setTaskScheduler(taskScheduler);
         sftpInboundSynchronizer.afterPropertiesSet();
         sftpInboundSynchronizer.start();
-
+/*
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -102,7 +102,7 @@ public class Main {
                     // don't care
                 }
             }
-        }).start();
+        }).start();*/
 
 
     }
