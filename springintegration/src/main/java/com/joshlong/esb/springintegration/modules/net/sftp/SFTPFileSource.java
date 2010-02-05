@@ -19,6 +19,7 @@ package com.joshlong.esb.springintegration.modules.net.sftp;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.integration.core.Message;
+import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.integration.message.MessageSource;
 
 import java.io.File;
@@ -31,12 +32,25 @@ import java.io.File;
  */
 public class SFTPFileSource implements MessageSource<File>, InitializingBean, Lifecycle {
 
-    // todo add a file system readr message source
-    //
 
-    // todo add an inbound synchronizer
-    //
+    private SFTPInboundSynchronizer sftpInboundSynchronizer;
+    private FileReadingMessageSource fileReadingMessageSource;
 
+    public SFTPInboundSynchronizer getSftpInboundSynchronizer() {
+        return sftpInboundSynchronizer;
+    }
+
+    public void setSftpInboundSynchronizer(SFTPInboundSynchronizer sftpInboundSynchronizer) {
+        this.sftpInboundSynchronizer = sftpInboundSynchronizer;
+    }
+
+    public FileReadingMessageSource getFileReadingMessageSource() {
+        return fileReadingMessageSource;
+    }
+
+    public void setFileReadingMessageSource(FileReadingMessageSource fileReadingMessageSource) {
+        this.fileReadingMessageSource = fileReadingMessageSource;
+    }
 
     public void start() {
 
