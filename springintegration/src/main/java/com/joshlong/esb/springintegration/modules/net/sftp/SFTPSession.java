@@ -100,6 +100,7 @@ public class SFTPSession {
     }
 
     public void start() throws Exception {
-        channel.connect();
+        if(  !channel.isConnected() )
+            channel.connect();
     }
 }

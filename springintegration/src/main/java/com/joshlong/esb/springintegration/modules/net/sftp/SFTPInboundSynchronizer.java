@@ -148,7 +148,6 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
             session = pool.getSession();
              session.start();
             ChannelSftp channelSftp = session.getChannel();
-//            channelSftp.connect();
             Collection<ChannelSftp.LsEntry> files = channelSftp.ls(remotePath);
             for (ChannelSftp.LsEntry lsEntry : files) {
                 if (lsEntry != null && !lsEntry.getAttrs().isDir() && !lsEntry.getAttrs().isLink()) {

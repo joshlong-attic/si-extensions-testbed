@@ -61,7 +61,7 @@ public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean 
 
     public void release(SFTPSession session) {
         logger.debug("releasing " + session.toString());
-       // session.getChannel().disconnect();
+       //  session.getChannel().disconnect();
       //  session.getSession().disconnect();
         queue.add(session);
     }
