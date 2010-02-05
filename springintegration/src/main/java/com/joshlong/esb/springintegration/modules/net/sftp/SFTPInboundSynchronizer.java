@@ -17,17 +17,22 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.SftpATTRS;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.integration.core.MessagingException;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.support.PeriodicTrigger;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * this class takes files in a given remote directory and moves them to the local directory.
@@ -48,10 +53,40 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
      * taken from <code>FtpInboundSynchronizer</code>
      */
     static final String INCOMPLETE_EXTENSION = ".INCOMPLETE";
+    private static final long DEFAULT_REFRESH_RATE = 10 * 1000; // 10 seconds 
+    private volatile TaskScheduler taskScheduler;
     private volatile String remotePath;
     private volatile boolean autoCreatePath;
     private volatile SFTPSessionPool pool;
     private volatile Resource localDirectory;
+    private volatile boolean running;
+    private volatile ScheduledFuture<?> scheduledFuture;
+    private volatile Trigger trigger = new PeriodicTrigger(DEFAULT_REFRESH_RATE);
+
+
+    public TaskScheduler getTaskScheduler() {
+        return taskScheduler;
+    }
+
+    public void setTaskScheduler(TaskScheduler taskScheduler) {
+        this.taskScheduler = taskScheduler;
+    }
+
+    public ScheduledFuture<?> getScheduledFuture() {
+        return scheduledFuture;
+    }
+
+    public void setScheduledFuture(ScheduledFuture<?> scheduledFuture) {
+        this.scheduledFuture = scheduledFuture;
+    }
+
+    public Trigger getTrigger() {
+        return trigger;
+    }
+
+    public void setTrigger(Trigger trigger) {
+        this.trigger = trigger;
+    }
 
 
     public void setAutoCreatePath(boolean autoCreatePath) {
@@ -70,18 +105,6 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         this.pool = pool;
     }
 
-
-    /*public boolean isAutoCreatePath() {
-        return autoCreatePath;
-    }public String getRemotePath() {
-        return remotePath;
-    }
- public Resource getLocalDirectory() {
-        return localDirectory;
-    }
-    public QueuedSFTPSessionPool getPool() {
-        return pool;
-    }*/
 
     @SuppressWarnings("ignored")
     private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession, ChannelSftp.LsEntry entry, Resource localDir) throws Exception {
@@ -123,13 +146,10 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         SFTPSession session = null;
         try {
             session = pool.getSession();
-            assert (session != null) : "the session can't be null!";
-
-            session.start();
-
+             session.start();
             ChannelSftp channelSftp = session.getChannel();
+//            channelSftp.connect();
             Collection<ChannelSftp.LsEntry> files = channelSftp.ls(remotePath);
-
             for (ChannelSftp.LsEntry lsEntry : files) {
                 if (lsEntry != null && !lsEntry.getAttrs().isDir() && !lsEntry.getAttrs().isLink()) {
                     copyFromRemoteToLocalDirectory(session, lsEntry, this.localDirectory);
@@ -145,8 +165,86 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
 
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public boolean isRunning() {
+        return running;
+    }
 
+
+    class SynchronizeTask implements Runnable {
+        public void run() {
+            try {
+                synchronize();
+            } catch (Throwable e) {
+                logger.debug("couldn't invoke synchronize()", e);
+            }
+        }
+    }
+
+    /**
+     * Madeness this way lays
+     */
+    private boolean checkThatRemotePathExists(String rPath) {
+        SFTPSession session = null;
+        ChannelSftp channelSftp = null;
+        try {
+            session = pool.getSession();
+            assert session != null : "session's not null";
+            session.start();
+            channelSftp = session.getChannel();
+
+            SftpATTRS attrs = channelSftp.stat(rPath);
+            assert attrs != null &&  attrs.isDir(): "attrs can't be null, and should indicate that it's a directory!";
+
+            return true;
+
+        } catch (Throwable th) {
+            logger.debug("exception throwing when trying to verify the presence of the remote rPath '" + rPath + "'", th);
+            if (this.autoCreatePath && pool != null && session != null)
+                try {
+                    if (channelSftp != null) {
+                        channelSftp.mkdir(rPath);
+                        if (channelSftp.stat(rPath).isDir())
+                            return true;
+                    }
+                } catch (Throwable t) {
+                    return false;
+                }
+        } finally {
+            if (pool != null && session != null)
+                pool.release(session);
+        }
+        return false;
+
+    }
+
+    public void start() {
+        if (running)
+            return;
+
+     //   assert checkThatRemotePathExists(this.remotePath) : "the remote path had better exist!"; // we do our best here but better to blow up early
+        assert taskScheduler != null : "'taskScheduler' is required";
+
+        scheduledFuture = taskScheduler.schedule(new SynchronizeTask(), trigger);
+
+        this.running = true;
+        if (logger.isInfoEnabled())
+            logger.info("Started " + this);
+    }
+
+    public void stop() {
+        if (!running) {
+            return;
+        }
+        assert scheduledFuture != null : "scheduledFuture is null!";
+        this.scheduledFuture.cancel(true);
+        this.running = false;
+        if (logger.isInfoEnabled())
+            logger.info("Stopped " + this);
+
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        assert (taskScheduler != null) : "taskScheduler can't be null!";
         assert (localDirectory != null) : "the localDirectory property must not be null!";
 
         File localDir = localDirectory.getFile();
@@ -157,65 +255,5 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
 
     }
 
-    /*
-             FTPFile[] fileList = client.listFiles();
-             try {
-                 for (FTPFile ftpFile : fileList) {
-
-                     if (ftpFile != null && ftpFile.isFile()) {
-                         copyFileToLocalDirectory(client, ftpFile,
-                                 this.localDirectory);
-                     }
-                 }
-             }
-             finally {
-                 if (client != null) {
-                     this.clientPool.releaseClient(client);
-                 }
-             }
-         }
-         catch (IOException e) {
-             throw new MessagingException(
-                     "Problem occurred while synchronizing remote to local directory",
-                     e);
-         }*/
-
-
-    /*private boolean copyFileToLocalDirectory(FTPClient client, FTPFile ftpFile,
-             Resource localDirectory) throws IOException, FileNotFoundException {
-         String remoteFileName = ftpFile.getName();
-         String localFileName = localDirectory.getFile().getPath() + "/"
-                 + remoteFileName;
-         File localFile = new File(localFileName);
-         if (!localFile.exists()) {
-             String tempFileName = localFileName + INCOMPLETE_EXTENSION;
-             File file = new File(tempFileName);
-             FileOutputStream fos = new FileOutputStream(file);
-             try {
-                 client.retrieveFile(remoteFileName, fos);
-             }
-             finally {
-                 fos.close();
-             }
-             file.renameTo(localFile);
-             return true;
-         }
-         else {
-             return false;
-         }
-     }*/
-
-
-    /*   public void start() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void stop() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public boolean isRunning() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }*/
 
 }

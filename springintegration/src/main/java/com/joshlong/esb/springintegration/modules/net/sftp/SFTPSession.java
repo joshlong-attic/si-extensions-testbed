@@ -91,7 +91,9 @@ public class SFTPSession {
     public SFTPSession(String usr, String host, String pw, int port) throws Exception {
         JSch jSch = new JSch();
         session = jSch.getSession(usr, host, port);
+
         userInfo = new MyUserInfo(usr, pw, null);
+
         session.setUserInfo(userInfo);
         session.connect();
         channel = (ChannelSftp) session.openChannel("sftp");

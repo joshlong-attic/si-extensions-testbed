@@ -17,8 +17,11 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.Logger;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.ErrorHandler;
 
 import java.io.File;
 
@@ -36,10 +39,13 @@ import java.io.File;
  * <code>SFTPMain</code> was more a dry run then my test harness.. I need a Main to do work against
  */
 public class Main {
+
+    static private final Logger logger = Logger.getLogger(Main.class);
+
     static public void main(String[] args) throws Throwable {
 
         // configuration
-        String host = "jlong",
+        String host = "studio",
                 pw = "cowbell",
                 usr = "jlong",
                 remotePath = "/home/jlong/remote_mount",
@@ -58,19 +64,46 @@ public class Main {
         sftpSessionFactory.setUser(usr);
         sftpSessionFactory.afterPropertiesSet();
 
-
         // pool
         QueuedSFTPSessionPool queuedSFTPSessionPool = new QueuedSFTPSessionPool(sftpSessionFactory);
         queuedSFTPSessionPool.afterPropertiesSet();
 
 
-        SFTPInboundSynchronizer sftpInboundSynchronizer = new SFTPInboundSynchronizer();
+
+        ThreadPoolTaskScheduler taskScheduler=  new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(10);
+        taskScheduler.setErrorHandler(new ErrorHandler(){
+            public void handleError(Throwable t) {
+              logger.debug( "error! ", t);
+            }
+        });
+
+        taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
+        taskScheduler.initialize();
+
+        // synchronizer
+
+        final SFTPInboundSynchronizer sftpInboundSynchronizer = new SFTPInboundSynchronizer();
         sftpInboundSynchronizer.setLocalDirectory(localDirectory);
         sftpInboundSynchronizer.setRemotePath(remotePath);
         sftpInboundSynchronizer.setAutoCreatePath(true);
         sftpInboundSynchronizer.setPool(queuedSFTPSessionPool);
+        sftpInboundSynchronizer.setTaskScheduler(taskScheduler);
         sftpInboundSynchronizer.afterPropertiesSet();
-        sftpInboundSynchronizer.synchronize();
+        sftpInboundSynchronizer.start();
+
+        new Thread(new Runnable(){
+            public void run() {
+                try {
+                    Thread.sleep(60* 1000); // 1 minute
+                    
+                    sftpInboundSynchronizer.stop();
+
+                } catch (InterruptedException e){
+                      // don't care
+                }
+            }
+        }).start();
 
 
     }
