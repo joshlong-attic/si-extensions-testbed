@@ -16,7 +16,6 @@
 
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
-import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -49,11 +48,11 @@ public class Main {
                 pw = "cowbell",
                 usr = "jlong",
                 remotePath = "/home/jlong/remote_mount",
-                localPath = "local_mount";
+                localPath = "/home/jlong/local_mount";
         int port = 22;
 
         // local path
-        File local = new File(SystemUtils.getUserHome(), localPath); // obviously this is just for test. Do what you need to do in your own
+        File local = new File(localPath); // obviously this is just for test. Do what you need to do in your own
         Resource localDirectory = new FileSystemResource(local);
 
         // factory
@@ -69,12 +68,11 @@ public class Main {
         queuedSFTPSessionPool.afterPropertiesSet();
 
 
-
-        ThreadPoolTaskScheduler taskScheduler=  new ThreadPoolTaskScheduler();
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(10);
-        taskScheduler.setErrorHandler(new ErrorHandler(){
+        taskScheduler.setErrorHandler(new ErrorHandler() {
             public void handleError(Throwable t) {
-              logger.debug( "error! ", t);
+                logger.debug("error! ", t);
             }
         });
 
@@ -88,19 +86,20 @@ public class Main {
         sftpInboundSynchronizer.setRemotePath(remotePath);
         sftpInboundSynchronizer.setAutoCreatePath(true);
         sftpInboundSynchronizer.setPool(queuedSFTPSessionPool);
+        sftpInboundSynchronizer.setShouldDeleteDownloadedRemoteFiles(true);
         sftpInboundSynchronizer.setTaskScheduler(taskScheduler);
         sftpInboundSynchronizer.afterPropertiesSet();
         sftpInboundSynchronizer.start();
 
-        new Thread(new Runnable(){
+        new Thread(new Runnable() {
             public void run() {
                 try {
-                    Thread.sleep(60* 1000); // 1 minute
-                    
+                    Thread.sleep(60 * 1000); // 1 minute
+
                     sftpInboundSynchronizer.stop();
 
-                } catch (InterruptedException e){
-                      // don't care
+                } catch (InterruptedException e) {
+                    // don't care
                 }
             }
         }).start();

@@ -62,7 +62,15 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
     private volatile boolean running;
     private volatile ScheduledFuture<?> scheduledFuture;
     private volatile Trigger trigger = new PeriodicTrigger(DEFAULT_REFRESH_RATE);
+    private volatile boolean shouldDeleteDownloadedRemoteFiles = false; // obviously this is fale
 
+    public boolean isShouldDeleteDownloadedRemoteFiles() {
+        return shouldDeleteDownloadedRemoteFiles;
+    }
+
+    public void setShouldDeleteDownloadedRemoteFiles(boolean shouldDeleteDownloadedRemoteFiles) {
+        this.shouldDeleteDownloadedRemoteFiles = shouldDeleteDownloadedRemoteFiles;
+    }
 
     public TaskScheduler getTaskScheduler() {
         return taskScheduler;
@@ -109,7 +117,8 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
     @SuppressWarnings("ignored")
     private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession, ChannelSftp.LsEntry entry, Resource localDir) throws Exception {
 
-        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s", remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
+        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s",
+                remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
 
         File fileForLocalDir = localDir.getFile();
 
@@ -125,8 +134,16 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                 in = sftpSession.getChannel().get(remoteFqPath);
                 IOUtils.copy(in, fos);
 
-                if (tmpLocalTarget.renameTo(localFile))
+                if (tmpLocalTarget.renameTo(localFile)) {
+                    // last step
+                    if (isShouldDeleteDownloadedRemoteFiles()) {
+                        logger.debug(String.format("isShouldDeleteDownloadedRemoteFiles == true; " +
+                                "attempting to remove remote path '%s'", remoteFqPath));
+                        sftpSession.getChannel().rm(remoteFqPath);
+                    }
+
                     return true;
+                }
 
             } catch (Throwable th) {
                 IOUtils.closeQuietly(in);
