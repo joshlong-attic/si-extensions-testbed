@@ -30,6 +30,14 @@ import java.io.File;
  * TODO were going to use a FileReadingMessageSource to scan the local directory for any files that have been 'added' by the ftp process. is there some way to use our Native one instead? Is there some ommon, injectable interface? (MessageSource?)
  */
 public class SFTPFileSource implements MessageSource<File>, InitializingBean, Lifecycle {
+
+    // todo add a file system readr message source
+    //
+
+    // todo add an inbound synchronizer
+    //
+
+
     public void start() {
 
     }
