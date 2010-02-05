@@ -85,9 +85,8 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
 
     @SuppressWarnings("ignored")
     private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession, ChannelSftp.LsEntry entry, Resource localDir) throws Exception {
-        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s",
-                remotePath,
-                entry.getFilename(), localDir.getFile().getAbsolutePath()));
+
+        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s", remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
 
         File fileForLocalDir = localDir.getFile();
 
