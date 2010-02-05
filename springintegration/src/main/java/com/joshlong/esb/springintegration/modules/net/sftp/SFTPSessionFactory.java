@@ -36,30 +36,7 @@ public class SFTPSessionFactory implements FactoryBean<SFTPSession>, Initializin
     public void setPort(int port) {
         this.port = port;
     }
-    /*
-
-        static private Collection<ChannelSftp.LsEntry> listRemoteSystemWithUserAndPassword(String host, int port, String usr, String pw, String remotePath)
-                throws Throwable {
-            JSch jSch = new JSch();
-            Session session = jSch.getSession(usr, host, port);
-            UserInfo userInfo = new MyUserInfo(usr, pw, null);
-            session.setUserInfo(userInfo);
-            session.connect();
-            Channel channel = session.openChannel("sftp");
-            channel.connect();
-            ChannelSftp c = (ChannelSftp) channel;
-            return c.ls(remotePath);
-
-        }
-
-    */
-
-    /**
-     * note that the client must still call <code>connect()</code> on the resulting SFTPSession.
-     *
-     * @return a valid, connectable SFTPSession
-     * @throws Exception
-     */
+   
     public SFTPSession getObject() throws Exception {
         return new SFTPSession(this.getUser(), this.getRemoteHost(), this.getPassword(), this.getPort());
     }

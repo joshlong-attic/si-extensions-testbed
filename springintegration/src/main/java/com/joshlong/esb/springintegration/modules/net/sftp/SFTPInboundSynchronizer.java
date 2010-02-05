@@ -133,7 +133,7 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                 IOUtils.closeQuietly(fos);
             }
         } else {
-            logger.debug("local file %s already exists. Not re-downloading it.");
+            logger.debug(String.format("local file %s already exists. Not re-downloading it." , localFile.getAbsolutePath()));
         }
 
 
