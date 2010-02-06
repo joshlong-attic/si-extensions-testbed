@@ -125,7 +125,7 @@ public class Main {
     }
 
     static public void main(String[] args) throws Throwable {
-        boolean testKey = false;
+        boolean testKey = true;
         SFTPSessionFactory factory = testKey ?
                 sftpSessionFactory("joshlong.com", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22) : // this wont work on your machine. get yer own!
                 sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);

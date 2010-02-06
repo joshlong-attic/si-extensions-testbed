@@ -21,44 +21,47 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 
 
 /**
- * this contains the information we need to talk to a working Jsch session.
+ * This class is a simple abstraction on top of a JSCh #Session object. It configures everything and then attempts to connect. It honors the lifecycle and
+ *
+ * @author Josh Long
  */
 public class SFTPSession {
 
     private static final Logger logger = Logger.getLogger(SFTPSession.class);
 
+    // these are the two actors in our system: the #session handles the connection, the userInfo handles interactive authentication and server interaction.
     private volatile Session session;
     private volatile UserInfo userInfo;
+
+    // the sftp channel
     private volatile ChannelSftp channel;
 
-
-    // private key
+    // private key storage
     private String privateKey;
     private String privateKeyPassphrase;
 
+
+    /**
+     * this is a simple, optimistic implementation of this interface. It simply returns in the positive
+     * where possible and handles interactive authentication (ie, 'Please enter your password: '
+     * prompts are dispatched automatically using this)
+     *
+     * @author Josh Long
+     */
     static private class MyUserInfo implements UserInfo {
 
-        @Override
-        public String toString() {
-            return new ReflectionToStringBuilder(this).toString();
-        }
+        private String pw;
 
-        public MyUserInfo(String user, String password, String passphrase) {
-            this.usr = user;
+        public MyUserInfo(String password) {
             this.pw = password;
-            this.pass = passphrase;
         }
 
-
-        private String usr, pw, pass;
-        private int count = 0;
 
         public String getPassphrase() {
             return null; // pass
@@ -77,7 +80,6 @@ public class SFTPSession {
         }
 
         public boolean promptYesNo(String string) {
-            count = +1;
             return true;
         }
 
@@ -97,11 +99,22 @@ public class SFTPSession {
     // handle setting up a user/pw connectino
     // different ctors might handle others soon
 
-    public SFTPSession(String usr, String host, String pw, int port, String knownHostsFile, InputStream knownHostsInputStream, String pvKey, String pvKeyPassPhrase) throws Exception {
+    /**
+     * @param userName              the name of the account being logged into.
+     * @param hostName              this should be the host. I found values like <code>foo.com</code> work, where <code>http://foo.com</code> don't.
+     * @param userPassword          if you are not using key based authentication, then you are likely being prompted for a password each time you login. This is that password. It is <em>not</em> the passphrase for the private key!
+     * @param port                  the default is 22, and if you specify N<0 for this value we'll default it to 22
+     * @param knownHostsFile        this is the known hosts file. If you don't specify it, jsch does some magic to work without your specification. If you have it in a non well-known location, however, this property is for you. An example: <code>/home/user/.ssh/known_hosts</code>
+     * @param knownHostsInputStream this is the known hosts file. If you don't specify it, jsch does some magic to work without your specification. If you have it in a non well-known location, however, this property is for you. An example: <code>/home/user/.ssh/known_hosts</code>. Note that you may specify this <em>or</em> the #knownHostsFile  - not both!
+     * @param privateKey            this is usually used when you want passwordless automation (obviously, for this integration it's useless since this lets you specify a password once, anyway, but still good to have if required). This file might be ~/.ssh/id_dsa, or a <code>.pem</code> for your remote server (for example, on EC2)
+     * @param pvKeyPassPhrase       sometimes, to be extra secure, the private key itself is extra encrypted. In order to surmount that, we need the private key passphrase. Specify that here.
+     * @throws Exception thrown if any of a myriad of scenarios plays out
+     */
+    public SFTPSession(String userName, String hostName, String userPassword, int port, String knownHostsFile, InputStream knownHostsInputStream, String privateKey, String pvKeyPassPhrase) throws Exception {
         JSch jSch = new JSch();
 
         // make sure these are set
-        this.privateKey = pvKey;  //   "/home/cr/users/anand/.ssh/id_dsa"
+        this.privateKey = privateKey;  //   "/home/cr/users/anand/.ssh/id_dsa"
         this.privateKeyPassphrase = pvKeyPassPhrase;
 
         // known hosts: /home/jlong/.ssh/known_hosts
@@ -115,24 +128,26 @@ public class SFTPSession {
         }
 
         // private key
-        if (!StringUtils.isEmpty(privateKey)) {
+        if (!StringUtils.isEmpty(this.privateKey)) {
             if (!StringUtils.isEmpty(privateKeyPassphrase)) {
-                jSch.addIdentity(privateKey, privateKeyPassphrase);
-                logger.debug(" jSch.addIdentity(" + privateKey +
+                jSch.addIdentity(this.privateKey, privateKeyPassphrase);
+                logger.debug(" jSch.addIdentity(" + this.privateKey +
                         ", " + privateKeyPassphrase + ");");
             } else {
-                jSch.addIdentity(privateKey);
-                logger.debug(" jSch.addIdentity(" + privateKey + ");");
+                jSch.addIdentity(this.privateKey);
+                logger.debug(" jSch.addIdentity(" + this.privateKey + ");");
             }
         }
 
 
-        session = jSch.getSession(usr, host, port);
-        if (!StringUtils.isEmpty(pw))
-            session.setPassword(pw);
+        session = jSch.getSession(userName, hostName, port);
+        if (!StringUtils.isEmpty(userPassword))
+            session.setPassword(userPassword);
 
-        userInfo = new MyUserInfo(usr, pw, null);
+        //if(!StringUtils.isEmpty(userPassword)){
+        userInfo = new MyUserInfo(userPassword);
         session.setUserInfo(userInfo);
+        //}
         session.connect();
         channel = (ChannelSftp) session.openChannel("sftp");
     }
