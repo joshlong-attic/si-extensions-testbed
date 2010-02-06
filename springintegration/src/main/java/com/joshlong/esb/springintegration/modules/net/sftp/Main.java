@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright 2010 the original author or authors
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,6 @@
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- ******************************************************************************/
-
-/*
- * Copyright 2010 the original author or authors
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
  */
 
 package com.joshlong.esb.springintegration.modules.net.sftp;
@@ -41,23 +25,6 @@ import org.springframework.util.ErrorHandler;
 
 import java.io.File;
 
-/**
- * OSCONTRIB-5
- * <p/>
- * todo: threading (so that the synchronizer works with a thread to constantly work) todo investigate more effective
- * ways of downloading (right now its an input strean, but hwo does that approach scale w/ 20gb files?) todo : add in a
- * MessageSource so that this can play well with Spring Integration. Also, add in support for delivering newly minted
- * files using one of the FileReadingMssageSource or my native filesystem message source. this message source is
- * ultimately what 'delivers' news of the files that have been synched from the remote server
- * <p/>
- * <p/>
- * <code>SFTPMain</code> was more a dry run then my test harness.. I need a Main to do work against
- * <p/>
- * <p/>
- * To test, run: <code>mkdir ~/{local,remote}_mount</code>
- * <p/>
- * Or, you can test the cursory functionality that will try to ensure these mounts are available for you.
- */
 public class Main {
 
     static private final Logger logger = Logger.getLogger(Main.class);

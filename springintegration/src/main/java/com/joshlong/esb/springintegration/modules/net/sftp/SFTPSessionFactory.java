@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright 2010 the original author or authors
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,6 @@
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- ******************************************************************************/
-
-/**
- * $copyri
  */
 
 package com.joshlong.esb.springintegration.modules.net.sftp;
@@ -24,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-// todo support the known hosts input stream param. or maybe using a resource and an editor?
 public class SFTPSessionFactory implements FactoryBean<SFTPSession>, InitializingBean {
 
     volatile private int port = 22; // the default

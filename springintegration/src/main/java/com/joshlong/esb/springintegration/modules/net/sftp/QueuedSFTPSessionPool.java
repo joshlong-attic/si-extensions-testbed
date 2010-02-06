@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright 2010 the original author or authors
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +12,8 @@
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- ******************************************************************************/
+ */
 
-/** copyright */
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.log4j.Logger;
@@ -23,13 +22,6 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-/**
- * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
- *         <p/>
- *         This is designed to hold a fixed number of sessions and return them as needed (to the same configured
- *         resource, of course). This might be useful, for example, if a thread starts in on a sync and then the trigger
- *         hits again and it's time to sync again.
- */
 public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean {
 
     static public final Logger logger = Logger.getLogger(QueuedSFTPSessionPool.class);
