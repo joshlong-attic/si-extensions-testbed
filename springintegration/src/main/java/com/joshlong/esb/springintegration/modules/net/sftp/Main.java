@@ -82,9 +82,6 @@ public class Main {
 
         Resource localDirectory = new FileSystemResource(local);
 
-        // factory
-
-
         // pool
         QueuedSFTPSessionPool queuedSFTPSessionPool = new QueuedSFTPSessionPool(sftpSessionFactory);
         queuedSFTPSessionPool.afterPropertiesSet();
@@ -128,12 +125,13 @@ public class Main {
     }
 
     static public void main(String[] args) throws Throwable {
-        boolean testKey = true;
+        boolean testKey = false;
         SFTPSessionFactory factory = testKey ?
-                sftpSessionFactory("joshlong.com", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22) :
+                sftpSessionFactory("joshlong.com", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22) : // this wont work on your machine. get yer own!
                 sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
 
-        run(factory, "local_mount_" + (testKey ? "key" : "pass"), "foo");
+        String suffix = (testKey ? "key" : "pass");
+        run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);
 
     }
 }
