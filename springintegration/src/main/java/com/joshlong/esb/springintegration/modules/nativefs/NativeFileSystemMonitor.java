@@ -59,11 +59,13 @@ public class NativeFileSystemMonitor {
      * This method is what is called from our code to talk to the native code:
      * <p/>
      * Behind the scenes, this offers a native inotify based event driven mechanism.
+     *
+     * @param path   the path that should be monitored. I haven't done any checking to see well this plays with the C libraries that we're using.
+     *
      */
     public native void monitor(String path);
 
    public NativeFileSystemMonitor(){
-
    }
 
     private transient LinkedBlockingQueue<String> additions;
