@@ -41,7 +41,7 @@ import java.io.File;
  *
  * To test, run: <code>mkdir ~/{local,remote}_mount</code>
  *
- * Or, you
+ * Or, you can test the cursory functionality that will try to ensure these mounts are available for you.
  */
 public class Main {
 
