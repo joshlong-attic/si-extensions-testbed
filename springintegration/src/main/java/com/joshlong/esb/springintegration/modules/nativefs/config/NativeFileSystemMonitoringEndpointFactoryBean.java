@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 /*
  * Copyright 2010 the original author or authors
  *
@@ -28,11 +44,11 @@ import org.springframework.integration.core.MessageChannel;
 import java.io.File;
 
 /**
- * Creates a NativeFileSystemMonitoringEndpoint  that can be used to monitor the file system for new files and send them onto the bus.
+ * Creates a NativeFileSystemMonitoringEndpoint  that can be used to monitor the file system for new files and send them
+ * onto the bus.
  */
 public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFactoryBean<NativeFileSystemMonitoringEndpoint>
         implements ResourceLoaderAware, InitializingBean {
-
 
     private transient boolean autoStartup = true;
     private transient int maxQueuedValue;
@@ -50,7 +66,6 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
         this.maxQueuedValue = maxQueuedValue;
     }
 
-
     public boolean isAutoStartup() {
         return autoStartup;
     }
@@ -58,7 +73,6 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
     public void setAutoStartup(boolean autoStartup) {
         this.autoStartup = autoStartup;
     }
-
 
     public String getDirectory() {
         return directory;
@@ -93,9 +107,11 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
     protected NativeFileSystemMonitoringEndpoint createInstance() throws Exception {
 
         File f = new File(this.directory);
-        if (this.isAutoCreateDirectory())
-            if(!f.exists()&&!f.mkdirs())
-                throw new RuntimeException( "couldn't create directory '"+ this.directory + "'.");
+        if (this.isAutoCreateDirectory()) {
+            if (!f.exists() && !f.mkdirs()) {
+                throw new RuntimeException("couldn't create directory '" + this.directory + "'.");
+            }
+        }
 
         ResourceEditor editor = new ResourceEditor(this.resourceLoader);
         editor.setAsText(this.directory);
@@ -110,7 +126,6 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
 
         // todo add support for a filter 
         // todo add support for an 'auto-startup' boolean
-
 
         return nativeFileSystemMonitoringEndpoint;
     }

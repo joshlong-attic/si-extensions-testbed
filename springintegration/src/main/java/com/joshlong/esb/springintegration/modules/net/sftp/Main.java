@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 /*
  * Copyright 2010 the original author or authors
  *
@@ -25,15 +41,14 @@ import org.springframework.util.ErrorHandler;
 
 import java.io.File;
 
-
 /**
  * OSCONTRIB-5
  * <p/>
- * todo: threading (so that the synchronizer works with a thread to constantly work)
- * todo investigate more effective ways of downloading (right now its an input strean, but hwo does that approach scale w/ 20gb files?)
- * todo : add in a MessageSource so that this can play well with Spring Integration.
- * Also, add in support for delivering newly minted files using one of the FileReadingMssageSource or my native filesystem message source.
- * this message source is ultimately what 'delivers' news of the files that have been synched from the remote server
+ * todo: threading (so that the synchronizer works with a thread to constantly work) todo investigate more effective
+ * ways of downloading (right now its an input strean, but hwo does that approach scale w/ 20gb files?) todo : add in a
+ * MessageSource so that this can play well with Spring Integration. Also, add in support for delivering newly minted
+ * files using one of the FileReadingMssageSource or my native filesystem message source. this message source is
+ * ultimately what 'delivers' news of the files that have been synched from the remote server
  * <p/>
  * <p/>
  * <code>SFTPMain</code> was more a dry run then my test harness.. I need a Main to do work against
@@ -59,25 +74,19 @@ public class Main {
         sftpSessionFactory.setPrivateKeyPassphrase(pvKeyPass);
         sftpSessionFactory.afterPropertiesSet();
 
-
         return sftpSessionFactory;
     }
 
-
-    static void run(SFTPSessionFactory sftpSessionFactory, String lp, String rp)
-            throws Throwable {
-
-        // configuration
-        // SystemUtils.getUserHome() + "/remote_mount",
-//                localPath = SystemUtils.getUserHome() + "/local_mount";
+    static void run(SFTPSessionFactory sftpSessionFactory, String lp, String rp) throws Throwable {
 
         // local path
         File local = new File(lp); // obviously this is just for test. Do what you need to do in your own
 
         // we are testing, after all
         if (local.exists() && local.list().length > 0) {
-            for (File f : local.listFiles())
+            for (File f : local.listFiles()) {
                 if (!f.delete()) logger.debug("couldn't delete " + f.getAbsolutePath());
+            }
         }
 
         Resource localDirectory = new FileSystemResource(local);
@@ -98,7 +107,6 @@ public class Main {
         taskScheduler.initialize();
 
         // synchronizer
-
         final SFTPInboundSynchronizer sftpInboundSynchronizer = new SFTPInboundSynchronizer();
         sftpInboundSynchronizer.setLocalDirectory(localDirectory);
         sftpInboundSynchronizer.setRemotePath(rp);
@@ -120,15 +128,18 @@ public class Main {
                     // don't care
                 }
             }
-        }).start();*/
+        }).start();
+*/
 
     }
 
     static public void main(String[] args) throws Throwable {
         boolean testKey = true;
         SFTPSessionFactory factory = testKey ?
-                sftpSessionFactory("joshlong.com", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22) : // this wont work on your machine. get yer own!
-                sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
+                                     sftpSessionFactory("joshlong.com", null, "ubuntu",
+                                                        SystemUtils.getUserHome() + "/jlongec2.pem", null,
+                                                        22) : // this wont work on your machine. get yer own!
+                                     sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
 
         String suffix = (testKey ? "key" : "pass");
         run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);

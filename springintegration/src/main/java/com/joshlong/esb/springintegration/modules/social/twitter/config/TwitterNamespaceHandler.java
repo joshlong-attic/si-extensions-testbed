@@ -1,18 +1,35 @@
-/*
+/*******************************************************************************
  * Copyright 2010 the original author or authors
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType;
@@ -20,33 +37,35 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.integration.config.xml.AbstractOutboundChannelAdapterParser;
 import org.springframework.integration.config.xml.AbstractPollingInboundChannelAdapterParser;
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
-
 @SuppressWarnings("unused")
-public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
+public class TwitterNamespaceHandler extends org.springframework.beans.factory.xml.NamespaceHandlerSupport {
     static public String DIRECT_MESSAGES = "direct-messages";
     static public String MENTIONS = "mentions";
     static public String FRIENDS = "friends";
 
-
-    static private TwitterMessageType handleParsingMessageType(BeanDefinitionBuilder builder, Element element, ParserContext parserContext) {
+    static private com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType handleParsingMessageType(
+            BeanDefinitionBuilder builder,
+            Element element,
+            ParserContext parserContext) {
         String typeAttr = element.getAttribute("type");
         if (!StringUtils.isEmpty(typeAttr)) {
 
-
-            if (typeAttr.equalsIgnoreCase(FRIENDS))
+            if (typeAttr.equalsIgnoreCase(FRIENDS)) {
                 return TwitterMessageType.FRIENDS;
+            }
 
-            if (typeAttr.equalsIgnoreCase(MENTIONS))
+            if (typeAttr.equalsIgnoreCase(MENTIONS)) {
                 return TwitterMessageType.MENTIONS;
-            if (typeAttr.equalsIgnoreCase(DIRECT_MESSAGES))
+            }
+            if (typeAttr.equalsIgnoreCase(DIRECT_MESSAGES)) {
                 return TwitterMessageType.DM;
+            }
 
         }
 
@@ -68,7 +87,8 @@ public class TwitterNamespaceHandler extends NamespaceHandlerSupport {
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
             builder.addPropertyValue("type", handleParsingMessageType(builder, element, parserContext));
-            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
+            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(),
+                                                                       parserContext.getRegistry());
         }
     }
 

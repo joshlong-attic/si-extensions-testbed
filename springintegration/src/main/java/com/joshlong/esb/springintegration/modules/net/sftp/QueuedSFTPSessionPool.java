@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 /** copyright */
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
@@ -7,9 +23,12 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-
 /**
- * this is designed to keep multiple sessions going so that multiple subscribers
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ *         <p/>
+ *         This is designed to hold a fixed number of sessions and return them as needed (to the same configured
+ *         resource, of course). This might be useful, for example, if a thread starts in on a sync and then the trigger
+ *         hits again and it's time to sync again.
  */
 public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean {
 
@@ -32,28 +51,32 @@ public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean 
         SFTPSession session = this.queue.poll();
         if (null == session) {
             session = this.sftpSessionFactory.getObject();
-            if (queue.size() < maxPoolSize)
+            if (queue.size() < maxPoolSize) {
                 queue.add(session);
+            }
         }
         if (null == session) session = queue.poll();
         return session;
     }
 
-
     public void release(SFTPSession session) {
         logger.debug("releasing " + session.toString());
-        if (queue.size() < maxPoolSize)
+        if (queue.size() < maxPoolSize) {
             queue.add(session);    // somehow one snuck in before <code>session</code> was finished!
+        }
         else {
             dispose(session);
         }
     }
 
     private void dispose(SFTPSession s) {
-        if (s == null)
+        if (s == null) {
             return;
+        }
         if (queue.contains(s)) //this should never happen, but if it does ...
+        {
             queue.remove(s);
+        }
         if (s.getChannel() != null && s.getChannel().isConnected()) s.getChannel().disconnect();
         if (s.getSession().isConnected()) s.getSession().disconnect();
     }

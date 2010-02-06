@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 /*
  * Copyright 2010 the original author or authors
  *
@@ -29,8 +45,8 @@ import java.io.File;
 /**
  * This component will react to the file system and publish any new files (or updated files) on the request channel.
  * <p/>
- * TODO this should be a drop-in replacement for the polling version
- * TODO this should throw a unholy fit if we detect that java.library.path isn't set since this (clearly) won't work without it.
+ * TODO this should be a drop-in replacement for the polling version TODO this should throw a unholy fit if we detect
+ * that java.library.path isn't set since this (clearly) won't work without it.
  */
 public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
 
@@ -64,7 +80,6 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
         this.requestChannel = requestChannel;
     }
 
-
     public boolean isAutoCreateDirectory() {
         return autoCreateDirectory;
     }
@@ -89,7 +104,8 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
             channelTemplate.afterPropertiesSet();
-        } catch (Throwable th) {
+        }
+        catch (Throwable th) {
             throw new RuntimeException(th);
         }
     }
@@ -97,18 +113,19 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     @Override
     protected void doStart() {
         try {
-          new Thread( new Runnable(){
-              public void run() {
-                     nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
-                public void fileAdded(File dir, String fn) {
-                    File file = new File(dir, fn);
-                    Message<File> fileMsg = MessageBuilder.withPayload(file).build();
-                    channelTemplate.send(fileMsg,requestChannel);
+            new Thread(new Runnable() {
+                public void run() {
+                    nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
+                        public void fileAdded(File dir, String fn) {
+                            File file = new File(dir, fn);
+                            Message<File> fileMsg = MessageBuilder.withPayload(file).build();
+                            channelTemplate.send(fileMsg, requestChannel);
+                        }
+                    });
                 }
-            });
-              }
-          }).start();
-        } catch (Throwable th) {
+            }).start();
+        }
+        catch (Throwable th) {
             throw new RuntimeException(th);
         }
     }

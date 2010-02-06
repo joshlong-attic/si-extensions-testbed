@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 /*
  * Copyright 2010 the original author or authors
  *
@@ -41,17 +57,14 @@ import java.util.concurrent.ScheduledFuture;
  * <p/>
  * <p/>
  * <p/>
- * TODO get this working (once)
- * TODO then make it so that this thing is multi threaded using a TaskExecutor implementation (make it so that the taskExecutor is injectable and works
- * with Spring 3.0s impleentations)
+ * TODO get this working (once) TODO then make it so that this thing is multi threaded using a TaskExecutor
+ * implementation (make it so that the taskExecutor is injectable and works with Spring 3.0s impleentations)
  */
 public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ {
 
     private static final Logger logger = Logger.getLogger(SFTPInboundSynchronizer.class);
 
-    /**
-     * taken from <code>FtpInboundSynchronizer</code>
-     */
+    /** taken from <code>FtpInboundSynchronizer</code> */
     static final String INCOMPLETE_EXTENSION = ".INCOMPLETE";
     private static final long DEFAULT_REFRESH_RATE = 10 * 1000; // 10 seconds 
     private volatile TaskScheduler taskScheduler;
@@ -96,7 +109,6 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         this.trigger = trigger;
     }
 
-
     public void setAutoCreatePath(boolean autoCreatePath) {
         this.autoCreatePath = autoCreatePath;
     }
@@ -113,12 +125,13 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         this.pool = pool;
     }
 
-
     @SuppressWarnings("ignored")
-    private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession, ChannelSftp.LsEntry entry, Resource localDir) throws Exception {
+    private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession,
+                                                   ChannelSftp.LsEntry entry,
+                                                   Resource localDir) throws Exception {
 
         logger.debug(String.format("attempting to sync remote file %s/%s to local file %s",
-                remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
+                                   remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
 
         File fileForLocalDir = localDir.getFile();
 
@@ -138,21 +151,23 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                     // last step
                     if (isShouldDeleteDownloadedRemoteFiles()) {
                         logger.debug(String.format("isShouldDeleteDownloadedRemoteFiles == true; " +
-                                "attempting to remove remote path '%s'", remoteFqPath));
+                                                   "attempting to remove remote path '%s'", remoteFqPath));
                         sftpSession.getChannel().rm(remoteFqPath);
                     }
 
                     return true;
                 }
 
-            } catch (Throwable th) {
+            }
+            catch (Throwable th) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(fos);
             }
-        } else {
-            logger.debug(String.format("local file %s already exists. Not re-downloading it.", localFile.getAbsolutePath()));
         }
-
+        else {
+            logger.debug(String.format("local file %s already exists. Not re-downloading it.",
+                                       localFile.getAbsolutePath()));
+        }
 
         return false;
 
@@ -171,12 +186,14 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                     copyFromRemoteToLocalDirectory(session, lsEntry, this.localDirectory);
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new MessagingException("couldn't synchronize remote to local directory", e);
         }
         finally {
-            if (session != null && pool != null)
+            if (session != null && pool != null) {
                 pool.release(session);
+            }
         }
 
     }
@@ -185,28 +202,29 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         return running;
     }
 
-
     class SynchronizeTask implements Runnable {
         public void run() {
             try {
                 synchronize();
-            } catch (Throwable e) {
+            }
+            catch (Throwable e) {
                 logger.debug("couldn't invoke synchronize()", e);
             }
         }
     }
 
-
     /**
      * there be dragons this way ...
      * <p/>
-     * This method will check to ensure that the remote directory exists. If the directory doesnt exist, and autoCreatePath is configured to be true,
-     * then this method makes a few reasonably sane attempts to create it.
+     * This method will check to ensure that the remote directory exists. If the directory doesnt exist, and
+     * autoCreatePath is configured to be true, then this method makes a few reasonably sane attempts to create it.
      * <p/>
      * Otherwise, it fails fast.
      *
      * @param rPath the path on the remote SSH / SFTP server to create.
-     * @return whether or not the directory is there (regardless of whether we created it in this method or it already existed.)
+     *
+     * @return whether or not the directory is there (regardless of whether we created it in this method or it already
+     *         existed.)
      */
     private boolean checkThatRemotePathExists(String rPath) {
         SFTPSession session = null;
@@ -222,9 +240,12 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
 
             return true;
 
-        } catch (Throwable th) {
-            logger.debug("exception throwing when trying to verify the presence of the remote rPath '" + rPath + "'. Will try to create the directory.", th);
-            if (this.autoCreatePath && pool != null && session != null)
+        }
+        catch (Throwable th) {
+            logger.debug(
+                    "exception throwing when trying to verify the presence of the remote rPath '" + rPath + "'. Will try to create the directory.",
+                    th);
+            if (this.autoCreatePath && pool != null && session != null) {
                 try {
                     if (channelSftp != null) {
                         channelSftp.mkdir(rPath);
@@ -233,29 +254,36 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                             return true;
                         }
                     }
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     return false;
                 }
-        } finally {
-            if (pool != null && session != null)
+            }
+        }
+        finally {
+            if (pool != null && session != null) {
                 pool.release(session);
+            }
         }
         return false;
 
     }
 
     public void start() {
-        if (running)
+        if (running) {
             return;
+        }
 
-        assert checkThatRemotePathExists(remotePath) : "the remotePath had better exist!"; // we do our best here but better to blow up early
+        assert checkThatRemotePathExists(
+                remotePath) : "the remotePath had better exist!"; // we do our best here but better to blow up early
         assert taskScheduler != null : "'taskScheduler' is required";
 
         scheduledFuture = taskScheduler.schedule(new SynchronizeTask(), trigger);
 
         this.running = true;
-        if (logger.isInfoEnabled())
+        if (logger.isInfoEnabled()) {
             logger.info("Started " + this);
+        }
     }
 
     public void stop() {
@@ -265,8 +293,9 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         assert scheduledFuture != null : "scheduledFuture is null!";
         this.scheduledFuture.cancel(true);
         this.running = false;
-        if (logger.isInfoEnabled())
+        if (logger.isInfoEnabled()) {
             logger.info("Stopped " + this);
+        }
 
     }
 
@@ -275,12 +304,15 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         assert (localDirectory != null) : "the localDirectory property must not be null!";
 
         File localDir = localDirectory.getFile();
-        if (!localDir.exists())
-            if (autoCreatePath)
-                if (!localDir.mkdirs())
-                    throw new RuntimeException(String.format("couldn't create localDirectory %s", this.localDirectory.getFile().getAbsolutePath()));
+        if (!localDir.exists()) {
+            if (autoCreatePath) {
+                if (!localDir.mkdirs()) {
+                    throw new RuntimeException(String.format("couldn't create localDirectory %s",
+                                                             this.localDirectory.getFile().getAbsolutePath()));
+                }
+            }
+        }
 
     }
-
 
 }

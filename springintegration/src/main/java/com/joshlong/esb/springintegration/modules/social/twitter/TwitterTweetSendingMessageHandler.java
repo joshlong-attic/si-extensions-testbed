@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ ******************************************************************************/
+
 /*
  * Copyright 2010 the original author or authors
  *
@@ -19,7 +35,6 @@ package com.joshlong.esb.springintegration.modules.social.twitter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageHeaders;
 import org.springframework.integration.message.MessageDeliveryException;
@@ -30,14 +45,14 @@ import org.springframework.util.Assert;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-/* 
- *  @author Josh Long 
- * 
- *  Produces status updates on behalf of the user.
- *
+/**
+ * Produces status updates on behalf of the user.
+ * <p/>
  * TODO what does <code>Ordered</code> buy us?
- **/
-public class TwitterTweetSendingMessageHandler implements InitializingBean, MessageHandler/*, Ordered */ {
+ *
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
+public class TwitterTweetSendingMessageHandler implements org.springframework.beans.factory.InitializingBean, MessageHandler/*, Ordered */ {
     static private Logger logger = Logger.getLogger(TwitterTweetSendingMessageHandler.class);
 
     private volatile String username;
@@ -48,14 +63,18 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
     public void tweet(MessageHeaders headers, String tweet) {
         try {
             String dmTarget = (String) headers.get(TwitterConstants.TWITTER_DM_TARGET_USER_ID);
-            if (type.equals(TwitterMessageType.FRIENDS))
+            if (type.equals(TwitterMessageType.FRIENDS)) {
                 twitter.updateStatus(tweet);
-            else if (type.equals(TwitterMessageType.DM) && !StringUtils.isEmpty(dmTarget))
+            }
+            else if (type.equals(TwitterMessageType.DM) && !StringUtils.isEmpty(dmTarget)) {
                 twitter.sendDirectMessage(dmTarget, tweet);
-            else
+            }
+            else {
                 throw new RuntimeException("can't send direct message without proper" +
-                        " message header for TwitterConstants.TWITTER_DM_TARGET_USER_ID!");
-        } catch (TwitterException e) {
+                                           " message header for TwitterConstants.TWITTER_DM_TARGET_USER_ID!");
+            }
+        }
+        catch (TwitterException e) {
             logger.debug(ExceptionUtils.getFullStackTrace(e));
         }
     }
@@ -94,7 +113,6 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
 
     public void afterPropertiesSet() throws Exception {
 
-
         Assert.state(null != type);
 
         if (twitter == null) {
@@ -105,7 +123,8 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
             twitter.setUserId(username);
             twitter.setPassword(password);
 
-        } else { // it isnt null, in which case it becomes canonical memory
+        }
+        else { // it isnt null, in which case it becomes canonical memory
             setPassword(twitter.getPassword());
             setUsername(twitter.getUserId());
         }
@@ -117,11 +136,14 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
         if (payload instanceof String) {
             String msg = (String) payload;
             tweet(message.getHeaders(), msg);
-        } else if (payload instanceof Tweet) {
+        }
+        else if (payload instanceof Tweet) {
             Tweet twt = (Tweet) payload;
             tweet(message.getHeaders(), twt.getMessage());
-        } else
+        }
+        else {
             throw new RuntimeException("Can't tweet! Payload was not a 'Tweet' or 'String'");
+        }
     }
 
     /*   public int getOrder() {
