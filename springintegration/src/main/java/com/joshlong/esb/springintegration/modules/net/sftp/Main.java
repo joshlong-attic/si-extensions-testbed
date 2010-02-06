@@ -37,42 +37,57 @@ import java.io.File;
  * <p/>
  * <p/>
  * <code>SFTPMain</code> was more a dry run then my test harness.. I need a Main to do work against
- *
- *
+ * <p/>
+ * <p/>
  * To test, run: <code>mkdir ~/{local,remote}_mount</code>
- *
+ * <p/>
  * Or, you can test the cursory functionality that will try to ensure these mounts are available for you.
  */
 public class Main {
 
     static private final Logger logger = Logger.getLogger(Main.class);
 
-    static public void main(String[] args) throws Throwable {
-
-        // configuration
-        String host = "jlong",
-                pw = "cowbell",
-                usr = "jlong",
-                remotePath =  SystemUtils.getUserHome()+ "/remote_mount",
-                localPath =  SystemUtils.getUserHome()+"/local_mount";
-        int port = 22;
-
-        // local path
-        File local = new File(localPath); // obviously this is just for test. Do what you need to do in your own
-        Resource localDirectory = new FileSystemResource(local);
-
-        // factory
+    static SFTPSessionFactory sftpSessionFactory(String host, String pw, String usr,
+                                                 String pvKey, String pvKeyPass,
+                                                 int port) throws Throwable {
         SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
         sftpSessionFactory.setPassword(pw);
         sftpSessionFactory.setPort(port);
         sftpSessionFactory.setRemoteHost(host);
         sftpSessionFactory.setUser(usr);
+        sftpSessionFactory.setPrivateKey(pvKey);
+        sftpSessionFactory.setPrivateKeyPassphrase(pvKeyPass);
         sftpSessionFactory.afterPropertiesSet();
+
+
+        return sftpSessionFactory;
+    }
+
+
+    static void run(SFTPSessionFactory sftpSessionFactory, String lp, String rp)
+            throws Throwable {
+
+        // configuration
+        // SystemUtils.getUserHome() + "/remote_mount",
+//                localPath = SystemUtils.getUserHome() + "/local_mount";
+
+        // local path
+        File local = new File(lp); // obviously this is just for test. Do what you need to do in your own
+
+        // we are testing, after all
+        if (local.exists() && local.list().length > 0) {
+            for (File f : local.listFiles())
+                if (!f.delete()) logger.debug("couldn't delete " + f.getAbsolutePath());
+        }
+
+        Resource localDirectory = new FileSystemResource(local);
+
+        // factory
+
 
         // pool
         QueuedSFTPSessionPool queuedSFTPSessionPool = new QueuedSFTPSessionPool(sftpSessionFactory);
         queuedSFTPSessionPool.afterPropertiesSet();
-
 
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(10);
@@ -89,10 +104,10 @@ public class Main {
 
         final SFTPInboundSynchronizer sftpInboundSynchronizer = new SFTPInboundSynchronizer();
         sftpInboundSynchronizer.setLocalDirectory(localDirectory);
-        sftpInboundSynchronizer.setRemotePath(remotePath);
+        sftpInboundSynchronizer.setRemotePath(rp);
         sftpInboundSynchronizer.setAutoCreatePath(true);
         sftpInboundSynchronizer.setPool(queuedSFTPSessionPool);
-        sftpInboundSynchronizer.setShouldDeleteDownloadedRemoteFiles(true);
+        sftpInboundSynchronizer.setShouldDeleteDownloadedRemoteFiles(false);
         sftpInboundSynchronizer.setTaskScheduler(taskScheduler);
         sftpInboundSynchronizer.afterPropertiesSet();
         sftpInboundSynchronizer.start();
@@ -110,6 +125,15 @@ public class Main {
             }
         }).start();*/
 
+    }
+
+    static public void main(String[] args) throws Throwable {
+        boolean testKey = true;
+        SFTPSessionFactory factory = testKey ?
+                sftpSessionFactory("joshlong.com", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22) :
+                sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
+
+        run(factory, "local_mount_" + (testKey ? "key" : "pass"), "foo");
 
     }
 }

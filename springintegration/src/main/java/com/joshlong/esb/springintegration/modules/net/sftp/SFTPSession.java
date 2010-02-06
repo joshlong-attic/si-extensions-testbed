@@ -20,7 +20,11 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.log4j.Logger;
+
+import java.io.InputStream;
 
 
 /**
@@ -28,11 +32,16 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
  */
 public class SFTPSession {
 
+    private static final Logger logger = Logger.getLogger(SFTPSession.class);
 
     private volatile Session session;
     private volatile UserInfo userInfo;
     private volatile ChannelSftp channel;
 
+
+    // private key
+    private String privateKey;
+    private String privateKeyPassphrase;
 
     static private class MyUserInfo implements UserInfo {
 
@@ -88,19 +97,50 @@ public class SFTPSession {
     // handle setting up a user/pw connectino
     // different ctors might handle others soon
 
-    public SFTPSession(String usr, String host, String pw, int port) throws Exception {
+    public SFTPSession(String usr, String host, String pw, int port, String knownHostsFile, InputStream knownHostsInputStream, String pvKey, String pvKeyPassPhrase) throws Exception {
         JSch jSch = new JSch();
+
+        // make sure these are set
+        this.privateKey = pvKey;  //   "/home/cr/users/anand/.ssh/id_dsa"
+        this.privateKeyPassphrase = pvKeyPassPhrase;
+
+        // known hosts: /home/jlong/.ssh/known_hosts
+        if (!StringUtils.isEmpty(knownHostsFile)) {
+            jSch.setKnownHosts(knownHostsFile);
+            logger.debug("jsch.setKnownHosts(" + knownHostsFile + ")");
+        } else if (null != knownHostsInputStream) {
+
+            jSch.setKnownHosts(knownHostsInputStream);
+            logger.debug("jsch.setKnownHosts(InputSteam)");
+        }
+
+        // private key
+        if (!StringUtils.isEmpty(privateKey)) {
+            if (!StringUtils.isEmpty(privateKeyPassphrase)) {
+                jSch.addIdentity(privateKey, privateKeyPassphrase);
+                logger.debug(" jSch.addIdentity(" + privateKey +
+                        ", " + privateKeyPassphrase + ");");
+            } else {
+                jSch.addIdentity(privateKey);
+                logger.debug(" jSch.addIdentity(" + privateKey + ");");
+            }
+        }
+
+
         session = jSch.getSession(usr, host, port);
+        if (!StringUtils.isEmpty(pw))
+            session.setPassword(pw);
 
         userInfo = new MyUserInfo(usr, pw, null);
-
         session.setUserInfo(userInfo);
         session.connect();
         channel = (ChannelSftp) session.openChannel("sftp");
     }
 
     public void start() throws Exception {
-        if(  !channel.isConnected() )
+        if (!channel.isConnected()) {
+            logger.debug("channel is not connected, connecting.");
             channel.connect();
+        }
     }
 }
