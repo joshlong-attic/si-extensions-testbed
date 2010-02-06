@@ -16,6 +16,7 @@
 
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -36,6 +37,11 @@ import java.io.File;
  * <p/>
  * <p/>
  * <code>SFTPMain</code> was more a dry run then my test harness.. I need a Main to do work against
+ *
+ *
+ * To test, run: <code>mkdir ~/{local,remote}_mount</code>
+ *
+ * Or, you
  */
 public class Main {
 
@@ -44,11 +50,11 @@ public class Main {
     static public void main(String[] args) throws Throwable {
 
         // configuration
-        String host = "studio",
+        String host = "jlong",
                 pw = "cowbell",
                 usr = "jlong",
-                remotePath = "/home/jlong/remote_mount",
-                localPath = "/home/jlong/local_mount";
+                remotePath =  SystemUtils.getUserHome()+ "/remote_mount",
+                localPath =  SystemUtils.getUserHome()+"/local_mount";
         int port = 22;
 
         // local path
