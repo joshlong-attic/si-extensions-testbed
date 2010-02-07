@@ -40,9 +40,13 @@
 
     <channel id="inboundFilesChannel"/>
 
-    <sftp:inbound-channel-adapter local-working-directory="file:///home/jlong/inboundSftp"
-                                  remote-directory="/home/jlong/remoteSftpFiles" auto-create-directories="true"
-                                  channel="inboundFilesChannel" username="jlong" password="cowbell" host="studio">
+    <sftp:inbound-channel-adapter
+            key-file="/home/jlong/jlongec2.pem"
+            remote-directory="/home/ubuntu/remote_mount_key"
+            auto-create-directories="true"
+            channel="inboundFilesChannel"
+            username="ubuntu"
+            host="joshlong.com">
         <poller>
             <interval-trigger interval="10"/>
         </poller>
