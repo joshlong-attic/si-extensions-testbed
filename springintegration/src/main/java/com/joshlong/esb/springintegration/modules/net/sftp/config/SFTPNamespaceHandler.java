@@ -37,14 +37,36 @@ public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("inbound-channel-adapter", new SFTPMessageSourceBeanDefinitionParser());
     }
 
+    /*
+    *
+    *   /// implementation properties
+    private Trigger trigger;
+    private TaskScheduler taskScheduler;
+    private FileReadingMessageSource fileReadingMessageSource;
+    private SFTPInboundSynchronizer synchronizer;
+
+    // connectivity properties
+    private ApplicationContext applicationContext;
+    private String username, password, host, keyFile, keyFilePassword;
+    private boolean autoDeleteRemoteFilesOnSync;
+    private int port = 22;
+    private boolean autoCreateDirectories;
+    private File localDirectory;
+
+    private String remotePath;*/
+
     private static class SFTPMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
         @Override
         @SuppressWarnings("unused")
         protected String parseSource(Element element, ParserContext parserContext) {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.TwitterMessageSourceFactoryBean");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
+                    PACKAGE_NAME + ".config.SFTPMessageSourceFactoryBean");
+
+            for (String p : "auto-create-directories,username,password,host,key-file,key-file-password,remote-directory,local-working-directory,auto-delete-remote-files-on-sync".split(
+                    ",")) {
+                IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, p);
+            }
+
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(),
                                                                        parserContext.getRegistry());
         }

@@ -84,8 +84,9 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         return trigger;
     }
 
-    public void setTrigger(Trigger trigger) {
-        this.trigger = trigger;
+    public void setTrigger(Trigger t) {
+
+        this.trigger = t;
     }
 
     public void setAutoCreatePath(boolean autoCreatePath) {

@@ -74,13 +74,22 @@
                  - auto-delete-remote-files-on-sync : boolean
 
             -->
-
+            <!--
+            autoCreateDirectories,username,password,host,keyFile,keyFilePassword,remoteDirectory,localDirectory,localPath
+            -->
             <xsd:attribute name="username" type="xsd:string" use="required"/>
+            <xsd:attribute name="remote-directory" type="xsd:string" use="required"/>
+            <xsd:attribute name="local-working-directory" type="xsd:string" use="required"/>
+            <xsd:attribute name="host" type="xsd:string" use="required"/>
+
             <xsd:attribute name="password" type="xsd:string"/>
             <xsd:attribute name="port" type="xsd:int" default="22"/>
-            <xsd:attribute name="key" type="xsd:string"/>
-            <xsd:attribute name="keyPassword" type="xsd:string"/>
-            <xsd:attribute name="host" type="xsd:string"/>
+            <xsd:attribute name="key-file" type="xsd:string"/>
+            <xsd:attribute name="key-file-password" type="xsd:string"/>
+
+
+            <xsd:attribute name="auto-create-directories" type="xsd:boolean"/>
+            <xsd:attribute name="auto-delete-remote-files-on-sync" type="xsd:boolean"/>
 
 
         </xsd:complexType>

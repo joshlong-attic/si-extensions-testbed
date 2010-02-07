@@ -18,6 +18,7 @@ package com.joshlong.esb.springintegration.modules.nativefs.config;
 
 import com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitoringEndpoint;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceEditor;
@@ -29,7 +30,7 @@ import java.io.File;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-public class NativeFileSystemMonitoringEndpointFactoryBean extends org.springframework.beans.factory.config.AbstractFactoryBean<com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitoringEndpoint>
+public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFactoryBean<NativeFileSystemMonitoringEndpoint>
         implements ResourceLoaderAware, InitializingBean {
 
     private transient boolean autoStartup = true;

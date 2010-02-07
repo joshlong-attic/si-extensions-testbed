@@ -35,22 +35,21 @@
 						http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool-3.0.xsd
 						http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
 
-    <context:component-scan base-package="com.joshlong.esb.springintegration.modules.nativefs"/>
+    <context:component-scan base-package="com.joshlong.esb.springintegration.modules.net.sftp"/>
 
-    <beans:bean class="org.springframework.core.io.FileSystemResource" id="fileSystemResource">
-        <beans:constructor-arg value="file:///home/jlong/Desktop/testFsEvents"/>
-    </beans:bean>
 
     <channel id="inboundFilesChannel"/>
 
-    <sftp:inbound-channel-adapter channel="inboundFilesChannel" username="jlong" password="cowbell" host="jlong">
+    <sftp:inbound-channel-adapter local-working-directory="file:///home/jlong/inboundSftp"
+                                  remote-directory="/home/jlong/remoteSftpFiles" auto-create-directories="true"
+                                  channel="inboundFilesChannel" username="jlong" password="cowbell" host="studio">
         <poller>
             <interval-trigger interval="10"/>
         </poller>
     </sftp:inbound-channel-adapter>
 
 
-    <service-activator input-channel="inboundFilesChannel" ref="nativeFsEventAnnouncer"/>
+    <service-activator input-channel="inboundFilesChannel" ref="sftpFileAnnouncer"/>
 
 
 </beans:beans>

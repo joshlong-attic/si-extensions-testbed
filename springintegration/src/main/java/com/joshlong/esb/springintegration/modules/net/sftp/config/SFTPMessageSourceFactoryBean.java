@@ -16,41 +16,60 @@
 
 package com.joshlong.esb.springintegration.modules.net.sftp.config;
 
-import com.joshlong.esb.springintegration.modules.net.sftp.*;
+import com.joshlong.esb.springintegration.modules.net.sftp.QueuedSFTPSessionPool;
+import com.joshlong.esb.springintegration.modules.net.sftp.SFTPInboundSynchronizer;
+import com.joshlong.esb.springintegration.modules.net.sftp.SFTPMessageSource;
+import com.joshlong.esb.springintegration.modules.net.sftp.SFTPSessionFactory;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceEditor;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.ErrorHandler;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a> TODO flesh this out
  */
-public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessageSource> implements ApplicationContextAware {
+public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessageSource> implements ApplicationContextAware, ResourceLoaderAware {
+
+    public void setResourceLoader(final ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
     final private static Logger logger = Logger.getLogger(SFTPMessageSourceFactoryBean.class);
 
     /// implementation properties
     private Trigger trigger;
+    private ResourceLoader resourceLoader;
     private TaskScheduler taskScheduler;
     private FileReadingMessageSource fileReadingMessageSource;
     private SFTPInboundSynchronizer synchronizer;
 
+    // remoteDirectory,localWorkingDirectory,localPath
+
     // connectivity properties
+    private Resource localDirectoryResource;
     private ApplicationContext applicationContext;
     private String username, password, host, keyFile, keyFilePassword;
     private boolean autoDeleteRemoteFilesOnSync;
     private int port = 22;
     private boolean autoCreateDirectories;
-    private File localDirectory;
+    private String localWorkingDirectory;
 
-    private String remotePath;
+    private String remoteDirectory;
 
     /**
      * This method hides the minutae required to build an #SFTPSessionFactory.
@@ -93,35 +112,64 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
     protected SFTPMessageSource createInstance() throws Exception {
 
         try {
+            if (localWorkingDirectory == null || StringUtils.isEmpty(localWorkingDirectory)) {
+                File tmp = SystemUtils.getJavaIoTmpDir();
+                File sftpTmp = new File(tmp, "sftpInbound");
+                this.localWorkingDirectory = "file://" + sftpTmp.getAbsolutePath();
+            }
+            assert !StringUtils.isEmpty(this.localWorkingDirectory) : "the local working directory mustn't be null!";
+
+            // resource for local directory
+            ResourceEditor editor = new ResourceEditor(this.resourceLoader);
+            editor.setAsText(this.localWorkingDirectory);
+            this.localDirectoryResource = (Resource) editor.getValue();
+
             fileReadingMessageSource = new FileReadingMessageSource();
 
             synchronizer = new SFTPInboundSynchronizer();
             if (null == taskScheduler) {
-                taskScheduler = applicationContext.getBean(TaskScheduler.class);
+                Map<String, TaskScheduler> tss = null;
+                if ((tss = applicationContext.getBeansOfType(TaskScheduler.class)).keySet().size() != 0) {
+                    taskScheduler = tss.get(tss.keySet().iterator().next());
+                }
             }
+            if (null == taskScheduler) {
+                ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
+                ts.setPoolSize(10);
+                ts.setErrorHandler(new ErrorHandler() {
+                    public void handleError(Throwable t) {
+                        // todo make this forward a message onto the error channel (how does that work?)
+                        logger.debug("error! ", t);
+                    }
+                });
 
-            if (null == taskScheduler) {    // todo what's the right behavior here??
-                String msg = "couldn't get a taskScheduler!";
-                logger.debug(msg);
-                throw new RuntimeException(msg);
+                ts.setWaitForTasksToCompleteOnShutdown(true);
+                ts.initialize();
+                this.taskScheduler = ts;
+
             }
 
             SFTPSessionFactory sessionFactory = this.buildSftpSessionFactory(
                     this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(),
                     this.getKeyFilePassword(), this.getPort());
 
-            SFTPSessionPool pool = new QueuedSFTPSessionPool(15, sessionFactory);
-
-            synchronizer.setRemotePath(this.getRemotePath());
+            QueuedSFTPSessionPool pool = new QueuedSFTPSessionPool(15, sessionFactory);
+            pool.afterPropertiesSet();
+            synchronizer.setRemotePath(this.getRemoteDirectory());
             synchronizer.setPool(pool);
+            synchronizer.setAutoCreatePath(this.isAutoCreateDirectories());
+            synchronizer.setShouldDeleteDownloadedRemoteFiles(this.isAutoDeleteRemoteFilesOnSync());
 
             SFTPMessageSource sftpMessageSource = new SFTPMessageSource(fileReadingMessageSource, synchronizer);
 
             sftpMessageSource.setTaskScheduler(taskScheduler);
-            sftpMessageSource.setTrigger(getTrigger());
-            sftpMessageSource.setLocalDirectory(new FileSystemResource(this.getLocalDirectory()));
-            sftpMessageSource.afterPropertiesSet();
+            if (null != this.trigger) {
+                sftpMessageSource.setTrigger(trigger);
+            }
 
+            sftpMessageSource.setLocalDirectory(this.localDirectoryResource);
+            sftpMessageSource.afterPropertiesSet();
+            sftpMessageSource.start();
             return sftpMessageSource;
 
         }
@@ -229,12 +277,13 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
         this.trigger = trigger;
     }
 
-    public File getLocalDirectory() {
-        return localDirectory;
+    public String getLocalWorkingDirectory() {
+        return localWorkingDirectory;
     }
 
-    public void setLocalDirectory(final File localDirectory) {
-        this.localDirectory = localDirectory;
+    public void setLocalWorkingDirectory(final String lwd) {
+        this.localWorkingDirectory = lwd;
+
     }
 
     public TaskScheduler getTaskScheduler() {
@@ -245,11 +294,11 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
         this.taskScheduler = taskScheduler;
     }
 
-    public String getRemotePath() {
-        return remotePath;
+    public String getRemoteDirectory() {
+        return remoteDirectory;
     }
 
-    public void setRemotePath(final String remotePath) {
-        this.remotePath = remotePath;
+    public void setRemoteDirectory(final String remoteDirectory) {
+        this.remoteDirectory = remoteDirectory;
     }
 }
