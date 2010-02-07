@@ -14,10 +14,7 @@
  *     limitations under the License.
  */
 
-package com.joshlong.esb.springintegration.modules.social.twitter;
+package com.joshlong.esb.springintegration.modules.net.sftp.config;
 
-public enum TwitterMessageType {
-    DM, // TODO not supported atm
-    FRIENDS,
-    MENTIONS
+public class SFTPMessageSourceFactoryBean {
 }

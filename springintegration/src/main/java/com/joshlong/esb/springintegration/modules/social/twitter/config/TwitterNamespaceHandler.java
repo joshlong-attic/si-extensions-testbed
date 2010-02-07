@@ -33,10 +33,9 @@ public class TwitterNamespaceHandler extends org.springframework.beans.factory.x
     static public String MENTIONS = "mentions";
     static public String FRIENDS = "friends";
 
-    static private com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType handleParsingMessageType(
-            BeanDefinitionBuilder builder,
-            Element element,
-            ParserContext parserContext) {
+    static private TwitterMessageType handleParsingMessageType(BeanDefinitionBuilder builder,
+                                                               Element element,
+                                                               ParserContext parserContext) {
         String typeAttr = element.getAttribute("type");
         if (!StringUtils.isEmpty(typeAttr)) {
 
