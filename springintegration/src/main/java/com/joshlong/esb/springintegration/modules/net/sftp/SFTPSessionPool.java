@@ -16,6 +16,9 @@
 
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public interface SFTPSessionPool {
     /**
      * Frees up the client. Im not sure what the meaningful semantics of this are. Perhaps it just calls <code>(session

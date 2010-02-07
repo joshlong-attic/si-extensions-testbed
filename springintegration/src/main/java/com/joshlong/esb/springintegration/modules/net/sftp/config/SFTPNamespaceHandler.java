@@ -28,7 +28,8 @@ import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
- */ public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
+ */
+public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
 
     private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.net.sftp";
 
