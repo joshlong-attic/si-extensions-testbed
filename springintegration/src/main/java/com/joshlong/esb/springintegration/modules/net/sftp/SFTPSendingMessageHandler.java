@@ -33,9 +33,11 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
- * @author <a href="mailto:josh@joshlong.com">Josh Long</a> Sending a message payload to a remote SFTP endpoint. For
- *         now, we assume that the payload of the inbound message is of type #java.io.File. Perhaps we could support a
- *         payload of java.io.InputStream with a Header designatin the file name?
+ * Sending a message payload to a remote SFTP endpoint. For now, we assume that the payload of the inbound message is of
+ * type #java.io.File. Perhaps we could support a payload of java.io.InputStream with a Header designatin the file
+ * name?
+ *
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class SFTPSendingMessageHandler implements MessageHandler, InitializingBean {
 
@@ -72,7 +74,7 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
         try {
             fileInputStream = new FileInputStream(file);
             String baseOfRemotePath = StringUtils.isEmpty(this.remoteDirectory) ?
-                                      StringUtils.EMPTY : remoteDirectory + "/"; // the safe default 
+                                      StringUtils.EMPTY : remoteDirectory; // the safe default
 
             String dynRd = null;
             MessageHeaders messageHeaders = null;
@@ -84,6 +86,10 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
                         baseOfRemotePath = dynRd;
                     }
                 }
+            }
+
+            if (!StringUtils.defaultString(baseOfRemotePath).endsWith("/")) {
+                baseOfRemotePath += "/";
             }
 
             sftp.put(fileInputStream, baseOfRemotePath + file.getName());
