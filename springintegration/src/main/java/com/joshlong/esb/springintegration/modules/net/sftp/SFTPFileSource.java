@@ -24,6 +24,9 @@ import org.springframework.integration.message.MessageSource;
 
 import java.io.File;
 
+/**
+ * @author Josh Long
+ */
 public class SFTPFileSource implements MessageSource<File>, InitializingBean, Lifecycle {
 
     private SFTPInboundSynchronizer sftpInboundSynchronizer;
