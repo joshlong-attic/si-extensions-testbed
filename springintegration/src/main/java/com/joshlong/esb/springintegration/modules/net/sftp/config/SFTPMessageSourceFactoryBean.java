@@ -71,38 +71,6 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
 
     private String remoteDirectory;
 
-    /**
-     * This method hides the minutae required to build an #SFTPSessionFactory.
-     *
-     * @param host      the host to connect to.
-     * @param usr       this is required. It is the username of the credentials being authenticated.
-     * @param pw        if password authentication is being used (as opposed to key-based authentication) then this is
-     *                  where you configure the password.
-     * @param pvKey     the file that is the private key
-     * @param pvKeyPass the passphrase used to use the key file
-     * @param port      the default (22) is used if the value here is N< 0. The value should be only be set if the port
-     *                  is non-standard (not 22)
-     *
-     * @return the SFTPSessionFactory that's used to create connections and get us in the right state to start issue
-     *         commands against a remote SFTP/SSH filesystem
-     *
-     * @throws Throwable thrown in case of darned near <em>anything</em>
-     */
-    private SFTPSessionFactory buildSftpSessionFactory(String host, String pw, String usr,
-                                                       String pvKey, String pvKeyPass,
-                                                       int port) throws Throwable {
-        SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
-        sftpSessionFactory.setPassword(pw);
-        sftpSessionFactory.setPort(port);
-        sftpSessionFactory.setRemoteHost(host);
-        sftpSessionFactory.setUser(usr);
-        sftpSessionFactory.setPrivateKey(pvKey);
-        sftpSessionFactory.setPrivateKeyPassphrase(pvKeyPass);
-        sftpSessionFactory.afterPropertiesSet();
-
-        return sftpSessionFactory;
-    }
-
     @Override
     public Class<? extends SFTPMessageSource> getObjectType() {
         return SFTPMessageSource.class;
@@ -149,7 +117,7 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
 
             }
 
-            SFTPSessionFactory sessionFactory = this.buildSftpSessionFactory(
+            SFTPSessionFactory sessionFactory = SFTPSessionUtils.buildSftpSessionFactory(
                     this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(),
                     this.getKeyFilePassword(), this.getPort());
 

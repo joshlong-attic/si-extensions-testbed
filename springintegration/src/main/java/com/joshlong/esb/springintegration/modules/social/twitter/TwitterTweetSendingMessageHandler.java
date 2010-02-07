@@ -19,6 +19,7 @@ package com.joshlong.esb.springintegration.modules.social.twitter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageHeaders;
 import org.springframework.integration.message.MessageDeliveryException;
@@ -32,7 +33,7 @@ import twitter4j.TwitterException;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-public class TwitterTweetSendingMessageHandler implements org.springframework.beans.factory.InitializingBean, MessageHandler/*, Ordered */ {
+public class TwitterTweetSendingMessageHandler implements InitializingBean, MessageHandler {
     static private Logger logger = Logger.getLogger(TwitterTweetSendingMessageHandler.class);
 
     private volatile String username;

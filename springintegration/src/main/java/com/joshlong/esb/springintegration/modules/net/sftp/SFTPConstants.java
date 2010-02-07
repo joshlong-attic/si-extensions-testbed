@@ -14,22 +14,11 @@
  *     limitations under the License.
  */
 
-package com.joshlong.esb.springintegration.modules.net.sftp.test;
-
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+package com.joshlong.esb.springintegration.modules.net.sftp;
 
 /**
- * @author <a href="mailto:josh@joshlong.com">Josh Long </a>
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-
-@ContextConfiguration(locations = {"/net/sftp/test_inbound_sftp_using_ns.xml"})
-public class TestSFTPFileAnnouncer extends AbstractJUnit4SpringContextTests {
-    @Test
-    public void testItGood() throws Throwable {
-        if (System.in.read() <= 0) {
-            logger.debug("returning after test");
-        }
-    }
+public class SFTPConstants {
+    public static final String SFTP_REMOTE_DIRECTORY_HEADER = "SFTP_REMOTE_DIRECTORY_HEADER";
 }
