@@ -16,8 +16,21 @@
 
 package com.joshlong.esb.springintegration.modules.net.sftp.config;
 
+import com.joshlong.esb.springintegration.modules.net.sftp.SFTPMessageSource;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
+
 /**
- * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a> TODO flesh this out
  */
-public class SFTPMessageSourceFactoryBean {
+public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessageSource> {
+
+    @Override
+    public Class<? extends SFTPMessageSource> getObjectType() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected SFTPMessageSource createInstance() throws Exception {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
