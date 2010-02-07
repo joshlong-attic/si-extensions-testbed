@@ -20,6 +20,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class SFTPSessionFactory implements FactoryBean<SFTPSession>, InitializingBean {
 
     volatile private int port = 22; // the default

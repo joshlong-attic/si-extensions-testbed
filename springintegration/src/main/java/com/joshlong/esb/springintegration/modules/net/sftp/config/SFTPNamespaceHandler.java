@@ -25,7 +25,10 @@ import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
 @SuppressWarnings("unused")
-public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
+
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */ public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
 
     private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.net.sftp";
 

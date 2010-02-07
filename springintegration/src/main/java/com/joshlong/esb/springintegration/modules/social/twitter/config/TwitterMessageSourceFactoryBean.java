@@ -20,6 +20,9 @@ import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageS
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class TwitterMessageSourceFactoryBean extends AbstractFactoryBean<TwitterMessageSource> {
 
     private String username;

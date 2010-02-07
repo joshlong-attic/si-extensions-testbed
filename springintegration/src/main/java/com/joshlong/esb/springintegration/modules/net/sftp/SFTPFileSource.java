@@ -25,7 +25,7 @@ import org.springframework.integration.message.MessageSource;
 import java.io.File;
 
 /**
- * @author Josh Long
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class SFTPFileSource implements MessageSource<File>, InitializingBean, Lifecycle {
 

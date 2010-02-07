@@ -26,6 +26,9 @@ import org.springframework.integration.core.MessageChannel;
 
 import java.io.File;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class NativeFileSystemMonitoringEndpointFactoryBean extends org.springframework.beans.factory.config.AbstractFactoryBean<com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitoringEndpoint>
         implements ResourceLoaderAware, InitializingBean {
 

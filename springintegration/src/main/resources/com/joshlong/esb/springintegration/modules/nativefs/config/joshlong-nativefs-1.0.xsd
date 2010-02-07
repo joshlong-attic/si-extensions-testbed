@@ -2,17 +2,17 @@
 <!--
   ~ Copyright 2010 the original author or authors
   ~
-  ~    Licensed under the Apache License, Version 2.0 (the "License");
-  ~    you may not use this file except in compliance with the License.
-  ~    You may obtain a copy of the License at
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~         http://www.apache.org/licenses/LICENSE-2.0
   ~
-  ~    Unless required by applicable law or agreed to in writing, software
-  ~    distributed under the License is distributed on an "AS IS" BASIS,
-  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~    See the License for the specific language governing permissions and
-  ~    limitations under the License.
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
   -->
 
 <xsd:schema xmlns="http://www.joshlong.com/schema/integration/nativefs"
@@ -40,14 +40,15 @@
         <xsd:annotation>
             <xsd:documentation>
                 Configures an endpoint that reacts to events emitted by underlying operating system's file system.
-                The main working implementation at the moment is linux. Our endpoint wraps the kernel-level inotify library.
+                The main working implementation at the moment is linux. Our endpoint wraps the kernel-level inotify
+                library.
 
                 inotify, for example, is what tail on linux uses to be updated when events change a file being tailed.
 
             </xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
-            
+
             <xsd:attribute name="id" type="xsd:string"/>
             <xsd:attribute name="channel" use="required" type="xsd:string">
                 <xsd:annotation>
@@ -60,37 +61,37 @@
             </xsd:attribute>
             <xsd:attribute name="directory" type="xsd:string" use="required"/>
             <xsd:attribute name="max-queued-value" type="xsd:int" default="1000" use="optional"/>
-            <xsd:attribute name="auto-create-directory" type="xsd:boolean" />
+            <xsd:attribute name="auto-create-directory" type="xsd:boolean"/>
         </xsd:complexType>
     </xsd:element>
-<!--
+    <!--
 
-    <xsd:element name="inbound-channel-adapter">
-        <xsd:annotation>
-            <xsd:documentation>
-                Configures an inbound channel adapter that consumes mesages from twitter and sends Messages whose
-                payloads are Tweet objects.
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element ref="integration:poller" minOccurs="0" maxOccurs="1"/>
-            </xsd:sequence>
-            <xsd:attribute name="id" type="xsd:string"/>
-            <xsd:attribute name="channel" type="xsd:string">
-                <xsd:annotation>
-                    <xsd:appinfo>
-                        <tool:annotation kind="ref">
-                            <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
-                        </tool:annotation>
-                    </xsd:appinfo>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute name="username" type="xsd:string" use="required"/>
-            <xsd:attribute name="password" type="xsd:string" use="required"/>
-        </xsd:complexType>
-    </xsd:element>
--->
+        <xsd:element name="inbound-channel-adapter">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Configures an inbound channel adapter that consumes mesages from twitter and sends Messages whose
+                    payloads are Tweet objects.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="integration:poller" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+                <xsd:attribute name="id" type="xsd:string"/>
+                <xsd:attribute name="channel" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <tool:annotation kind="ref">
+                                <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                            </tool:annotation>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="username" type="xsd:string" use="required"/>
+                <xsd:attribute name="password" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:element>
+    -->
 
 
 </xsd:schema>

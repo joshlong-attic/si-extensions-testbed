@@ -16,6 +16,9 @@
 
 package com.joshlong.esb.springintegration.modules.social.twitter;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class TwitterConstants {
     public static final String TWITTER_DM_TARGET_USER_ID = "TWITTER_DM_TARGET_USER_ID";
 }

@@ -23,6 +23,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class Tweet implements Serializable, Comparable<Tweet> {
 
     private static final long serialVersionUID = 1L;

@@ -20,6 +20,9 @@ import com.joshlong.esb.springintegration.modules.social.twitter.Tweet;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @Component
 public class TwitterAnnouncer {
 

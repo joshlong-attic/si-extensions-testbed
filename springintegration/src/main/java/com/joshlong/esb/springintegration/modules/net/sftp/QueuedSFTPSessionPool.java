@@ -22,6 +22,9 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean {
 
     static public final Logger logger = Logger.getLogger(QueuedSFTPSessionPool.class);

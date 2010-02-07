@@ -21,6 +21,9 @@ import org.springframework.util.Assert;
 import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class NativeFileSystemMonitor {
     static {
         System.loadLibrary(
@@ -32,9 +35,8 @@ public class NativeFileSystemMonitor {
     }
 
     /**
-     * This method is what is called from our code to talk to the native code:
-     * <p/>
-     * Behind the scenes, this offers a native inotify based event driven mechanism.
+     * This method is what is called from our code to talk to the native code: Behind the scenes, this offers a native
+     * inotify based event driven mechanism.
      *
      * @param path the path that should be monitored. I haven't done any checking to see well this plays with the C
      *             libraries that we're using.
@@ -85,7 +87,9 @@ public class NativeFileSystemMonitor {
 
     }
 
-    /** This method is invoked FROM the C code, delegating to the */
+    /**
+     * This method is invoked FROM the C code, delegating to the
+     */
     public void nativeFileRecieved(String fileName) {
         additions.add(fileName);
     }

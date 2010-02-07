@@ -27,6 +27,9 @@ import org.springframework.integration.config.xml.AbstractPollingInboundChannelA
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @SuppressWarnings("unused")
 public class TwitterNamespaceHandler extends org.springframework.beans.factory.xml.NamespaceHandlerSupport {
     static public String DIRECT_MESSAGES = "direct-messages";

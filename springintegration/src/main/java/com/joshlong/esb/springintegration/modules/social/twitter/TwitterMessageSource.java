@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class TwitterMessageSource implements MessageSource<Tweet>, InitializingBean {
 
     static private Logger logger = Logger.getLogger(TwitterMessageSource.class);

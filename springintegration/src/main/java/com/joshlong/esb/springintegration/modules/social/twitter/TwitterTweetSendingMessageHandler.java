@@ -29,6 +29,9 @@ import org.springframework.util.Assert;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class TwitterTweetSendingMessageHandler implements org.springframework.beans.factory.InitializingBean, MessageHandler/*, Ordered */ {
     static private Logger logger = Logger.getLogger(TwitterTweetSendingMessageHandler.class);
 

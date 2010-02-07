@@ -29,7 +29,10 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import javax.annotation.Resource;
 
 @ContextConfiguration(locations = {"/social/twitter/sending_and_recieving_messages.xml"})
-public class TwitterIntegrationTest extends AbstractJUnit4SpringContextTests {
+
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */ public class TwitterIntegrationTest extends AbstractJUnit4SpringContextTests {
 
     private static final Logger logger = Logger.getLogger(TwitterIntegrationTest.class.getName());
 

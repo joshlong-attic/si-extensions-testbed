@@ -26,6 +26,9 @@ import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
 
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitoringEndpoint.class);

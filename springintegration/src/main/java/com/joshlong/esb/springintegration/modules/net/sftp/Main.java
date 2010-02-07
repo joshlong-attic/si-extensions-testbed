@@ -25,6 +25,9 @@ import org.springframework.util.ErrorHandler;
 
 import java.io.File;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class Main {
 
     static private final Logger logger = Logger.getLogger(Main.class);

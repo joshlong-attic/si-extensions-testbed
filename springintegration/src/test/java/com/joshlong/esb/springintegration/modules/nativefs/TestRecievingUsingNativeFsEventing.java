@@ -1,3 +1,19 @@
+/*
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
+
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import junit.framework.Assert;
@@ -15,6 +31,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @SuppressWarnings("unchecked")
 @ContextConfiguration(locations = {"/nativefs/recieving_native_fs_events_using_ns.xml"})
 public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringContextTests {
@@ -42,7 +61,8 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
             OutputStream outputStream = new FileOutputStream(nFile);
             IOUtils.write(msg, outputStream);
             IOUtils.closeQuietly(outputStream);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             // don't care
         }
     }
@@ -50,21 +70,21 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
     @SuppressWarnings("")
     @Test
     public void testHavingRecievedEvents() throws Throwable {
-        for (File f : fsfile.listFiles())
+        for (File f : fsfile.listFiles()) {
             if (!f.delete()) throw new RuntimeException(String.format("couldn't delete file %s!", f.getAbsolutePath()));
+        }
 
         Assert.assertTrue(fsfile.list().length == 0);
 
         Assert.assertTrue(fsfile.exists());
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++) {
             write(i + ".txt", "now is the time for " + i);
-
+        }
 
         if (System.in.read() <= 0) {
             logger.debug("returning after test");
         }
-
 
     }
 }

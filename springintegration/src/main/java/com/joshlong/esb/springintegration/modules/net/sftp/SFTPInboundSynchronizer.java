@@ -34,11 +34,16 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.concurrent.ScheduledFuture;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ {
 
     private static final Logger logger = Logger.getLogger(SFTPInboundSynchronizer.class);
 
-    /** taken from <code>FtpInboundSynchronizer</code> */
+    /**
+     * taken from <code>FtpInboundSynchronizer</code>
+     */
     static final String INCOMPLETE_EXTENSION = ".INCOMPLETE";
     private static final long DEFAULT_REFRESH_RATE = 10 * 1000; // 10 seconds 
     private volatile TaskScheduler taskScheduler;
@@ -188,12 +193,9 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
     }
 
     /**
-     * there be dragons this way ...
-     * <p/>
-     * This method will check to ensure that the remote directory exists. If the directory doesnt exist, and
-     * autoCreatePath is configured to be true, then this method makes a few reasonably sane attempts to create it.
-     * <p/>
-     * Otherwise, it fails fast.
+     * there be dragons this way ... This method will check to ensure that the remote directory exists. If the directory
+     * doesnt exist, and autoCreatePath is configured to be true, then this method makes a few reasonably sane attempts
+     * to create it. Otherwise, it fails fast.
      *
      * @param rPath the path on the remote SSH / SFTP server to create.
      *
