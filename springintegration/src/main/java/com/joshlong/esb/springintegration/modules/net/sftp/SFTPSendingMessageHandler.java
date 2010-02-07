@@ -70,6 +70,7 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
         }
         session.start();
         ChannelSftp sftp = session.getChannel();
+
         InputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(file);
@@ -93,6 +94,7 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
             }
 
             sftp.put(fileInputStream, baseOfRemotePath + file.getName());
+            return true;
         }
         finally {
             IOUtils.closeQuietly(fileInputStream);
@@ -100,7 +102,7 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
                 pool.release(session);
             }
         }
-        return false;
+
     }
 
     public void handleMessage(final Message<?> message) throws MessageRejectedException, MessageHandlingException, MessageDeliveryException {
@@ -113,6 +115,9 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
                 if (sendFileToRemoteEndpoint(message, inboundFilePayload)) {
                     logger.debug("sent " + ((File) message.getPayload()).getAbsolutePath() + ".");
                 }
+                else {
+                    logger.debug("coudln't send " + inboundFilePayload.getAbsolutePath());
+                }
             }
         }
         catch (Throwable thr) {
@@ -122,10 +127,17 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
 
     }
 
+    private volatile boolean afterPropertiesSetRan = false;
+
     public void afterPropertiesSet() throws Exception {
-        assert this.pool != null : "the pool can't be null!";
-        if (StringUtils.isEmpty(this.remoteDirectory)) {
-            remoteDirectory = null;
+        logger.debug("starting the SFTPSendingMessageHandler");
+        if (!afterPropertiesSetRan) {
+            assert this.pool != null : "the pool can't be null!";
+            if (StringUtils.isEmpty(this.remoteDirectory)) {
+                remoteDirectory = null;
+            }
+            this.afterPropertiesSetRan = true;
+
         }
     }
 

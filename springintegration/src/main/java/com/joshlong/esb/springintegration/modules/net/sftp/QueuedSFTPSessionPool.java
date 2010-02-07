@@ -50,7 +50,9 @@ public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean 
                 queue.add(session);
             }
         }
-        if (null == session) session = queue.poll();
+        if (null == session) {
+            session = queue.poll();
+        }
         return session;
     }
 

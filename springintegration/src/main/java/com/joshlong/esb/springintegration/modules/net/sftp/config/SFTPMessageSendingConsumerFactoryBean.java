@@ -40,9 +40,11 @@ public class SFTPMessageSendingConsumerFactoryBean implements InitializingBean, 
                 this.getKeyFilePassword(), this.getPort());
 
         QueuedSFTPSessionPool queuedSFTPSessionPool = new QueuedSFTPSessionPool(15, sessionFactory);
+        queuedSFTPSessionPool.afterPropertiesSet();
 
         SFTPSendingMessageHandler sftpSendingMessageHandler = new SFTPSendingMessageHandler(queuedSFTPSessionPool);
         sftpSendingMessageHandler.setRemoteDirectory(this.getRemoteDirectory());
+        sftpSendingMessageHandler.afterPropertiesSet();
         return sftpSendingMessageHandler;
     }
 
@@ -51,7 +53,7 @@ public class SFTPMessageSendingConsumerFactoryBean implements InitializingBean, 
     }
 
     public boolean isSingleton() {
-        return true;
+        return false;
     }
 
     public int getPort() {

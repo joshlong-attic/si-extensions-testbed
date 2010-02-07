@@ -135,9 +135,8 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                         sftpSession.getChannel().rm(remoteFqPath);
                     }
 
-                    return true;
                 }
-
+                return true;
             }
             catch (Throwable th) {
                 IOUtils.closeQuietly(in);
@@ -147,6 +146,7 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
         else {
             logger.debug(String.format("local file %s already exists. Not re-downloading it.",
                                        localFile.getAbsolutePath()));
+            return true;
         }
 
         return false;
