@@ -77,6 +77,8 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
             String baseOfRemotePath = StringUtils.isEmpty(this.remoteDirectory) ?
                                       StringUtils.EMPTY : remoteDirectory; // the safe default
 
+            logger.debug("going to send " + file.getAbsolutePath() + " to a remote sftp endpoint");
+
             String dynRd = null;
             MessageHeaders messageHeaders = null;
             if (message != null) {
@@ -130,9 +132,10 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
     private volatile boolean afterPropertiesSetRan = false;
 
     public void afterPropertiesSet() throws Exception {
-        logger.debug("starting the SFTPSendingMessageHandler");
+        assert this.pool != null : "the pool can't be null!";
+        logger.debug("afterPropertiesSet() called on SFTPSendingMessageHandler");
         if (!afterPropertiesSetRan) {
-            assert this.pool != null : "the pool can't be null!";
+
             if (StringUtils.isEmpty(this.remoteDirectory)) {
                 remoteDirectory = null;
             }

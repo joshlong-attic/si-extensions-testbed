@@ -128,6 +128,8 @@ public class SFTPSession {
                        String pvKeyPassPhrase) throws Exception {
         JSch jSch = new JSch();
 
+        if (port <= 0) port = 22;
+
         // make sure these are set
         this.privateKey = privateKey;  //   "/home/cr/users/anand/.ssh/id_dsa"
         this.privateKeyPassphrase = pvKeyPassPhrase;

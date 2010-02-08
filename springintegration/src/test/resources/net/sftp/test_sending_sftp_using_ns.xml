@@ -47,9 +47,7 @@
             channel="inboundFilesChannel"
             username="ubuntu"
             host="joshlong.com">
-        <poller>
-            <interval-trigger interval="10"/>
-        </poller>
+
     </sftp:outbound-channel-adapter>
 
 

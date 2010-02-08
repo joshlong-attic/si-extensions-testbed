@@ -45,6 +45,7 @@ public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean 
     public SFTPSession getSession() throws Exception {
         SFTPSession session = this.queue.poll();
         if (null == session) {
+            logger.debug("this.sftpSessionFactory=" + this.sftpSessionFactory);
             session = this.sftpSessionFactory.getObject();
             if (queue.size() < maxPoolSize) {
                 queue.add(session);

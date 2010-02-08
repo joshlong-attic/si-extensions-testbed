@@ -50,7 +50,7 @@
 
     <sftp:outbound-channel-adapter
             key-file="/home/jlong/jlongec2.pem"
-            remote-directory="/home/ubuntu/remote_mount_key"
+            remote-directory="remote_mount_key"
             channel="inboundFilesChannel"
             username="ubuntu"
             host="joshlong.com"/>

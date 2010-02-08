@@ -85,7 +85,6 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
     }
 
     public void setTrigger(Trigger t) {
-
         this.trigger = t;
     }
 
@@ -110,8 +109,8 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                                                    ChannelSftp.LsEntry entry,
                                                    Resource localDir) throws Exception {
 
-        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s",
-                                   remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
+        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s", remotePath,
+                                   entry.getFilename(), localDir.getFile().getAbsolutePath()));
 
         File fileForLocalDir = localDir.getFile();
 
@@ -130,8 +129,9 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
                 if (tmpLocalTarget.renameTo(localFile)) {
                     // last step
                     if (isShouldDeleteDownloadedRemoteFiles()) {
-                        logger.debug(String.format("isShouldDeleteDownloadedRemoteFiles == true; " +
-                                                   "attempting to remove remote path '%s'", remoteFqPath));
+                        logger.debug(String.format(
+                                "isShouldDeleteDownloadedRemoteFiles == true; " + "attempting to remove remote path '%s'",
+                                remoteFqPath));
                         sftpSession.getChannel().rm(remoteFqPath);
                     }
 
@@ -251,8 +251,8 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
             return;
         }
 
-        assert checkThatRemotePathExists(
-                remotePath) : "the remotePath had better exist!"; // we do our best here but better to blow up early
+        assert checkThatRemotePathExists(remotePath) : "the remotePath had better exist!";
+
         assert taskScheduler != null : "'taskScheduler' is required";
 
         scheduledFuture = taskScheduler.schedule(new SynchronizeTask(), trigger);
