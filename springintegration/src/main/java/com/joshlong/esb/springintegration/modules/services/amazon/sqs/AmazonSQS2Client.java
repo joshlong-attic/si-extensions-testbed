@@ -134,7 +134,6 @@ public class AmazonSQS2Client
             messageQueue.deleteMessage(somethingToReturn);
         }
         return somethingToReturn;
-
     }
 
     public String getAwsUser() {
