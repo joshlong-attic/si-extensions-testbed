@@ -41,9 +41,7 @@ public class SFTPInboundSynchronizer implements InitializingBean/*, Lifecycle*/ 
 
     private static final Logger logger = Logger.getLogger(SFTPInboundSynchronizer.class);
 
-    /**
-     * taken from <code>FtpInboundSynchronizer</code>
-     */
+    // a lot of the approach for this (including the use of a FileReadingMessageSource and the regex / mask approach were lifted from FtpInboundSynchronizer
     static final String INCOMPLETE_EXTENSION = ".INCOMPLETE";
     private static final long DEFAULT_REFRESH_RATE = 10 * 1000; // 10 seconds 
     private volatile TaskScheduler taskScheduler;
