@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Trigger implements Serializable {
+public class Trigger
+        implements Serializable {
     private static final long serialVersionUID = -3034369257697571052L;
-
     private String id_;
     private String method_;
     private List<Service> services_ = new ArrayList<Service>();

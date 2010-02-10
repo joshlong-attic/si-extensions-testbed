@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package org.indrio.pingfm;
 
 import org.indrio.pingfm.beans.Message;
@@ -23,20 +22,18 @@ import org.indrio.pingfm.beans.Trigger;
 import java.io.Serializable;
 import java.util.List;
 
-public class ServerResponse implements Serializable {
+public class ServerResponse
+        implements Serializable {
     private static final long serialVersionUID = -3758085965897291883L;
-
     private final String status_;
     private final String transactionId_;
     private final String method_;
     private final String errorMessage_;
-
     private List<Message> messages_;
     private List<Service> services_;
     private List<Trigger> triggers_;
 
-    public ServerResponse(String _status, String _transactionId,
-                          String _method, String _errorMessage) {
+    public ServerResponse(String _status, String _transactionId, String _method, String _errorMessage) {
         super();
         this.status_ = _status;
         this.transactionId_ = _transactionId;

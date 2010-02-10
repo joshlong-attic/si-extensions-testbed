@@ -1,8 +1,10 @@
 package org.indrio.pingfm.tests;
 
 public class SettingPropertiesTest {
-    public void testFoo() throws Throwable {
+    public void testFoo()
+            throws Throwable {
     }
+
 /*
     private static final String APP_NAME = "Ping.fm Java API";
     private static final String APP_VERSION = "0.1";
@@ -55,5 +57,4 @@ public class SettingPropertiesTest {
         assertNotNull(applicationKey);
         assertEquals(API_APPLICATION_KEY, applicationKey);
     }*/
-
 }

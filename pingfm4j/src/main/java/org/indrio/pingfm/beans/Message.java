@@ -3,15 +3,13 @@ package org.indrio.pingfm.beans;
 import java.io.Serializable;
 import java.util.Set;
 
-public class Message implements Serializable {
+public class Message
+        implements Serializable {
     private static final long serialVersionUID = 5852290431653309904L;
-
     private String id_;
     private String method_;
-
     private String dateRfc_;
     private String dateUnix_;
-
     private String contentTitle_;
     private String contentBody_;
     private Set<Service> services_;
@@ -20,8 +18,7 @@ public class Message implements Serializable {
         this(_id, _method, null, null);
     }
 
-    public Message(String _id, String _method,
-                   String _contentTitle, String _contentBody) {
+    public Message(String _id, String _method, String _contentTitle, String _contentBody) {
         super();
         this.id_ = _id;
         this.method_ = _method;
@@ -84,5 +81,4 @@ public class Message implements Serializable {
     public void setServices(Set<Service> _services) {
         this.services_ = _services;
     }
-
 }

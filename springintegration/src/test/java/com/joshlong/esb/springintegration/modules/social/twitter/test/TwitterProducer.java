@@ -28,10 +28,8 @@ import java.util.Date;
 public class TwitterProducer {
     public String tweet() {
         Date d = new Date();
-        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-                DateFormat.SHORT);
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 
-        return String.format("The time is %s and all is well!",
-                dateFormat.format(d));
+        return String.format("The time is %s and all is well!", dateFormat.format(d));
     }
 }

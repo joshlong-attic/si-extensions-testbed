@@ -13,13 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PingFmServiceImpl implements PingFmService {
+public class PingFmServiceImpl
+        implements PingFmService {
     private static final long serialVersionUID = 3153787174172310015L;
-
     private static final String HOSTNAME = SettingProperties.getLocationHost();
     private final String developerKey_;
     private final String apiKey_;
-
     private ServerRequest serverRequest = new ServerRequestImpl();
 
     public PingFmServiceImpl(String _developerKey, String _apiKey) {
@@ -36,6 +35,7 @@ public class PingFmServiceImpl implements PingFmService {
 
         try {
             ServerResponse serverResponse = serverRequest.send(HOSTNAME, actionPath, params);
+
             return serverResponse.getStatus().equals("OK");
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,6 +53,7 @@ public class PingFmServiceImpl implements PingFmService {
 
         try {
             ServerResponse serverResponse = serverRequest.send(HOSTNAME, actionPath, params);
+
             return serverResponse.getService();
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,6 +72,7 @@ public class PingFmServiceImpl implements PingFmService {
 
         try {
             ServerResponse serverResponse = serverRequest.send(HOSTNAME, actionPath, params);
+
             return serverResponse.getMessages();
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,6 +90,7 @@ public class PingFmServiceImpl implements PingFmService {
 
         try {
             ServerResponse serverResponse = serverRequest.send(HOSTNAME, actionPath, params);
+
             return serverResponse.getService();
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,6 +108,7 @@ public class PingFmServiceImpl implements PingFmService {
 
         try {
             ServerResponse serverResponse = serverRequest.send(HOSTNAME, actionPath, params);
+
             return serverResponse.getTrigger();
         } catch (IOException e) {
             e.printStackTrace();
@@ -121,12 +125,15 @@ public class PingFmServiceImpl implements PingFmService {
             params.put(ServerRequest.PARAM_API_KEY, this.developerKey_);
             params.put(ServerRequest.PARAM_USER_APP_KEY, this.apiKey_);
             params.put(ServerRequest.PARAM_POST_METHOD, _postMethod);
-            params.put(ServerRequest.PARAM_MESSAGE_TITLE, _message.getContentTitle());
-            params.put(ServerRequest.PARAM_MESSAGE_BODY, _message.getContentBody());
+            params.put(ServerRequest.PARAM_MESSAGE_TITLE,
+                    _message.getContentTitle());
+            params.put(ServerRequest.PARAM_MESSAGE_BODY,
+                    _message.getContentBody());
             params.put(ServerRequest.PARAM_POST_DEBUG, (isDebug ? "1" : "0"));
 
             try {
                 ServerResponse serverResponse = serverRequest.send(HOSTNAME, actionPath, params);
+
                 return serverResponse.getStatus().equals("OK");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -137,7 +144,7 @@ public class PingFmServiceImpl implements PingFmService {
     }
 
     private boolean checkData(Message _message, String _postMethod) {
-        if (_message != null && _postMethod != null && _message.getContentBody() != null) {
+        if ((_message != null) && (_postMethod != null) && (_message.getContentBody() != null)) {
             return true;
         }
 
@@ -151,6 +158,4 @@ public class PingFmServiceImpl implements PingFmService {
     public String getDeveloperKey_() {
         return developerKey_;
     }
-
-
 }

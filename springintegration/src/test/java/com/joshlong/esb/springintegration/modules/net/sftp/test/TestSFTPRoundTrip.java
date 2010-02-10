@@ -24,8 +24,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @ContextConfiguration(locations = {
-        "/net/sftp/test_roundtrip_sftp_using_ns.xml"}
-)
+        "/net/sftp/test_roundtrip_sftp_using_ns.xml"})
 public class TestSFTPRoundTrip extends AbstractJUnit4SpringContextTests {
     @Test
     public void testItGood() throws Throwable {

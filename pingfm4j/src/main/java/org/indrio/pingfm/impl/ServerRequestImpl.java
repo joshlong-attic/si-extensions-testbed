@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-public class ServerRequestImpl implements ServerRequest {
-
+public class ServerRequestImpl
+        implements ServerRequest {
     private final Logger logger = Logger.getLogger(ServerRequest.class);
 
     public HttpClient getHttpClient() {
@@ -28,7 +28,8 @@ public class ServerRequestImpl implements ServerRequest {
 
     private HttpClient httpClient = new HttpClient();
 
-    public ServerResponse send(String _host, String _path, Map<String, String> _params) throws IOException {
+    public ServerResponse send(String _host, String _path, Map<String, String> _params)
+            throws IOException {
         logger.debug("entering send method");
         logger.debug("	> _host : " + _host);
         logger.debug("	> _path : " + _path);
@@ -61,8 +62,11 @@ public class ServerRequestImpl implements ServerRequest {
         NameValuePair[] nameValuePair = new NameValuePair[_params.size()];
 
         int i = -1;
+
         for (Map.Entry<String, String> entry : _params.entrySet()) {
-            nameValuePair[++i] = new NameValuePair(entry.getKey(), entry.getValue());
+            nameValuePair[++i] =
+                    new NameValuePair(entry.getKey(),
+                            entry.getValue());
         }
 
         return nameValuePair;
@@ -71,7 +75,11 @@ public class ServerRequestImpl implements ServerRequest {
     private ServerResponse convertToServerResponse(InputStream _responseStream) {
         XMLResultParser parser = new XMLResultParser(_responseStream);
 
-        ServerResponse serverResponse = new ServerResponse(parser.getStatus(), parser.getTransactionId(), parser.getMethod(), parser.getErrorMessage());
+        ServerResponse serverResponse =
+                new ServerResponse(parser.getStatus(),
+                        parser.getTransactionId(),
+                        parser.getMethod(),
+                        parser.getErrorMessage());
 
         logger.debug("status : " + serverResponse.getStatus());
         logger.debug("transactionId : " + serverResponse.getTransactionId());

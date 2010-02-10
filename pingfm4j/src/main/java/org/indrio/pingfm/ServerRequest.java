@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface ServerRequest {
-
     String PARAM_API_KEY = "api_key";
     String PARAM_USER_APP_KEY = "user_app_key";
     String PARAM_LIMIT = "limit";
@@ -16,6 +15,6 @@ public interface ServerRequest {
     String PARAM_MESSAGE_SERVICE = "service";
     String PARAM_TRIGGER = "trigger";
 
-    public ServerResponse send(String _host, String _path, Map<String, String> _params) throws IOException;
-
+    public ServerResponse send(String _host, String _path, Map<String, String> _params)
+            throws IOException;
 }

@@ -32,8 +32,7 @@ import javax.annotation.Resource;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @ContextConfiguration(locations = {
-        "/social/twitter/sending_and_recieving_messages.xml"}
-)
+        "/social/twitter/sending_and_recieving_messages.xml"})
 public class TwitterIntegrationTest extends AbstractJUnit4SpringContextTests {
     private static final Logger logger = Logger.getLogger(TwitterIntegrationTest.class.getName());
     @Resource(name = "inboundTweets")
@@ -45,15 +44,15 @@ public class TwitterIntegrationTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testRecievingMessages() throws Throwable {
         String msg = "I wonder... " + System.currentTimeMillis();
-        in.subscribe(new MessageHandler() {
-            public void handleMessage(Message<?> message) {
-                tweet = (Tweet) message.getPayload();
-                System.out.println("tweet = " + tweet.toString());
-            }
-        });
+        in.subscribe(
+                new MessageHandler() {
+                    public void handleMessage(Message<?> message) {
+                        tweet = (Tweet) message.getPayload();
+                        System.out.println("tweet = " + tweet.toString());
+                    }
+                });
 
-        Message<String> helloWorldMessage = MessageBuilder.withPayload(msg)
-                .build();
+        Message<String> helloWorldMessage = MessageBuilder.withPayload(msg).build();
         out.send(helloWorldMessage);
 
         long delay = 1000;

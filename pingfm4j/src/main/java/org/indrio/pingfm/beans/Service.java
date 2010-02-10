@@ -4,13 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Service implements Serializable {
+public class Service
+        implements Serializable {
     private static final long serialVersionUID = 6661305932969082292L;
-
     private String id_;
     private String name_;
     private Trigger trigger_;
-
     private String url_;
     private String icon_;
     private List<String> methods_ = new ArrayList<String>();
@@ -72,5 +71,4 @@ public class Service implements Serializable {
     public void addMethod(String _method) {
         this.methods_.add(_method);
     }
-
 }

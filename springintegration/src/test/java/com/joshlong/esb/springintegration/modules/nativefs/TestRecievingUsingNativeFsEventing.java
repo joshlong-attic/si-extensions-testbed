@@ -36,32 +36,19 @@ import java.io.OutputStream;
  */
 @SuppressWarnings("unchecked")
 @ContextConfiguration(locations = {
-        "/nativefs/recieving_native_fs_events_using_ns.xml"}
-)
-public class TestRecievingUsingNativeFsEventing
-        extends AbstractJUnit4SpringContextTests {
+        "/nativefs/recieving_native_fs_events_using_ns.xml"})
+public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringContextTests {
     @Autowired
     private ApplicationContext applicationContext;
-    @Autowired
-    private NativeFsEventAnnouncer nativeFsEventAnnouncer;
+    private File fsfile;
     @Resource(name = "fileSystemResource")
     private FileSystemResource fileSystemResource;
-    private File fsfile;
+    @Autowired
+    private NativeFsEventAnnouncer nativeFsEventAnnouncer;
 
     @Before
     public void setup() throws Throwable {
         fsfile = fileSystemResource.getFile();
-    }
-
-    void write(String fileName, String msg) {
-        try {
-            File nFile = new File(fsfile, fileName);
-            OutputStream outputStream = new FileOutputStream(nFile);
-            IOUtils.write(msg, outputStream);
-            IOUtils.closeQuietly(outputStream);
-        } catch (Throwable t) {
-            // don't care
-        }
     }
 
     @SuppressWarnings("")
@@ -69,8 +56,7 @@ public class TestRecievingUsingNativeFsEventing
     public void testHavingRecievedEvents() throws Throwable {
         for (File f : fsfile.listFiles()) {
             if (!f.delete()) {
-                throw new RuntimeException(String.format(
-                        "couldn't delete file %s!", f.getAbsolutePath()));
+                throw new RuntimeException(String.format("couldn't delete file %s!", f.getAbsolutePath()));
             }
         }
 
@@ -84,6 +70,17 @@ public class TestRecievingUsingNativeFsEventing
 
         if (System.in.read() <= 0) {
             logger.debug("returning after test");
+        }
+    }
+
+    void write(String fileName, String msg) {
+        try {
+            File nFile = new File(fsfile, fileName);
+            OutputStream outputStream = new FileOutputStream(nFile);
+            IOUtils.write(msg, outputStream);
+            IOUtils.closeQuietly(outputStream);
+        } catch (Throwable t) {
+            // don't care
         }
     }
 }

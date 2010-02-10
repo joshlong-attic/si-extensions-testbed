@@ -60,6 +60,7 @@ public class PingFmServiceImplTest {
     }
 
     */
+
 /*
      @Test
      public void testPostMessage() {
@@ -68,8 +69,10 @@ public class PingFmServiceImplTest {
 
          assertTrue(pingFmService.postMessage(TEST_MESSAGE, "default", false));
      }
-     *//*
+     */
+
+    /*
 
 
-*/
+    */
 }
