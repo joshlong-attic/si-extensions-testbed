@@ -32,9 +32,9 @@ import org.w3c.dom.Element;
  */
 @SuppressWarnings("unused")
 public class TwitterNamespaceHandler extends org.springframework.beans.factory.xml.NamespaceHandlerSupport {
-    static public String DIRECT_MESSAGES = "direct-messages";
-    static public String MENTIONS = "mentions";
-    static public String FRIENDS = "friends";
+    static public final String DIRECT_MESSAGES = "direct-messages";
+    static public final String MENTIONS = "mentions";
+    static public final String FRIENDS = "friends";
 
     static private TwitterMessageType handleParsingMessageType(BeanDefinitionBuilder builder,
                                                                Element element,
@@ -74,7 +74,7 @@ public class TwitterNamespaceHandler extends org.springframework.beans.factory.x
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
             builder.addPropertyValue("type", handleParsingMessageType(builder, element, parserContext));
             return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(),
-                                                                       parserContext.getRegistry());
+                    parserContext.getRegistry());
         }
     }
 

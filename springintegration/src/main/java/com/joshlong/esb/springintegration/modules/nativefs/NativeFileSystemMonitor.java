@@ -16,6 +16,7 @@
 
 package com.joshlong.esb.springintegration.modules.nativefs;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.io.File;
@@ -45,6 +46,8 @@ public class NativeFileSystemMonitor {
 
     public NativeFileSystemMonitor() {
     }
+
+    static private final Logger logger = Logger.getLogger(NativeFileSystemMonitor.class);
 
     private transient LinkedBlockingQueue<String> additions;
     private int maxQueueValue;
@@ -76,14 +79,15 @@ public class NativeFileSystemMonitor {
         if (!goodDirToMonitor) {
             if (!directoryToMonitor.exists()) {
                 if (this.autoCreateDirectory) {
-                    directoryToMonitor.mkdirs();
+                    if (!directoryToMonitor.mkdirs())
+                        logger.debug(String.format("couldn't create directory %s", directoryToMonitor.getAbsolutePath()));
                 }
             }
 
         }
 
         Assert.state(directoryToMonitor.exists(), "the directory " +
-                                                  directoryToMonitor.getAbsolutePath() + " doesn't exist");
+                directoryToMonitor.getAbsolutePath() + " doesn't exist");
 
     }
 

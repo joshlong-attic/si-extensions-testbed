@@ -106,10 +106,10 @@ public class Main {
     static public void main(String[] args) throws Throwable {
         boolean testKey = true;
         SFTPSessionFactory factory = testKey ?
-                                     sftpSessionFactory("joshlong.com", null, "ubuntu",
-                                                        SystemUtils.getUserHome() + "/jlongec2.pem", null,
-                                                        22) : // this wont work on your machine. get yer own!
-                                     sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
+                sftpSessionFactory("joshlong.co    m", null, "ubuntu",
+                        SystemUtils.getUserHome() + "/jlongec2.pem", null,
+                        22) : // this wont work on your machine. get yer own!
+                sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
 
         String suffix = (testKey ? "key" : "pass");
         run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);

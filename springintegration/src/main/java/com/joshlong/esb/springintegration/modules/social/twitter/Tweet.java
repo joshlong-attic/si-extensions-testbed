@@ -45,7 +45,7 @@ public class Tweet implements Serializable, Comparable<Tweet> {
     private String user;
 
     public Tweet(long tweetId, String fromUser, Date received, String msg) {
-        this.received = received;
+        this.received = new Date(received.getTime());
         this.tweetId = tweetId;
         this.message = msg;
         this.user = fromUser;
@@ -63,12 +63,13 @@ public class Tweet implements Serializable, Comparable<Tweet> {
     }
 
     public Date getReceived() {
-        return received;
+        return new Date(received.getTime());
     }
 
-    public void setReceived(Date received) {
+    /*public void setReceived(Date received) {
         this.received = received;
     }
+*/
 
     public String getUser() {
         return user;
