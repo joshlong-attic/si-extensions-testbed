@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright 2010 the original author or authors
+  ~
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
+  -->
+
+<beans:beans
+        xmlns="http://www.springframework.org/schema/integration"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:twitter="http://www.joshlong.com/schema/integration/social/twitter"
+        xmlns:tool="http://www.springframework.org/schema/tool"
+        xmlns:lang="http://www.springframework.org/schema/lang"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
+					 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+					    http://www.joshlong.com/schema/integration/social/twitter http://www.joshlong.com/schema/integration/social/twitter/joshlong-twitter-1.0.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+						http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool-3.0.xsd
+						http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
+
+    <context:component-scan base-package="com.joshlong.esb.springintegration.modules.services.amazon.sqs"/>
+
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+                p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
+
+    <channel id="publish"/>
+    <channel id="receive"/>
+
+    <beans:bean id="sqsMessageSendingHandler"
+                class="com.joshlong.esb.springintegration.modules.services.amazon.sqs.SQSMessageSendingHandler"
+                p:amazonWebServicesAccessKey="${amazon.sqs2.accessKey}"
+                p:amazonWebServicesSecretKey="${amazon.sqs2.secretKey}" p:queueName="myQueueForPresident"
+            />
+
+    <beans:bean class="com.joshlong.esb.springintegration.modules.services.amazon.sqs.SQSMessageMessageSource"
+                id="messageMessageSource"
+                p:amazonWebServicesAccessKey="${amazon.sqs2.accessKey}"
+                p:amazonWebServicesSecretKey="${amazon.sqs2.secretKey}" p:queueName="myQueueForPresident"
+            />
+
+    <inbound-channel-adapter ref="producer" method="message" channel="publish">
+        <poller>
+            <interval-trigger interval="1000"/>
+        </poller>
+    </inbound-channel-adapter>
+
+    <outbound-channel-adapter ref="sqsMessageSendingHandler" method="handleMessage" channel="publish"/>
+
+    <inbound-channel-adapter ref="messageMessageSource" channel="receive">
+        <poller>
+            <interval-trigger interval="1000"/>
+        </poller>
+    </inbound-channel-adapter>
+    <service-activator ref="receiver" input-channel="receive"/>
+</beans:beans>

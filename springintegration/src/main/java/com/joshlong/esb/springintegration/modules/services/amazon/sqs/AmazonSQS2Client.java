@@ -57,15 +57,25 @@ public class AmazonSQS2Client implements InitializingBean {
         this.messagesNotYetRecieved = new ConcurrentLinkedQueue<Message>();
         this.awsUser = awsUser;
         this.awsPassword = awsPw;
+
+        if (StringUtils.isEmpty(awsHost)) {
+            awsHost = null; /// by default itll use "queue.amazonaws.com"  
+        }
+
         this.awsHost = awsHost;
     }
 
     public void afterPropertiesSet() throws Exception {
         assert !StringUtils.isEmpty(awsUser) : "the amazon web services user must not be null!";
         assert !StringUtils.isEmpty(awsPassword) : "the amazon web services password must not be null!";
-        assert !StringUtils.isEmpty(awsHost) : "the amazon web services host must not be null!";
+
+        //assert !StringUtils.isEmpty(awsHost) : "the amazon web services host must not be null!";
         assert this.queueReceiveInterval > 0 : "thw queueReceiveInterval should be > 0";
-        assert this.maxNumberOfMessageToReceive > 0 : "the maxNumberOfMessageToReceive should always be greater than 0";
+
+        // assert this.maxNumberOfMessageToReceive >= 0 && this.maxNumberOfMessageToReceive <=10 : "the maxNumberOfMessageToReceive should always be greater than 0";
+        if (this.maxNumberOfMessageToReceive > 10 || this.maxNumberOfMessageToReceive <= 0) {
+            maxNumberOfMessageToReceive = 10;
+        }
 
         this.queueService = SQSUtils.getQueueService(this.awsUser, this.awsPassword, this.awsHost);
     }

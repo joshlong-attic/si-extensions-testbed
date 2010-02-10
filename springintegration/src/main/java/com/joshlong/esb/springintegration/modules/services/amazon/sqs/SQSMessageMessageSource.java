@@ -33,33 +33,33 @@ import java.util.Map;
 public class SQSMessageMessageSource implements MessageSource, Lifecycle, InitializingBean {
     private static final Logger logger = Logger.getLogger(SQSMessageMessageSource.class);
     private volatile AmazonSQS2Client amazonSQS2Client;
+    private String amazonWebServicesAccessKey;
     private String amazonWebServicesHost;
-    private String amazonWebServicesPassword;
-    private String amazonWebServicesUser;
+    private String amazonWebServicesSecretKey;
     private String queueName;
     private volatile boolean extractPayload;
     private volatile boolean shouldAutoDeleteOnReciept;
 
     public void afterPropertiesSet() throws Exception {
-        assert !StringUtils.isEmpty(this.amazonWebServicesHost);
-        assert !StringUtils.isEmpty(this.amazonWebServicesUser);
-        assert !StringUtils.isEmpty(this.amazonWebServicesPassword);
+        // assert !StringUtils.isEmpty(this.amazonWebServicesHost);
+        assert !StringUtils.isEmpty(this.amazonWebServicesAccessKey);
+        assert !StringUtils.isEmpty(this.amazonWebServicesSecretKey);
         assert !StringUtils.isEmpty(this.queueName);
 
-        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesUser, this.amazonWebServicesPassword, this.amazonWebServicesHost);
+        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey, this.amazonWebServicesHost);
         this.amazonSQS2Client.afterPropertiesSet();
+    }
+
+    public String getAmazonWebServicesAccessKey() {
+        return amazonWebServicesAccessKey;
     }
 
     public String getAmazonWebServicesHost() {
         return amazonWebServicesHost;
     }
 
-    public String getAmazonWebServicesPassword() {
-        return amazonWebServicesPassword;
-    }
-
-    public String getAmazonWebServicesUser() {
-        return amazonWebServicesUser;
+    public String getAmazonWebServicesSecretKey() {
+        return amazonWebServicesSecretKey;
     }
 
     public String getQueueName() {
@@ -101,16 +101,16 @@ public class SQSMessageMessageSource implements MessageSource, Lifecycle, Initia
         return null;
     }
 
+    public void setAmazonWebServicesAccessKey(final String amazonWebServicesAccessKey) {
+        this.amazonWebServicesAccessKey = amazonWebServicesAccessKey;
+    }
+
     public void setAmazonWebServicesHost(final String amazonWebServicesHost) {
         this.amazonWebServicesHost = amazonWebServicesHost;
     }
 
-    public void setAmazonWebServicesPassword(final String amazonWebServicesPassword) {
-        this.amazonWebServicesPassword = amazonWebServicesPassword;
-    }
-
-    public void setAmazonWebServicesUser(final String amazonWebServicesUser) {
-        this.amazonWebServicesUser = amazonWebServicesUser;
+    public void setAmazonWebServicesSecretKey(final String amazonWebServicesSecretKey) {
+        this.amazonWebServicesSecretKey = amazonWebServicesSecretKey;
     }
 
     public void setExtractPayload(final boolean extractPayload) {
