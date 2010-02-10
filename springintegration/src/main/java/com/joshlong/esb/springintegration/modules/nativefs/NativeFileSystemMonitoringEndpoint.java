@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
@@ -26,39 +25,29 @@ import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
-
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitoringEndpoint.class);
-
     private final MessageChannelTemplate channelTemplate = new MessageChannelTemplate();
+    private transient MessageChannel requestChannel;
     private transient NativeFileSystemMonitor nativeFileSystemMonitor;
     private transient Resource directory;
     private transient boolean autoCreateDirectory;
-    private transient MessageChannel requestChannel;
     private transient int maxQueuedValue;
-
-    public int getMaxQueuedValue() {
-        return maxQueuedValue;
-    }
-
-    public void setMaxQueuedValue(int maxQueuedValue) {
-        this.maxQueuedValue = maxQueuedValue;
-    }
 
     public Resource getDirectory() {
         return directory;
     }
 
-    public void setDirectory(Resource directory) {
-        this.directory = directory;
+    public int getMaxQueuedValue() {
+        return maxQueuedValue;
     }
 
-    public void setRequestChannel(MessageChannel requestChannel) {
-        this.channelTemplate.setDefaultChannel(requestChannel);
-        this.requestChannel = requestChannel;
+    public NativeFileSystemMonitor getNativeFileSystemMonitor() {
+        return nativeFileSystemMonitor;
     }
 
     public boolean isAutoCreateDirectory() {
@@ -69,12 +58,46 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
         this.autoCreateDirectory = autoCreateDirectory;
     }
 
-    public NativeFileSystemMonitor getNativeFileSystemMonitor() {
-        return nativeFileSystemMonitor;
+    public void setDirectory(Resource directory) {
+        this.directory = directory;
+    }
+
+    public void setMaxQueuedValue(int maxQueuedValue) {
+        this.maxQueuedValue = maxQueuedValue;
     }
 
     public void setNativeFileSystemMonitor(NativeFileSystemMonitor nativeFileSystemMonitor) {
         this.nativeFileSystemMonitor = nativeFileSystemMonitor;
+    }
+
+    public void setRequestChannel(MessageChannel requestChannel) {
+        this.channelTemplate.setDefaultChannel(requestChannel);
+        this.requestChannel = requestChannel;
+    }
+
+    @Override
+    protected void doStart() {
+        try {
+            new Thread(
+                    new Runnable() {
+                        public void run() {
+                            nativeFileSystemMonitor.monitor(
+                                    new NativeFileSystemMonitor.FileAddedListener() {
+                                        public void fileAdded(File dir, String fn) {
+                                            File file = new File(dir, fn);
+                                            Message<File> fileMsg = MessageBuilder.withPayload(file).build();
+                                            channelTemplate.send(fileMsg, requestChannel);
+                                        }
+                                    });
+                        }
+                    }).start();
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        }
+    }
+
+    @Override
+    protected void doStop() {
     }
 
     @Override
@@ -85,33 +108,8 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
             channelTemplate.afterPropertiesSet();
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             throw new RuntimeException(th);
         }
-    }
-
-    @Override
-    protected void doStart() {
-        try {
-            new Thread(new Runnable() {
-                public void run() {
-                    nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
-                        public void fileAdded(File dir, String fn) {
-                            File file = new File(dir, fn);
-                            Message<File> fileMsg = MessageBuilder.withPayload(file).build();
-                            channelTemplate.send(fileMsg, requestChannel);
-                        }
-                    });
-                }
-            }).start();
-        }
-        catch (Throwable th) {
-            throw new RuntimeException(th);
-        }
-    }
-
-    @Override
-    protected void doStop() {
     }
 }

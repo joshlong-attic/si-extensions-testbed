@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp.config;
 
 import com.joshlong.esb.springintegration.modules.net.sftp.QueuedSFTPSessionPool;
@@ -40,47 +39,171 @@ import org.springframework.util.ErrorHandler;
 import java.io.File;
 import java.util.Map;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a> TODO flesh this out
  */
 public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessageSource> implements ApplicationContextAware, ResourceLoaderAware {
-
-    public void setResourceLoader(final ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
-    final private static Logger logger = Logger.getLogger(SFTPMessageSourceFactoryBean.class);
-
-    /// implementation properties
-    private Trigger trigger;
-    private ResourceLoader resourceLoader;
-    private TaskScheduler taskScheduler;
+    private static final Logger logger = Logger.getLogger(SFTPMessageSourceFactoryBean.class);
+    private ApplicationContext applicationContext;
     private FileReadingMessageSource fileReadingMessageSource;
-    private SFTPInboundSynchronizer synchronizer;
 
     // remoteDirectory,localWorkingDirectory,localPath
 
     // connectivity properties
     private Resource localDirectoryResource;
-    private ApplicationContext applicationContext;
-    private String username, password, host, keyFile, keyFilePassword;
+    private ResourceLoader resourceLoader;
+    private SFTPInboundSynchronizer synchronizer;
+    private String host;
+    private String keyFile;
+    private String keyFilePassword;
+    private String localWorkingDirectory;
+    private String password;
+    private String remoteDirectory;
+    private String username;
+    private TaskScheduler taskScheduler;
+
+    /// implementation properties
+    private Trigger trigger;
+    private boolean autoCreateDirectories;
     private boolean autoDeleteRemoteFilesOnSync;
     private int port = 22;
-    private boolean autoCreateDirectories;
-    private String localWorkingDirectory;
 
-    private String remoteDirectory;
+    public FileReadingMessageSource getFileReadingMessageSource() {
+        return fileReadingMessageSource;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getKeyFile() {
+        return keyFile;
+    }
+
+    public String getKeyFilePassword() {
+        return keyFilePassword;
+    }
+
+    public String getLocalWorkingDirectory() {
+        return localWorkingDirectory;
+    }
 
     @Override
     public Class<? extends SFTPMessageSource> getObjectType() {
         return SFTPMessageSource.class;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getRemoteDirectory() {
+        return remoteDirectory;
+    }
+
+    public SFTPInboundSynchronizer getSynchronizer() {
+        return synchronizer;
+    }
+
+    public TaskScheduler getTaskScheduler() {
+        return taskScheduler;
+    }
+
+    public Trigger getTrigger() {
+        return trigger;
+    }
+
+    // this is the ultimate layer of control
+    // users will configure theeir entire experience using this class and trust that a working
+    // component comes out as a result of their input
+    // we need to support user/pw/keys/host/port/auto-delete properties
+
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean isAutoCreateDirectories() {
+        return autoCreateDirectories;
+    }
+
+    public boolean isAutoDeleteRemoteFilesOnSync() {
+        return autoDeleteRemoteFilesOnSync;
+    }
+
+    public void setApplicationContext(final ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    public void setAutoCreateDirectories(final boolean autoCreateDirectories) {
+        this.autoCreateDirectories = autoCreateDirectories;
+    }
+
+    public void setAutoDeleteRemoteFilesOnSync(final boolean autoDeleteRemoteFilesOnSync) {
+        this.autoDeleteRemoteFilesOnSync = autoDeleteRemoteFilesOnSync;
+    }
+
+    public void setFileReadingMessageSource(final FileReadingMessageSource fileReadingMessageSource) {
+        this.fileReadingMessageSource = fileReadingMessageSource;
+    }
+
+    public void setHost(final String host) {
+        this.host = host;
+    }
+
+    public void setKeyFile(final String keyFile) {
+        this.keyFile = keyFile;
+    }
+
+    public void setKeyFilePassword(final String keyFilePassword) {
+        this.keyFilePassword = keyFilePassword;
+    }
+
+    public void setLocalWorkingDirectory(final String lwd) {
+        this.localWorkingDirectory = lwd;
+    }
+
+    public void setPassword(final String password) {
+        this.password = password;
+    }
+
+    public void setPort(final int port) {
+        this.port = port;
+    }
+
+    public void setRemoteDirectory(final String remoteDirectory) {
+        this.remoteDirectory = remoteDirectory;
+    }
+
+    public void setResourceLoader(final ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    public void setSynchronizer(final SFTPInboundSynchronizer synchronizer) {
+        this.synchronizer = synchronizer;
+    }
+
+    public void setTaskScheduler(final TaskScheduler taskScheduler) {
+        this.taskScheduler = taskScheduler;
+    }
+
+    public void setTrigger(final Trigger trigger) {
+        this.trigger = trigger;
+    }
+
+    public void setUsername(final String username) {
+        this.username = username;
+    }
+
     @Override
     protected SFTPMessageSource createInstance() throws Exception {
-
         try {
-            if (localWorkingDirectory == null || StringUtils.isEmpty(localWorkingDirectory)) {
+            if ((localWorkingDirectory == null) || StringUtils.isEmpty(localWorkingDirectory)) {
                 File tmp = SystemUtils.getJavaIoTmpDir();
                 File sftpTmp = new File(tmp, "sftpInbound");
                 this.localWorkingDirectory = "file://" + sftpTmp.getAbsolutePath();
@@ -95,12 +218,15 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
             fileReadingMessageSource = new FileReadingMessageSource();
 
             synchronizer = new SFTPInboundSynchronizer();
+
             if (null == taskScheduler) {
                 Map<String, TaskScheduler> tss = null;
+
                 if ((tss = applicationContext.getBeansOfType(TaskScheduler.class)).keySet().size() != 0) {
                     taskScheduler = tss.get(tss.keySet().iterator().next());
                 }
             }
+
             if (null == taskScheduler) {
                 ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
                 ts.setPoolSize(10);
@@ -114,12 +240,10 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
                 ts.setWaitForTasksToCompleteOnShutdown(true);
                 ts.initialize();
                 this.taskScheduler = ts;
-
             }
 
             SFTPSessionFactory sessionFactory = SFTPSessionUtils.buildSftpSessionFactory(
-                    this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(),
-                    this.getKeyFilePassword(), this.getPort());
+                    this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(), this.getKeyFilePassword(), this.getPort());
 
             QueuedSFTPSessionPool pool = new QueuedSFTPSessionPool(15, sessionFactory);
             pool.afterPropertiesSet();
@@ -131,6 +255,7 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
             SFTPMessageSource sftpMessageSource = new SFTPMessageSource(fileReadingMessageSource, synchronizer);
 
             sftpMessageSource.setTaskScheduler(taskScheduler);
+
             if (null != this.trigger) {
                 sftpMessageSource.setTrigger(trigger);
             }
@@ -138,135 +263,12 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
             sftpMessageSource.setLocalDirectory(this.localDirectoryResource);
             sftpMessageSource.afterPropertiesSet();
             sftpMessageSource.start();
-            return sftpMessageSource;
 
-        }
-        catch (Throwable thr) {
+            return sftpMessageSource;
+        } catch (Throwable thr) {
             logger.debug("error occurred when trying to configure SFTPmessageSource ", thr);
         }
 
         return null;
-    }
-
-    // this is the ultimate layer of control
-    // users will configure theeir entire experience using this class and trust that a working
-    // component comes out as a result of their input
-    // we need to support user/pw/keys/host/port/auto-delete properties
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(final String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(final String host) {
-        this.host = host;
-    }
-
-    public String getKeyFile() {
-        return keyFile;
-    }
-
-    public void setKeyFile(final String keyFile) {
-        this.keyFile = keyFile;
-    }
-
-    public String getKeyFilePassword() {
-        return keyFilePassword;
-    }
-
-    public void setKeyFilePassword(final String keyFilePassword) {
-        this.keyFilePassword = keyFilePassword;
-    }
-
-    public boolean isAutoDeleteRemoteFilesOnSync() {
-        return autoDeleteRemoteFilesOnSync;
-    }
-
-    public void setAutoDeleteRemoteFilesOnSync(final boolean autoDeleteRemoteFilesOnSync) {
-        this.autoDeleteRemoteFilesOnSync = autoDeleteRemoteFilesOnSync;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public FileReadingMessageSource getFileReadingMessageSource() {
-        return fileReadingMessageSource;
-    }
-
-    public void setFileReadingMessageSource(final FileReadingMessageSource fileReadingMessageSource) {
-        this.fileReadingMessageSource = fileReadingMessageSource;
-    }
-
-    public SFTPInboundSynchronizer getSynchronizer() {
-        return synchronizer;
-    }
-
-    public void setSynchronizer(final SFTPInboundSynchronizer synchronizer) {
-        this.synchronizer = synchronizer;
-    }
-
-    public void setPort(final int port) {
-        this.port = port;
-    }
-
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    public boolean isAutoCreateDirectories() {
-        return autoCreateDirectories;
-    }
-
-    public void setAutoCreateDirectories(final boolean autoCreateDirectories) {
-        this.autoCreateDirectories = autoCreateDirectories;
-    }
-
-    public Trigger getTrigger() {
-        return trigger;
-    }
-
-    public void setTrigger(final Trigger trigger) {
-        this.trigger = trigger;
-    }
-
-    public String getLocalWorkingDirectory() {
-        return localWorkingDirectory;
-    }
-
-    public void setLocalWorkingDirectory(final String lwd) {
-        this.localWorkingDirectory = lwd;
-
-    }
-
-    public TaskScheduler getTaskScheduler() {
-        return taskScheduler;
-    }
-
-    public void setTaskScheduler(final TaskScheduler taskScheduler) {
-        this.taskScheduler = taskScheduler;
-    }
-
-    public String getRemoteDirectory() {
-        return remoteDirectory;
-    }
-
-    public void setRemoteDirectory(final String remoteDirectory) {
-        this.remoteDirectory = remoteDirectory;
     }
 }

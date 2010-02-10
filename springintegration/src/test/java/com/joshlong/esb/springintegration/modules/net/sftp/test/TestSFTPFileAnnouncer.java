@@ -13,18 +13,19 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp.test;
 
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long </a>
  */
-
-@ContextConfiguration(locations = {"/net/sftp/test_inbound_sftp_using_ns.xml"})
+@ContextConfiguration(locations = {
+        "/net/sftp/test_inbound_sftp_using_ns.xml"}
+)
 public class TestSFTPFileAnnouncer extends AbstractJUnit4SpringContextTests {
     @Test
     public void testItGood() throws Throwable {

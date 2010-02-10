@@ -13,14 +13,12 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.social.twitter;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public enum TwitterMessageType {
-    DM, // TODO not supported atm
-    FRIENDS,
-    MENTIONS
+    DM, FRIENDS, MENTIONS
 }

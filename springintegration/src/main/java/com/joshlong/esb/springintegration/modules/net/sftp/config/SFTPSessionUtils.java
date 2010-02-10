@@ -13,16 +13,15 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp.config;
 
 import com.joshlong.esb.springintegration.modules.net.sftp.SFTPSessionFactory;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class SFTPSessionUtils {
-
     /**
      * This method hides the minutae required to build an #SFTPSessionFactory.
      *
@@ -34,15 +33,12 @@ public class SFTPSessionUtils {
      * @param pvKeyPass the passphrase used to use the key file
      * @param port      the default (22) is used if the value here is N< 0. The value should be only be set if the port
      *                  is non-standard (not 22)
-     *
      * @return the SFTPSessionFactory that's used to create connections and get us in the right state to start issue
      *         commands against a remote SFTP/SSH filesystem
-     *
      * @throws Exception thrown in case of darned near <em>anything</em>
      */
-    public static SFTPSessionFactory buildSftpSessionFactory(String host, String pw, String usr,
-                                                             String pvKey, String pvKeyPass,
-                                                             int port) throws Exception {
+    public static SFTPSessionFactory buildSftpSessionFactory(String host, String pw, String usr, String pvKey, String pvKeyPass, int port)
+            throws Exception {
         SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
         sftpSessionFactory.setPassword(pw);
         sftpSessionFactory.setPort(port);
@@ -54,5 +50,4 @@ public class SFTPSessionUtils {
 
         return sftpSessionFactory;
     }
-
 }

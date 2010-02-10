@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import junit.framework.Assert;
@@ -31,22 +30,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @SuppressWarnings("unchecked")
-@ContextConfiguration(locations = {"/nativefs/recieving_native_fs_events_using_ns.xml"})
-public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringContextTests {
-
+@ContextConfiguration(locations = {
+        "/nativefs/recieving_native_fs_events_using_ns.xml"}
+)
+public class TestRecievingUsingNativeFsEventing
+        extends AbstractJUnit4SpringContextTests {
     @Autowired
     private ApplicationContext applicationContext;
-
     @Autowired
     private NativeFsEventAnnouncer nativeFsEventAnnouncer;
-
     @Resource(name = "fileSystemResource")
     private FileSystemResource fileSystemResource;
-
     private File fsfile;
 
     @Before
@@ -56,13 +55,11 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
 
     void write(String fileName, String msg) {
         try {
-
             File nFile = new File(fsfile, fileName);
             OutputStream outputStream = new FileOutputStream(nFile);
             IOUtils.write(msg, outputStream);
             IOUtils.closeQuietly(outputStream);
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             // don't care
         }
     }
@@ -71,7 +68,10 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
     @Test
     public void testHavingRecievedEvents() throws Throwable {
         for (File f : fsfile.listFiles()) {
-            if (!f.delete()) throw new RuntimeException(String.format("couldn't delete file %s!", f.getAbsolutePath()));
+            if (!f.delete()) {
+                throw new RuntimeException(String.format(
+                        "couldn't delete file %s!", f.getAbsolutePath()));
+            }
         }
 
         Assert.assertTrue(fsfile.list().length == 0);
@@ -85,6 +85,5 @@ public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringCont
         if (System.in.read() <= 0) {
             logger.debug("returning after test");
         }
-
     }
 }

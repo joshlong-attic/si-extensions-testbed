@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.social.twitter;
 
 import org.apache.commons.lang.StringUtils;
@@ -34,66 +33,82 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class TwitterMessageSource implements MessageSource<Tweet>, InitializingBean {
-
-    static private Logger logger = Logger.getLogger(TwitterMessageSource.class);
-
+    private static Logger logger = Logger.getLogger(TwitterMessageSource.class);
     private volatile Queue<Tweet> cachedStatuses;
-    private volatile String userId;
     private volatile String password;
+    private volatile String userId;
     private volatile Twitter twitter;
-    private volatile long lastStatusIdRetreived = -1;
     private TwitterMessageType twitterMessageType = TwitterMessageType.FRIENDS;
+    private int pagingCount = 10;
+    private volatile long lastStatusIdRetreived = -1;
 
-    public TwitterMessageType getTwitterMessageType() {
-        return twitterMessageType;
-    }
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("after properties set for TwitterMessageSource!!");
 
-    public void setTwitterMessageType(TwitterMessageType twitterMessageType) {
-        this.twitterMessageType = twitterMessageType;
+        if (twitter == null) {
+            Assert.state(!StringUtils.isEmpty(userId));
+            Assert.state(!StringUtils.isEmpty(password));
+
+            twitter = new Twitter();
+            twitter.setUserId(userId);
+            twitter.setPassword(password);
+        } else { // it isnt null, in which case it becomes canonical memory
+            setPassword(twitter.getPassword());
+            setUserId(twitter.getUserId());
+        }
+
+        cachedStatuses = new ConcurrentLinkedQueue<Tweet>();
+        lastStatusIdRetreived = -1;
     }
 
     public int getPagingCount() {
         return pagingCount;
     }
 
-    public void setPagingCount(int pagingCount) {
-        this.pagingCount = pagingCount;
+    public String getPassword() {
+        return password;
     }
 
-    private int pagingCount = 10;
+    public TwitterMessageType getTwitterMessageType() {
+        return twitterMessageType;
+    }
 
-    private Tweet buildTweetFromStatus(Status firstPost) {
-        Tweet tweet = new Tweet(firstPost.getId(), firstPost.getUser()
-                .getName(), firstPost.getCreatedAt(), firstPost.getText());
-        return tweet;
+    public String getUserId() {
+        return userId;
     }
 
     public Message<Tweet> receive() {
-
         Assert.state(this.twitterMessageType != null, "the twitterMessageType can't be null!");
         Assert.state(cachedStatuses != null, "the cachedStatuses can't be null!");
 
         if (cachedStatuses.peek() == null) {
             Paging paging = new Paging();
             paging.setCount(getPagingCount());
+
             if (-1 != lastStatusIdRetreived) {
                 paging.sinceId(lastStatusIdRetreived);
             }
+
             try {
                 List<Status> statuses = new ArrayList<Status>();
+
                 switch (getTwitterMessageType()) {
                     case DM:
                         throw new UnsupportedOperationException("we don't support receiving direct mentions yet!");
 
                     case FRIENDS:
                         statuses = twitter.getFriendsTimeline(paging);
+
                         break;
+
                     case MENTIONS:
                         statuses = twitter.getMentions(paging);
+
                         break;
                 }
 
@@ -102,9 +117,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
                         this.cachedStatuses.add(buildTweetFromStatus(status));
                     }
                 }
-
-            }
-            catch (TwitterException e) {
+            } catch (TwitterException e) {
                 logger.info(ExceptionUtils.getFullStackTrace(e));
                 throw new RuntimeException(e);
             }
@@ -114,56 +127,43 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
             // size() == 0 would be more obvious a test, but size() isn't constant time
             Tweet cachedStatus = cachedStatuses.poll();
             lastStatusIdRetreived = cachedStatus.getTweetId();
+
             return MessageBuilder.withPayload(cachedStatus).build();
         }
+
         return null;
     }
 
-    public void afterPropertiesSet() throws Exception {
-        System.out.println("after properties set for TwitterMessageSource!!");
-        if (twitter == null) {
-            Assert.state(!StringUtils.isEmpty(userId));
-            Assert.state(!StringUtils.isEmpty(password));
-
-            twitter = new Twitter();
-            twitter.setUserId(userId);
-            twitter.setPassword(password);
-
-        }
-        else { // it isnt null, in which case it becomes canonical memory
-            setPassword(twitter.getPassword());
-            setUserId(twitter.getUserId());
-        }
-
-        cachedStatuses = new ConcurrentLinkedQueue<Tweet>();
-        lastStatusIdRetreived = -1;
-
+    public void setPagingCount(int pagingCount) {
+        this.pagingCount = pagingCount;
     }
 
-    public String getUserId() {
-        return userId;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setTwitterMessageType(TwitterMessageType twitterMessageType) {
+        this.twitterMessageType = twitterMessageType;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getPassword() {
-        return password;
+    private Tweet buildTweetFromStatus(Status firstPost) {
+        Tweet tweet = new Tweet(firstPost.getId(), firstPost.getUser().getName(), firstPost.getCreatedAt(), firstPost.getText());
+
+        return tweet;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-/*
+    /*
 
-    public Twitter getTwitter() {
-        return twitter;
-    }
+        public Twitter getTwitter() {
+            return twitter;
+        }
 
-    public void setTwitter(Twitter twitter) {
-        this.twitter = twitter;
-    }
-*/
-
+        public void setTwitter(Twitter twitter) {
+            this.twitter = twitter;
+        }
+    */
 }

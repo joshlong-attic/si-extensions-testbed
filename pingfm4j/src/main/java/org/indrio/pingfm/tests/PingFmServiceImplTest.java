@@ -1,9 +1,7 @@
 package org.indrio.pingfm.tests;
 
 public class PingFmServiceImplTest {
-    public void testFoo() throws Throwable {
-    }
-/*
+    /*
 
     private static final Message TEST_MESSAGE = new Message(null, "default");
 

@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType;
@@ -27,21 +26,26 @@ import org.springframework.integration.config.xml.AbstractPollingInboundChannelA
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @SuppressWarnings("unused")
 public class TwitterNamespaceHandler extends org.springframework.beans.factory.xml.NamespaceHandlerSupport {
-    static public final String DIRECT_MESSAGES = "direct-messages";
-    static public final String MENTIONS = "mentions";
-    static public final String FRIENDS = "friends";
+    private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.social.twitter";
+    public static final String DIRECT_MESSAGES = "direct-messages";
+    public static final String MENTIONS = "mentions";
+    public static final String FRIENDS = "friends";
 
-    static private TwitterMessageType handleParsingMessageType(BeanDefinitionBuilder builder,
-                                                               Element element,
-                                                               ParserContext parserContext) {
+    public void init() {
+        registerBeanDefinitionParser("inbound-channel-adapter", new TwitterMessageSourceBeanDefinitionParser());
+        registerBeanDefinitionParser("outbound-channel-adapter", new TwitterMessageProducerBeanDefinitionParser());
+    }
+
+    private static TwitterMessageType handleParsingMessageType(BeanDefinitionBuilder builder, Element element, ParserContext parserContext) {
         String typeAttr = element.getAttribute("type");
-        if (!StringUtils.isEmpty(typeAttr)) {
 
+        if (!StringUtils.isEmpty(typeAttr)) {
             if (typeAttr.equalsIgnoreCase(FRIENDS)) {
                 return TwitterMessageType.FRIENDS;
             }
@@ -49,45 +53,36 @@ public class TwitterNamespaceHandler extends org.springframework.beans.factory.x
             if (typeAttr.equalsIgnoreCase(MENTIONS)) {
                 return TwitterMessageType.MENTIONS;
             }
+
             if (typeAttr.equalsIgnoreCase(DIRECT_MESSAGES)) {
                 return TwitterMessageType.DM;
             }
-
         }
 
         return TwitterMessageType.FRIENDS;
     }
 
-    private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.social.twitter";
-
-    public void init() {
-        registerBeanDefinitionParser("inbound-channel-adapter", new TwitterMessageSourceBeanDefinitionParser());
-        registerBeanDefinitionParser("outbound-channel-adapter", new TwitterMessageProducerBeanDefinitionParser());
-    }
-
-    private static class TwitterMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
-        @Override
-        protected String parseSource(Element element, ParserContext parserContext) {
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.TwitterMessageSourceFactoryBean");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
-            builder.addPropertyValue("type", handleParsingMessageType(builder, element, parserContext));
-            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(),
-                    parserContext.getRegistry());
-        }
-    }
-
     private static class TwitterMessageProducerBeanDefinitionParser extends AbstractOutboundChannelAdapterParser {
         @Override
         protected AbstractBeanDefinition parseConsumer(Element element, ParserContext parserContext) {
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".TwitterTweetSendingMessageHandler");
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(PACKAGE_NAME + ".TwitterTweetSendingMessageHandler");
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
             builder.addPropertyValue("type", handleParsingMessageType(builder, element, parserContext));
 
             return builder.getBeanDefinition();
+        }
+    }
+
+    private static class TwitterMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
+        @Override
+        protected String parseSource(Element element, ParserContext parserContext) {
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(PACKAGE_NAME + ".config.TwitterMessageSourceFactoryBean");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "username");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "password");
+            builder.addPropertyValue("type", handleParsingMessageType(builder, element, parserContext));
+
+            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
         }
     }
 }

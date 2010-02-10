@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.springframework.integration.annotation.ServiceActivator;
@@ -21,18 +20,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-
 @Component("sftpFileAnnouncer")
 public class SFTPFileAnnouncer {
-
     @ServiceActivator
     public void announceNewSftpFile(File f) throws Throwable {
-
         System.out.println("new file recieved: " + f.getAbsolutePath());
-
     }
-
 }

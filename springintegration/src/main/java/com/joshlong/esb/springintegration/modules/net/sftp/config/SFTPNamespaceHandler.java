@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp.config;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -26,13 +25,12 @@ import org.springframework.integration.config.xml.AbstractPollingInboundChannelA
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-
 @SuppressWarnings("unused")
 public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
-
     private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.net.sftp";
 
     public void init() {
@@ -46,13 +44,12 @@ public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
     private static class SFTPMessageSendingConsumerBeanDefinitionParser extends AbstractOutboundChannelAdapterParser {
         @Override
         protected AbstractBeanDefinition parseConsumer(Element element, ParserContext parserContext) {
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(PACKAGE_NAME + ".config.SFTPMessageSendingConsumerFactoryBean");
 
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.SFTPMessageSendingConsumerFactoryBean");
-            for (String p : "auto-create-directories,username,password,host,key-file,key-file-password,remote-directory".split(
-                    ",")) {
+            for (String p : "auto-create-directories,username,password,host,key-file,key-file-password,remote-directory".split(",")) {
                 IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, p);
             }
+
             return builder.getBeanDefinition();
         }
     }
@@ -61,22 +58,17 @@ public class SFTPNamespaceHandler extends NamespaceHandlerSupport {
      * Configures an object that can recieve files from a remote SFTP endpoint and broadcast their arrival to the
      * consumer
      */
-
     private static class SFTPMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
         @Override
         @SuppressWarnings("unused")
         protected String parseSource(Element element, ParserContext parserContext) {
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                    PACKAGE_NAME + ".config.SFTPMessageSourceFactoryBean");
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(PACKAGE_NAME + ".config.SFTPMessageSourceFactoryBean");
 
-            for (String p : "auto-create-directories,username,password,host,key-file,key-file-password,remote-directory,local-working-directory,auto-delete-remote-files-on-sync".split(
-                    ",")) {
+            for (String p : "auto-create-directories,username,password,host,key-file,key-file-password,remote-directory,local-working-directory,auto-delete-remote-files-on-sync".split(",")) {
                 IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, p);
             }
 
-            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(),
-                                                                       parserContext.getRegistry());
+            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
         }
     }
-
 }

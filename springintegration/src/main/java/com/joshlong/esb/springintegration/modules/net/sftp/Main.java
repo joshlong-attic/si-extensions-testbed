@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.commons.lang.SystemUtils;
@@ -25,37 +24,34 @@ import org.springframework.util.ErrorHandler;
 
 import java.io.File;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class Main {
+    private static final Logger logger = Logger.getLogger(Main.class);
 
-    static private final Logger logger = Logger.getLogger(Main.class);
+    public static void main(String[] args) throws Throwable {
+        boolean testKey = true;
+        SFTPSessionFactory factory = testKey ? sftpSessionFactory("joshlong.co    m", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22)
+                : // this wont work on your machine. get yer own!
+                sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
 
-    static SFTPSessionFactory sftpSessionFactory(String host, String pw, String usr,
-                                                 String pvKey, String pvKeyPass,
-                                                 int port) throws Throwable {
-        SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
-        sftpSessionFactory.setPassword(pw);
-        sftpSessionFactory.setPort(port);
-        sftpSessionFactory.setRemoteHost(host);
-        sftpSessionFactory.setUser(usr);
-        sftpSessionFactory.setPrivateKey(pvKey);
-        sftpSessionFactory.setPrivateKeyPassphrase(pvKeyPass);
-        sftpSessionFactory.afterPropertiesSet();
-
-        return sftpSessionFactory;
+        String suffix = (testKey ? "key" : "pass");
+        run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);
     }
 
-    static void run(SFTPSessionFactory sftpSessionFactory, String lp, String rp) throws Throwable {
-
+    static void run(SFTPSessionFactory sftpSessionFactory, String lp, String rp)
+            throws Throwable {
         // local path
         File local = new File(lp); // obviously this is just for test. Do what you need to do in your own
 
         // we are testing, after all
         if (local.exists() && local.list().length > 0) {
             for (File f : local.listFiles()) {
-                if (!f.delete()) logger.debug("couldn't delete " + f.getAbsolutePath());
+                if (!f.delete()) {
+                    logger.debug("couldn't delete " + f.getAbsolutePath());
+                }
             }
         }
 
@@ -86,33 +82,34 @@ public class Main {
         sftpInboundSynchronizer.setTaskScheduler(taskScheduler);
         sftpInboundSynchronizer.afterPropertiesSet();
         sftpInboundSynchronizer.start();
-/*
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(60 * 1000); // 1 minute
 
-                    sftpInboundSynchronizer.stop();
+        /*
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(60 * 1000); // 1 minute
 
-                } catch (InterruptedException e) {
-                    // don't care
-                }
-            }
-        }).start();
-*/
+                            sftpInboundSynchronizer.stop();
 
+                        } catch (InterruptedException e) {
+                            // don't care
+                        }
+                    }
+                }).start();
+        */
     }
 
-    static public void main(String[] args) throws Throwable {
-        boolean testKey = true;
-        SFTPSessionFactory factory = testKey ?
-                sftpSessionFactory("joshlong.co    m", null, "ubuntu",
-                        SystemUtils.getUserHome() + "/jlongec2.pem", null,
-                        22) : // this wont work on your machine. get yer own!
-                sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
+    static SFTPSessionFactory sftpSessionFactory(String host, String pw, String usr, String pvKey, String pvKeyPass, int port)
+            throws Throwable {
+        SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
+        sftpSessionFactory.setPassword(pw);
+        sftpSessionFactory.setPort(port);
+        sftpSessionFactory.setRemoteHost(host);
+        sftpSessionFactory.setUser(usr);
+        sftpSessionFactory.setPrivateKey(pvKey);
+        sftpSessionFactory.setPrivateKeyPassphrase(pvKeyPass);
+        sftpSessionFactory.afterPropertiesSet();
 
-        String suffix = (testKey ? "key" : "pass");
-        run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);
-
+        return sftpSessionFactory;
     }
 }

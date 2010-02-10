@@ -13,54 +13,52 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageSource;
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class TwitterMessageSourceFactoryBean extends AbstractFactoryBean<TwitterMessageSource> {
-
-    private String username;
     private String password;
+    private String username;
     private TwitterMessageType type;
-
-    public TwitterMessageType getType() {
-        return type;
-    }
-
-    public void setType(TwitterMessageType type) {
-        this.type = type;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Override
     public Class<? extends TwitterMessageSource> getObjectType() {
         return TwitterMessageSource.class;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public TwitterMessageType getType() {
+        return type;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setType(TwitterMessageType type) {
+        this.type = type;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     protected TwitterMessageSource createInstance() throws Exception {
-
         TwitterMessageSource twitterMessageSource = new TwitterMessageSource();
         twitterMessageSource.setPassword(this.password);
         twitterMessageSource.setUserId(this.username);

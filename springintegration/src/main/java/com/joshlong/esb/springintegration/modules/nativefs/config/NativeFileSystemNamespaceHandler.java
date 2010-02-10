@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs.config;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -23,11 +22,11 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
 import org.w3c.dom.Element;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
-
     private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.nativefs";
 
     public void init() {
@@ -36,13 +35,12 @@ public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
 
     private static class NativeFileSystemMonitoringEndpointParser extends AbstractSingleBeanDefinitionParser {
         @Override
-        protected boolean shouldGenerateId() {
-            return false;
-        }
-
-        @Override
-        protected boolean shouldGenerateIdAsFallback() {
-            return true;
+        protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "directory");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-create-directory");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "max-queued-value");
+            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel", "requestChannel");
+            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-startup");
         }
 
         @Override
@@ -51,13 +49,13 @@ public class NativeFileSystemNamespaceHandler extends NamespaceHandlerSupport {
         }
 
         @Override
-        protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "directory");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-create-directory");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "max-queued-value");
-            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel", "requestChannel");
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "auto-startup");
+        protected boolean shouldGenerateId() {
+            return false;
+        }
 
+        @Override
+        protected boolean shouldGenerateIdAsFallback() {
+            return true;
         }
     }
 }

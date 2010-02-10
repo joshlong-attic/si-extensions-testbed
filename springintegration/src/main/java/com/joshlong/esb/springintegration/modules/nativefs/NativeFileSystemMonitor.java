@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
@@ -22,17 +21,49 @@ import org.springframework.util.Assert;
 import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class NativeFileSystemMonitor {
+    private static final Logger logger = Logger.getLogger(NativeFileSystemMonitor.class);
+
     static {
-        System.loadLibrary(
-                "sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
+        System.loadLibrary("sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
     }
 
-    static interface FileAddedListener {
-        void fileAdded(File dir, String fn);
+    private File directoryToMonitor;
+    private transient LinkedBlockingQueue<String> additions;
+    private boolean autoCreateDirectory;
+    private int maxQueueValue;
+
+    public NativeFileSystemMonitor() {
+    }
+
+    public NativeFileSystemMonitor(File file) {
+        this.directoryToMonitor = file;
+    }
+
+    public File getDirectoryToMonitor() {
+        return directoryToMonitor;
+    }
+
+    public void init() {
+        additions = new LinkedBlockingQueue<String>(this.maxQueueValue);
+
+        boolean goodDirToMonitor = (directoryToMonitor.isDirectory() && directoryToMonitor.exists());
+
+        if (!goodDirToMonitor) {
+            if (!directoryToMonitor.exists()) {
+                if (this.autoCreateDirectory) {
+                    if (!directoryToMonitor.mkdirs()) {
+                        logger.debug(String.format("couldn't create directory %s", directoryToMonitor.getAbsolutePath()));
+                    }
+                }
+            }
+        }
+
+        Assert.state(directoryToMonitor.exists(), "the directory " + directoryToMonitor.getAbsolutePath() + " doesn't exist");
     }
 
     /**
@@ -44,51 +75,28 @@ public class NativeFileSystemMonitor {
      */
     public native void monitor(String path);
 
-    public NativeFileSystemMonitor() {
-    }
+    public void monitor(final FileAddedListener fal) {
+        final File nFile = new File(this.getDirectoryToMonitor().getAbsolutePath());
 
-    static private final Logger logger = Logger.getLogger(NativeFileSystemMonitor.class);
+        final String absPath = nFile.getAbsolutePath();
 
-    private transient LinkedBlockingQueue<String> additions;
-    private int maxQueueValue;
-    private File directoryToMonitor;
-    private boolean autoCreateDirectory;
+        // todo make this use an executor with a thread pool
+        // I have no idea the implications of thread safety for this sort of thing
+        Thread t = new Thread(
+                new Runnable() {
+                    public void run() {
+                        do {
+                            try {
+                                fal.fileAdded(nFile, additions.take());
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+                        } while (true);
+                    }
+                });
+        t.start();
 
-    public File getDirectoryToMonitor() {
-        return directoryToMonitor;
-    }
-
-    public void setAutoCreateDirectory(boolean autoCreateDirectory) {
-        this.autoCreateDirectory = autoCreateDirectory;
-    }
-
-    public NativeFileSystemMonitor(File file) {
-        this.directoryToMonitor = file;
-
-    }
-
-    public void setMaxQueueValue(int maxQueueValue) {
-        this.maxQueueValue = maxQueueValue;
-    }
-
-    public void init() {
-
-        additions = new LinkedBlockingQueue<String>(this.maxQueueValue);
-
-        boolean goodDirToMonitor = (directoryToMonitor.isDirectory() && directoryToMonitor.exists());
-        if (!goodDirToMonitor) {
-            if (!directoryToMonitor.exists()) {
-                if (this.autoCreateDirectory) {
-                    if (!directoryToMonitor.mkdirs())
-                        logger.debug(String.format("couldn't create directory %s", directoryToMonitor.getAbsolutePath()));
-                }
-            }
-
-        }
-
-        Assert.state(directoryToMonitor.exists(), "the directory " +
-                directoryToMonitor.getAbsolutePath() + " doesn't exist");
-
+        monitor(absPath);
     }
 
     /**
@@ -98,31 +106,15 @@ public class NativeFileSystemMonitor {
         additions.add(fileName);
     }
 
-    public void monitor(final FileAddedListener fal) {
-        final File nFile = new File(this.getDirectoryToMonitor().getAbsolutePath());
+    public void setAutoCreateDirectory(boolean autoCreateDirectory) {
+        this.autoCreateDirectory = autoCreateDirectory;
+    }
 
-        final String absPath = nFile.getAbsolutePath();
+    public void setMaxQueueValue(int maxQueueValue) {
+        this.maxQueueValue = maxQueueValue;
+    }
 
-        // todo make this use an executor with a thread pool
-        // I have no idea the implications of thread safety for this sort of thing
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                do {
-                    try {
-
-                        fal.fileAdded(nFile, additions.take());
-
-                    }
-                    catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                while (true);
-            }
-        });
-        t.start();
-
-        monitor(absPath);
+    static interface FileAddedListener {
+        void fileAdded(File dir, String fn);
     }
 }

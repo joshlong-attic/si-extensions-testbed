@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -31,6 +30,7 @@ import org.springframework.scheduling.Trigger;
 import java.io.File;
 import java.util.regex.Pattern;
 
+
 /**
  * this creates the message source that ultimately 'see's files on a local directory and forwards them on to the bus.
  * These files are asynchronously deposited into a folder via the SFTP synchronizer. This code is <i>very</i> influenced
@@ -39,26 +39,55 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class SFTPMessageSource implements MessageSource<File>, InitializingBean, Lifecycle {
-
-    private Trigger trigger;
-    private TaskScheduler taskScheduler;
+    private FileReadingMessageSource fileReadingMessageSource;
     private Resource localDirectory;
     private SFTPInboundSynchronizer synchronizer;
-    private FileReadingMessageSource fileReadingMessageSource;
+    private TaskScheduler taskScheduler;
+    private Trigger trigger;
 
-    public SFTPMessageSource(FileReadingMessageSource fileSource,
-                             SFTPInboundSynchronizer synchronizer) {
+    public SFTPMessageSource(FileReadingMessageSource fileSource, SFTPInboundSynchronizer synchronizer) {
         this.fileReadingMessageSource = fileSource;
         this.synchronizer = synchronizer;
-        Pattern completePattern = Pattern.compile("^.*(?<!"
-                                                  + SFTPInboundSynchronizer.INCOMPLETE_EXTENSION + ")$");
-        fileReadingMessageSource.setFilter(new CompositeFileListFilter(
-                new AcceptOnceFileListFilter(),
-                new PatternMatchingFileListFilter(completePattern)));
+
+        Pattern completePattern = Pattern.compile("^.*(?<!" + SFTPInboundSynchronizer.INCOMPLETE_EXTENSION + ")$");
+        fileReadingMessageSource.setFilter(new CompositeFileListFilter(new AcceptOnceFileListFilter(), new PatternMatchingFileListFilter(completePattern)));
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        synchronizer.afterPropertiesSet();
+        this.fileReadingMessageSource.afterPropertiesSet();
+    }
+
+    public FileReadingMessageSource getFileReadingMessageSource() {
+        return fileReadingMessageSource;
     }
 
     public Resource getLocalDirectory() {
         return localDirectory;
+    }
+
+    public SFTPInboundSynchronizer getSynchronizer() {
+        return synchronizer;
+    }
+
+    public TaskScheduler getTaskScheduler() {
+        return taskScheduler;
+    }
+
+    public Trigger getTrigger() {
+        return trigger;
+    }
+
+    public boolean isRunning() {
+        return this.synchronizer.isRunning();
+    }
+
+    public Message<File> receive() {
+        return this.fileReadingMessageSource.receive();
+    }
+
+    public void setFileReadingMessageSource(final FileReadingMessageSource fileReadingMessageSource) {
+        this.fileReadingMessageSource = fileReadingMessageSource;
     }
 
     public void setLocalDirectory(final Resource localDirectory) {
@@ -67,20 +96,18 @@ public class SFTPMessageSource implements MessageSource<File>, InitializingBean,
         this.synchronizer.setLocalDirectory(localDirectory);
     }
 
-    public SFTPInboundSynchronizer getSynchronizer() {
-        return synchronizer;
-    }
-
     public void setSynchronizer(final SFTPInboundSynchronizer synchronizer) {
         this.synchronizer = synchronizer;
     }
 
-    public FileReadingMessageSource getFileReadingMessageSource() {
-        return fileReadingMessageSource;
+    public void setTaskScheduler(final TaskScheduler taskScheduler) {
+        this.taskScheduler = taskScheduler;
+        synchronizer.setTaskScheduler(taskScheduler);
     }
 
-    public void setFileReadingMessageSource(final FileReadingMessageSource fileReadingMessageSource) {
-        this.fileReadingMessageSource = fileReadingMessageSource;
+    public void setTrigger(final Trigger trigger) {
+        this.trigger = trigger;
+        this.synchronizer.setTrigger(trigger);
     }
 
     public void start() {
@@ -90,36 +117,4 @@ public class SFTPMessageSource implements MessageSource<File>, InitializingBean,
     public void stop() {
         synchronizer.stop();
     }
-
-    public boolean isRunning() {
-        return this.synchronizer.isRunning();
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        synchronizer.afterPropertiesSet();
-        this.fileReadingMessageSource.afterPropertiesSet();
-    }
-
-    public Message<File> receive() {
-        return this.fileReadingMessageSource.receive();
-    }
-
-    public Trigger getTrigger() {
-        return trigger;
-    }
-
-    public void setTrigger(final Trigger trigger) {
-        this.trigger = trigger;
-        this.synchronizer.setTrigger(trigger);
-    }
-
-    public TaskScheduler getTaskScheduler() {
-        return taskScheduler;
-    }
-
-    public void setTaskScheduler(final TaskScheduler taskScheduler) {
-        this.taskScheduler = taskScheduler;
-        synchronizer.setTaskScheduler(taskScheduler);
-    }
-
 }

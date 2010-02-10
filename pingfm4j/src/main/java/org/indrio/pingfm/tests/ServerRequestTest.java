@@ -1,8 +1,6 @@
 package org.indrio.pingfm.tests;
 
 public class ServerRequestTest {
-    public void testFoo() throws Throwable {
-    }
     //   private ServerRequest serverRequest;
 /*
     @Before

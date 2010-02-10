@@ -13,19 +13,18 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.social.twitter.test;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.Tweet;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Component
 public class TwitterAnnouncer {
-
     private Tweet lastRecievedTweet;
 
     public Tweet getLastRecievedTweet() {
@@ -34,7 +33,6 @@ public class TwitterAnnouncer {
 
     @ServiceActivator
     public void announce(Tweet t) {
-
         this.lastRecievedTweet = t;
         System.out.println("I just recieved a tweet :: " + t.getMessage());
     }

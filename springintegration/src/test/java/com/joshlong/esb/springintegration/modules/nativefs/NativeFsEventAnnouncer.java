@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.springframework.integration.annotation.ServiceActivator;
@@ -21,12 +20,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 
+
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Component
 public class NativeFsEventAnnouncer {
-
     @ServiceActivator
     @SuppressWarnings("unused")
     public void announceIncomingFile(File file) {

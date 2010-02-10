@@ -13,13 +13,22 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public interface SFTPSessionPool {
+    /**
+     * this returns a session that can be used to connct to an sftp instance and perform operations
+     *
+     * @return the session from the pool ready to be connected to.
+     * @throws Exception thrown if theres any of the numerous faults possible when trying to connect to the remote
+     *                   server
+     */
+    SFTPSession getSession() throws Exception;
+
     /**
      * Frees up the client. Im not sure what the meaningful semantics of this are. Perhaps it just calls <code>(session
      * ,channel).disconnect()</code> ?
@@ -27,14 +36,4 @@ public interface SFTPSessionPool {
      * @param session the session to relinquish / renew
      */
     void release(SFTPSession session);
-
-    /**
-     * this returns a session that can be used to connct to an sftp instance and perform operations
-     *
-     * @return the session from the pool ready to be connected to.
-     *
-     * @throws Exception thrown if theres any of the numerous faults possible when trying to connect to the remote
-     *                   server
-     */
-    SFTPSession getSession() throws Exception;
 }
