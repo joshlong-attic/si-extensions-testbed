@@ -13,6 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -23,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
-
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -60,9 +60,17 @@ public class SFTPSession {
      *                              <code>.pem</code> for your remote server (for example, on EC2)
      * @param pvKeyPassPhrase       sometimes, to be extra secure, the private key itself is extra encrypted. In order
      *                              to surmount that, we need the private key passphrase. Specify that here.
+     *
      * @throws Exception thrown if any of a myriad of scenarios plays out
      */
-    public SFTPSession(String userName, String hostName, String userPassword, int port, String knownHostsFile, InputStream knownHostsInputStream, String privateKey, String pvKeyPassPhrase)
+    public SFTPSession(String userName,
+                       String hostName,
+                       String userPassword,
+                       int port,
+                       String knownHostsFile,
+                       InputStream knownHostsInputStream,
+                       String privateKey,
+                       String pvKeyPassPhrase)
             throws Exception {
         JSch jSch = new JSch();
 
@@ -78,7 +86,8 @@ public class SFTPSession {
         if (!StringUtils.isEmpty(knownHostsFile)) {
             jSch.setKnownHosts(knownHostsFile);
             logger.debug("jsch.setKnownHosts(" + knownHostsFile + ")");
-        } else if (null != knownHostsInputStream) {
+        }
+        else if (null != knownHostsInputStream) {
             jSch.setKnownHosts(knownHostsInputStream);
             logger.debug("jsch.setKnownHosts(InputSteam)");
         }
@@ -88,7 +97,8 @@ public class SFTPSession {
             if (!StringUtils.isEmpty(privateKeyPassphrase)) {
                 jSch.addIdentity(this.privateKey, privateKeyPassphrase);
                 logger.debug(" jSch.addIdentity(" + this.privateKey + ", " + privateKeyPassphrase + ");");
-            } else {
+            }
+            else {
                 jSch.addIdentity(this.privateKey);
                 logger.debug(" jSch.addIdentity(" + this.privateKey + ");");
             }
