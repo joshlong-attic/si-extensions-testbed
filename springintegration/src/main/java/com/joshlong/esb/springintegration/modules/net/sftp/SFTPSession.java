@@ -110,10 +110,8 @@ public class SFTPSession {
             session.setPassword(userPassword);
         }
 
-        //if(!StringUtils.isEmpty(userPassword)){
         userInfo = new MyUserInfo(userPassword);
         session.setUserInfo(userInfo);
-        //}
         session.connect();
         channel = (ChannelSftp) session.openChannel("sftp");
     }
