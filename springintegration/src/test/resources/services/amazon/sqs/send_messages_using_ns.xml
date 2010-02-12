@@ -39,33 +39,24 @@
     <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
                 p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
 
+
+    <poller default="true">
+        <interval-trigger interval="1000"/>
+    </poller>
+
     <channel id="publish"/>
     <channel id="receive"/>
 
-    <!--    <beans:bean id="sqsMessageSendingHandler"
-              class="com.joshlong.esb.springintegration.modules.services.amazon.sqs.SQSMessageSendingHandler"
-              p:amazonWebServicesAccessKey="${amazon.sqs2.accessKey}"
-              p:amazonWebServicesSecretKey="${amazon.sqs2.secretKey}" p:queueName="myQueueForPresident"
-          />
+    <inbound-channel-adapter ref="producer" method="message" channel="publish"/>
 
-  <beans:bean class="com.joshlong.esb.springintegration.modules.services.amazon.sqs.SQSMessageMessageSource"
-              id="messageMessageSource"
-              p:amazonWebServicesAccessKey="${amazon.sqs2.accessKey}"
-              p:amazonWebServicesSecretKey="${amazon.sqs2.secretKey}" p:queueName="myQueueForPresident"
-          />
+    <sqs2:outbound-channel-adapter channel="publish" access-key="${amazon.sqs2.accessKey}"
+                                   destination="rockOnSI" secret-key="${amazon.sqs2.secretKey}"/>
 
-  <inbound-channel-adapter ref="producer" method="message" channel="publish">
-      <poller>
-          <interval-trigger interval="1000"/>
-      </poller>
-  </inbound-channel-adapter>
 
-  <outbound-channel-adapter ref="sqsMessageSendingHandler" method="handleMessage" channel="publish"/>
+    <sqs2:inbound-channel-adapter channel="receive" delete-on-receipt="true" access-key="${amazon.sqs2.accessKey}"
+                                  destination="rockOnSI" secret-key="${amazon.sqs2.secretKey}"/>
 
-  <inbound-channel-adapter ref="messageMessageSource" channel="receive">
-      <poller>
-          <interval-trigger interval="1000"/>
-      </poller>
-  </inbound-channel-adapter>
-  <service-activator ref="receiver" input-channel="receive"/>-->
+    <service-activator ref="receiver" input-channel="receive"/>
+
+
 </beans:beans>

@@ -36,7 +36,7 @@ import org.w3c.dom.Element;
 @SuppressWarnings("unused")
 public class SQSNamespaceHandler extends NamespaceHandlerSupport {
     private static final Logger log = Logger.getLogger(SQSNamespaceHandler.class);
-    private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.services.sqs";
+    private static final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.services.amazon.sqs";
 
     public void init() {
         registerBeanDefinitionParser("inbound-channel-adapter", new SQSMessageSourceBeanDefinitionParser());
