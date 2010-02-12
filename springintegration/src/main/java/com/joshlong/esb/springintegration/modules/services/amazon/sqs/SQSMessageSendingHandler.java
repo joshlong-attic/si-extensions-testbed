@@ -1,3 +1,19 @@
+/*
+ * Copyright 2010 the original author or authors
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
+
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,7 +25,6 @@ import org.springframework.integration.message.MessageDeliveryException;
 import org.springframework.integration.message.MessageHandler;
 import org.springframework.integration.message.MessageHandlingException;
 import org.springframework.integration.message.MessageRejectedException;
-
 
 /**
  * This class takes inbound messages and publishes them to the SQS service.
@@ -31,7 +46,8 @@ public class SQSMessageSendingHandler implements MessageHandler, Lifecycle, Init
         assert !StringUtils.isEmpty(this.amazonWebServicesSecretKey);
         assert !StringUtils.isEmpty(this.queueName);
 
-        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey, this.amazonWebServicesHost);
+        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey,
+                                                     this.amazonWebServicesHost);
         this.amazonSQS2Client.afterPropertiesSet();
     }
 
@@ -58,10 +74,12 @@ public class SQSMessageSendingHandler implements MessageHandler, Lifecycle, Init
         try {
             if (payload instanceof String) {
                 this.amazonSQS2Client.send(this.queueName, (String) payload);
-            } else {
+            }
+            else {
                 this.amazonSQS2Client.send(this.queueName, payload.toString());
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.debug("Something happened when trying to send mesage to queueName '" + this.queueName + "'", e);
         }
     }

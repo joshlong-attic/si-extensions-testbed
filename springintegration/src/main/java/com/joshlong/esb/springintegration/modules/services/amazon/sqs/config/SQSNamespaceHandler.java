@@ -57,6 +57,7 @@ public class SQSNamespaceHandler extends NamespaceHandlerSupport {
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "host", "amazonWebServicesHost");
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "secret-key",
                                                                  "amazonWebServicesSecretKey");
+
             return builder.getBeanDefinition();
         }
     }

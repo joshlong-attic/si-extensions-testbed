@@ -13,6 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import com.xerox.amazonws.sqs2.Message;
@@ -29,7 +30,6 @@ import org.springframework.util.Assert;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 
 /**
  * AMazon SQS (simple messagesNotYetRecieved service) is a powerful, REST-ful Message Queue. You can use it with no fear
@@ -73,7 +73,7 @@ public class AmazonSQS2Client implements InitializingBean {
         assert this.queueReceiveInterval > 0 : "thw queueReceiveInterval should be > 0";
 
         // assert this.maxNumberOfMessageToReceive >= 0 && this.maxNumberOfMessageToReceive <=10 : "the maxNumberOfMessageToReceive should always be greater than 0";
-        if (this.maxNumberOfMessageToReceive > 10 || this.maxNumberOfMessageToReceive <= 0) {
+        if ((this.maxNumberOfMessageToReceive > 10) || (this.maxNumberOfMessageToReceive <= 0)) {
             maxNumberOfMessageToReceive = 10;
         }
 
@@ -86,7 +86,9 @@ public class AmazonSQS2Client implements InitializingBean {
             AmazonSQS2Client other = (AmazonSQS2Client) o;
             EqualsBuilder eqb = new EqualsBuilder();
 
-            return eqb.append(other.getAwsHost(), this.getAwsHost()).append(other.getAwsPassword(), this.getAwsPassword()).append(other.getAwsUser(), this.getAwsUser()).isEquals();
+            return eqb.append(other.getAwsHost(), this.getAwsHost()).append(other.getAwsPassword(),
+                                                                            this.getAwsPassword()).append(
+                    other.getAwsUser(), this.getAwsUser()).isEquals();
         }
 
         return false;
@@ -116,7 +118,8 @@ public class AmazonSQS2Client implements InitializingBean {
     public int hashCode() {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
 
-        return hashCodeBuilder.append(this.getAwsHost()).append(this.getAwsPassword()).append(this.getAwsUser()).toHashCode();
+        return hashCodeBuilder.append(this.getAwsHost()).append(this.getAwsPassword()).append(
+                this.getAwsUser()).toHashCode();
     }
 
     public Message receive(String queueId, boolean shouldDeleteOnReceipt)
