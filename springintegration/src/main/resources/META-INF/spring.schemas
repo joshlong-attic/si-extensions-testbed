@@ -1,4 +1,5 @@
 http\://www.joshlong.com/schema/integration/social/twitter/joshlong-twitter-1.0.xsd=com/joshlong/esb/springintegration/modules/social/twitter/config/joshlong-twitter-1.0.xsd
 http\://www.joshlong.com/schema/integration/nativefs/joshlong-nativefs-1.0.xsd=com/joshlong/esb/springintegration/modules/nativefs/config/joshlong-nativefs-1.0.xsd
 http\://www.joshlong.com/schema/integration/net/sftp/joshlong-sftp-1.0.xsd=com/joshlong/esb/springintegration/modules/net/sftp/config/joshlong-sftp-1.0.xsd
+http\://www.joshlong.com/schema/integration/services/amazon/sqs/joshlong-sqs2-1.0.xsd=com/joshlong/esb/springintegration/modules/services/amazon/sqs/config/joshlong-sqs2-1.0.xsd
 
