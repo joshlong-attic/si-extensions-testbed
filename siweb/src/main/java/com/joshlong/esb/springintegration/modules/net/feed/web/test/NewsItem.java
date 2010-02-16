@@ -16,6 +16,7 @@
 
 package com.joshlong.esb.springintegration.modules.net.feed.web.test;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -26,7 +27,7 @@ import java.util.UUID;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a> BS DTO so I have something to help test with
  */
-public class NewsItem {
+public class NewsItem implements Comparable<NewsItem> {
     private String title;
     private Date date;
     private String body;
@@ -89,5 +90,9 @@ public class NewsItem {
 
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public int compareTo(final NewsItem newsItem) {
+        return CompareToBuilder.reflectionCompare(this, newsItem);
     }
 }

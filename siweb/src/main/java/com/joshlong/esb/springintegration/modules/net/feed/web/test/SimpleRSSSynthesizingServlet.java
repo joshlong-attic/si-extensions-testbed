@@ -18,7 +18,8 @@ package com.joshlong.esb.springintegration.modules.net.feed.web.test;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedOutput;
-import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -39,16 +40,25 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Component("testRssWriter")
+@SuppressWarnings("unused")
 public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, InitializingBean {
-
-    static private Logger logger = Logger.getLogger(SimpleRSSSynthesizingServlet.class);
-
     static public String ATOM_03 = "atom_0.3";
     static public String RSS_20 = "rss_2.0";
-
     private Set<NewsItem> newsItems;
     private FeedUtils feedUtils;
     private ObjectToItemConvertorStrategy<NewsItem> objectToItemConvertorStrategy;
+
+    private static void debug(String msg, Throwable th) {
+        debug(msg + ":" + ExceptionUtils.getFullStackTrace(th));
+    }
+
+    private static void debug(String msg) {
+        System.out.println(msg);
+    }
+
+    private static void debug(String msg, Object... parms) {
+        debug(String.format(msg, parms));
+    }
 
     public void write(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, SyndFeed feed)
             throws Throwable {
@@ -56,19 +66,25 @@ public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, Initial
 
         SyndFeedOutput syndFeedOutput = new SyndFeedOutput();
         syndFeedOutput.output(feed, httpServletResponse.getWriter());
+        IOUtils.closeQuietly(httpServletResponse.getWriter());
     }
 
     public void handleRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            SyndFeed syndFeed = this.feedUtils.buildFeed(ATOM_03, "Josh Long", "JoshLong.com's Blog",
-                                                         "Description Time", "http://www.joshlong.com", this.newsItems,
-                                                         this.objectToItemConvertorStrategy);
 
+            String type = ATOM_03;
+            String requestUri = request.getRequestURI().toLowerCase();
+            if (requestUri.indexOf("rss") != -1) {
+                type = RSS_20;
+            }
+            SyndFeed syndFeed = feedUtils.buildFeed(type, "Josh Long", "JoshLong.com's Blog",
+                                                    "Description Time", "http://www.joshlong.com", this.newsItems,
+                                                    this.objectToItemConvertorStrategy);
             write(request, response, syndFeed);
         }
         catch (Throwable throwable) {
-            logger.debug("Something happened when trying to write the Collection<NewsItem> collection", throwable);
+            debug("Something happened when trying to write the Collection<NewsItem> collection", throwable);
         }
     }
 
@@ -76,7 +92,7 @@ public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, Initial
     public void addAnotherNewsItem() {
         Date newDate = new Date();
         long now = newDate.getTime();
-        logger.debug("running addAnotherNewsItem()");
+        debug("running addAnotherNewsItem()");
 
         NewsItem newsItem = new NewsItem("Title " + now, newDate, "Body " + now);
         this.newsItems.add(newsItem);

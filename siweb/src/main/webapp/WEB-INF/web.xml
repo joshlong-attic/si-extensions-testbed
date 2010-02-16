@@ -27,17 +27,20 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/spring_web_context.xml</param-value>
     </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>testRssWriter</servlet-name>
         <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>testRssWriter</servlet-name>
-        <url-pattern>*rss</url-pattern>
+        <url-pattern>*.rss</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>testRssWriter</servlet-name>
-        <url-pattern>*atom</url-pattern>
+        <url-pattern>*.atom</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
