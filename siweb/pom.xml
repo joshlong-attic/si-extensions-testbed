@@ -22,12 +22,13 @@
         <artifactId>modules</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-	<packaging>war</packaging>
+    <packaging>war</packaging>
     <artifactId>siweb</artifactId>
     <name>siweb</name>
     <dependencies>
         <dependency>
-            <groupId>rome</groupId><version>rome</version>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.typica</groupId>

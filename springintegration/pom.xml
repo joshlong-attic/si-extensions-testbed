@@ -26,6 +26,10 @@
     <name>springintegration</name>
     <dependencies>
         <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.typica</groupId>
             <artifactId>typica</artifactId>
 
