@@ -201,6 +201,10 @@
             <artifactId>wagon-ssh</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.homeip.yusuke</groupId>
             <artifactId>twitter4j</artifactId>
         </dependency>

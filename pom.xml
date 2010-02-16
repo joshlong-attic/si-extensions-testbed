@@ -56,6 +56,11 @@
                 <version>1.2.14</version>
             </dependency>
             <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
                 <groupId>apache-vfs</groupId>
                 <artifactId>commons-vfs</artifactId>
                 <version>1.0-dev</version>
