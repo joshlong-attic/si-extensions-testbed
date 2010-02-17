@@ -30,6 +30,10 @@
             <artifactId>rome</artifactId>
         </dependency>
         <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome-fetcher</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.typica</groupId>
             <artifactId>typica</artifactId>
 
