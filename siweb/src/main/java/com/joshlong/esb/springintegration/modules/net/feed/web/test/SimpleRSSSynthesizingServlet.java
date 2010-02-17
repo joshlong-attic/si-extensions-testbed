@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
- * The whole purpose of this class is to generate new entries at a fixed interval so that, when I ultimately write a
- * client, it is updated.
+ * The whole purpose of this class is to generate new entries at a fixed
+ * interval so that, when I ultimately write a client, it is updated.
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
@@ -44,6 +44,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, InitializingBean {
     static public String ATOM_03 = "atom_0.3";
     static public String RSS_20 = "rss_2.0";
+
     private Set<NewsItem> newsItems;
     private FeedUtils feedUtils;
     private ObjectToItemConvertorStrategy<NewsItem> objectToItemConvertorStrategy;
@@ -62,11 +63,14 @@ public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, Initial
 
     public void write(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, SyndFeed feed)
             throws Throwable {
+
         httpServletResponse.setContentType("text/xml");
 
         SyndFeedOutput syndFeedOutput = new SyndFeedOutput();
         syndFeedOutput.output(feed, httpServletResponse.getWriter());
+
         IOUtils.closeQuietly(httpServletResponse.getWriter());
+
     }
 
     public void handleRequest(final HttpServletRequest request, final HttpServletResponse response)
@@ -79,8 +83,8 @@ public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, Initial
                 type = RSS_20;
             }
             SyndFeed syndFeed = feedUtils.buildFeed(type, "Josh Long", "JoshLong.com's Blog",
-                                                    "Description Time", "http://www.joshlong.com", this.newsItems,
-                                                    this.objectToItemConvertorStrategy);
+                    "Description Time", "http://www.joshlong.com", this.newsItems,
+                    this.objectToItemConvertorStrategy);
             write(request, response, syndFeed);
         }
         catch (Throwable throwable) {
@@ -108,6 +112,11 @@ public class SimpleRSSSynthesizingServlet implements HttpRequestHandler, Initial
     }
 }
 
+/**
+ * Simple dummy strategy
+ *
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 class MyNewsItemToItemConvertorStrategy implements ObjectToItemConvertorStrategy<NewsItem> {
     public String getTitle(final NewsItem newsItem) {
         return newsItem.getTitle();

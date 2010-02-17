@@ -1,8 +1,11 @@
 package org.indrio.pingfm.util;
 
 import java.io.IOException;
+import java.io.InputStream;
+
 import java.util.Properties;
 
+@SuppressWarnings("unused")
 public class SettingProperties {
     private static final String APP_NAME = "app.name";
     private static final String APP_VERSION = "app.version";
@@ -16,7 +19,16 @@ public class SettingProperties {
         prop = new Properties();
 
         try {
-            prop.load(SettingProperties.class.getResourceAsStream("/setting.properties"));
+            InputStream inputStream = SettingProperties.class.getResourceAsStream("/setting.properties");
+            prop.load(inputStream);
+
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                    
+                } catch (Throwable th) {
+                    /** don't care */ }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
