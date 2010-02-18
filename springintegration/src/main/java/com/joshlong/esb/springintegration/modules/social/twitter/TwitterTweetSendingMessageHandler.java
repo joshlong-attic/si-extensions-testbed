@@ -118,7 +118,4 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
         }
     }
 
-    /*   public int getOrder() {
-        return 0;
-    }*/
 }

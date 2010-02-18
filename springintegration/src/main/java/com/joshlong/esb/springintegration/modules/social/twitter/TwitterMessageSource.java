@@ -152,7 +152,6 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
 
     private Tweet buildTweetFromStatus(Status firstPost) {
         Tweet tweet = new Tweet(firstPost.getId(), firstPost.getUser().getName(), firstPost.getCreatedAt(), firstPost.getText());
-
         return tweet;
     }
 
