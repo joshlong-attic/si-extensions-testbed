@@ -59,8 +59,7 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
         myFetcherListener = new MyFetcherListener();
         fetcherCache = HashMapFeedInfoCache.getInstance();
 
-        fetcher = new HttpURLFeedFetcher();
-        fetcher.setFeedInfoCache(fetcherCache);
+        fetcher = new HttpURLFeedFetcher(fetcherCache);
 
         // fetcher.set
         fetcher.addFetcherEventListener(myFetcherListener);
@@ -77,7 +76,7 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
         this.running = false;
     }
 
-    public Message<SyndFeed> receive() {
+    public SyndFeed receiveSyndFeed() {
         try {
             fetcher.retrieveFeed(this.feedURLObject);
             logger.debug("attempted to retrieve feed '" + this.feedUrl + "'");
@@ -86,14 +85,17 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
                 logger.debug("no feeds updated, return null!");
                 return null;
             }
-            return MessageBuilder.withPayload(returnedSyndFeed).setHeader(FeedConstants.FEED_URL,
-                                                                          this.feedURLObject).build();
         }
         catch (Throwable e) {
             logger.debug("Exception thrown when trying to retrive feed at url '" + this.feedURLObject + "'", e);
         }
 
         return null;
+    }
+
+    public Message<SyndFeed> receive() {
+        SyndFeed syndFeed = this.receiveSyndFeed();
+        return MessageBuilder.withPayload(syndFeed).setHeader(FeedConstants.FEED_URL, this.feedURLObject).build();
     }
 
     public boolean isRunning() {
@@ -141,7 +143,7 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
             if (msgWithSyndFeed != null) {
                 SyndFeed feed = msgWithSyndFeed.getPayload();
                 for (Object o : feed.getEntries()) {
-                    logger.debug(o);
+                    //    logger.debug(o);
                 }
             }
 
@@ -151,7 +153,7 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
 
     public static void main(String[] args) throws Throwable {
 
-        String siweb = "http://feeds.feedburner.com/TechCrunch";//http://localhost:8080/siweb/foo.atom";
-        test(siweb, 10000);
+        String siweb = "http://twitter.com/statuses/public_timeline.atom";//http://localhost:8080/siweb/foo.atom";
+        test(siweb, 1000);
     }
 }
