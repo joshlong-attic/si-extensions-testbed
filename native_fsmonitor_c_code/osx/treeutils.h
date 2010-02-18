@@ -29,7 +29,6 @@
 void printtree(void);
 ino_t * getDirectoryInodes(char *path);
 static void printme(const void *node, VISIT v, int k);
-void printtree(void);
 int tree_test(char testPath);
 
 
