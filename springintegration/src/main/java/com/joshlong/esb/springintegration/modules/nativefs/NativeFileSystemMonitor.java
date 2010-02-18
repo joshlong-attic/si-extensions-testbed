@@ -16,13 +16,21 @@
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
+
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+
 import org.springframework.util.Assert;
 
 import java.io.File;
+
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
+ *
+ * TODO make this class use SI hooks ({@link org.springframework.context.Lifecycle#start()}, {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()}, etc
+ *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class NativeFileSystemMonitor {
@@ -36,9 +44,9 @@ public class NativeFileSystemMonitor {
     private transient LinkedBlockingQueue<String> additions;
     private boolean autoCreateDirectory;
     private int maxQueueValue;
+    private volatile Executor executor;
 
-    public NativeFileSystemMonitor() {
-    }
+    public NativeFileSystemMonitor() {}
 
     public NativeFileSystemMonitor(File file) {
         this.directoryToMonitor = file;
@@ -63,6 +71,10 @@ public class NativeFileSystemMonitor {
             }
         }
 
+        if (this.executor == null) {
+            this.executor = new SimpleAsyncTaskExecutor();
+        }
+
         Assert.state(directoryToMonitor.exists(), "the directory " + directoryToMonitor.getAbsolutePath() + " doesn't exist");
     }
 
@@ -80,21 +92,19 @@ public class NativeFileSystemMonitor {
 
         final String absPath = nFile.getAbsolutePath();
 
-        // todo make this use an executor with a thread pool
         // I have no idea the implications of thread safety for this sort of thing
-        Thread t = new Thread(
-                new Runnable() {
-                    public void run() {
-                        do {
-                            try {
-                                fal.fileAdded(nFile, additions.take());
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-                        } while (true);
-                    }
-                });
-        t.start();
+        this.executor.execute(
+            new Runnable() {
+                public void run() {
+                    do {
+                        try {
+                            fal.fileAdded(nFile, additions.take());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    } while (true);
+                }
+            });
 
         monitor(absPath);
     }
