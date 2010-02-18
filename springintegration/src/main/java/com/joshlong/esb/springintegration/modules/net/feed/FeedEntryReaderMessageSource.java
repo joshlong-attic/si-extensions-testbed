@@ -19,6 +19,7 @@ package com.joshlong.esb.springintegration.modules.net.feed;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.integration.core.Message;
@@ -27,6 +28,7 @@ import org.springframework.integration.message.MessageSource;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -39,6 +41,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class FeedEntryReaderMessageSource implements InitializingBean, MessageSource<SyndEntry>, Lifecycle {
+    private static final Logger logger = Logger.getLogger(FeedEntryReaderMessageSource.class);
     private volatile Collection<SyndEntry> receivedEntries;
     private volatile FeedReaderMessageSource feedReaderMessageSource;
     private volatile boolean running;
@@ -48,7 +51,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     private long maximumBacklogCacheSize = -1;
 
     public FeedEntryReaderMessageSource() {
-        this.receivedEntries = new ConcurrentSkipListSet<SyndEntry>();
+        this.receivedEntries = new ConcurrentSkipListSet<SyndEntry>(new MyComparator());
         this.entries = new ConcurrentLinkedQueue<SyndEntry>();
     }
 
@@ -63,6 +66,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
 
         this.feedReaderMessageSource = new FeedReaderMessageSource();
         this.feedReaderMessageSource.setFeedUrl(this.feedUrl);
+        this.feedReaderMessageSource.afterPropertiesSet();
     }
 
     public void stop() {
@@ -96,15 +100,15 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
         // otherwise, fill the backlog up
         SyndFeed syndFeed = this.feedReaderMessageSource.receiveSyndFeed();
 
-        if (syndFeed == null) {
-            return null;
-        }
+        if (syndFeed != null) {
+            Collection<SyndEntry> feedEntries = (Collection<SyndEntry>) syndFeed.getEntries();
 
-        Collection<SyndEntry> feedEntries = (Collection<SyndEntry>) syndFeed.getEntries();
-
-        for (SyndEntry se : feedEntries) {
-            if (!this.receivedEntries.contains(se)) {
-                entries.add(se);
+            if (null != feedEntries) {
+                for (SyndEntry se : feedEntries) {
+                    if (!this.receivedEntries.contains(se)) {
+                        entries.add(se);
+                    }
+                }
             }
         }
 
@@ -114,7 +118,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     private SyndEntry pollAndCache() {
         SyndEntry next = this.entries.poll();
 
-        if ((this.maximumBacklogCacheSize != -1) && (this.receivedEntries.size() > this.maximumBacklogCacheSize)) {
+        if ((this.maximumBacklogCacheSize > -1) && (this.receivedEntries.size() > this.maximumBacklogCacheSize)) {
             // whats the correct behavior here?
 
             // if we were doing LRU we'd evict as many entries from the end as needed until the collection was appropriately sized (N<maximumBacklogCacheSize)
@@ -138,11 +142,14 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
         feedEntryReaderMessageSource.start();
 
         while (true) {
-            Message<SyndEntry> entries = feedEntryReaderMessageSource.receive();
+            Message<SyndEntry> entryMessage = feedEntryReaderMessageSource.receive();
 
-            if (entries != null) {
-
+            if (entryMessage != null) {
+                SyndEntry entry = entryMessage.getPayload();
+                logger.debug((entry.getTitle() + "=" + entry.getUri()));
             }
+
+            Thread.sleep(1000);
         }
     }
 
@@ -160,5 +167,18 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
 
     public void setMaximumBacklogCacheSize(final long maximumBacklogCacheSize) {
         this.maximumBacklogCacheSize = maximumBacklogCacheSize;
+    }
+
+    class MyComparator implements Comparator<SyndEntry> {
+        public int compare(final SyndEntry syndEntry, final SyndEntry syndEntry1) {
+            String uri = StringUtils.defaultString(syndEntry.getUri());
+            String uri2 = StringUtils.defaultString(syndEntry1.getUri());
+
+            if (!StringUtils.isEmpty(uri)) {
+                return uri.compareToIgnoreCase(uri2);
+            }
+
+            return 0;
+        }
     }
 }

@@ -75,15 +75,15 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
     }
 
     public SyndFeed receiveSyndFeed() {
+        SyndFeed returnedSyndFeed = null;
+
         try {
             fetcher.retrieveFeed(this.feedURLObject);
             logger.debug("attempted to retrieve feed '" + this.feedUrl + "'");
-
-            SyndFeed returnedSyndFeed = syndFeeds.poll();
+            returnedSyndFeed = syndFeeds.poll();
 
             if (null == returnedSyndFeed) {
                 logger.debug("no feeds updated, return null!");
-
                 return null;
             }
         }
@@ -91,12 +91,14 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
             logger.debug("Exception thrown when trying to retrive feed at url '" + this.feedURLObject + "'", e);
         }
 
-        return null;
+        return returnedSyndFeed;
     }
 
     public Message<SyndFeed> receive() {
         SyndFeed syndFeed = this.receiveSyndFeed();
-
+        if (null == syndFeed) {
+            return null;
+        }
         return MessageBuilder.withPayload(syndFeed).setHeader(FeedConstants.FEED_URL, this.feedURLObject).build();
     }
 
@@ -155,7 +157,6 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
             else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
                 logger.debug("\tEVENT: Feed Unchanged. URL = " + event.getUrlString());
 
-                //   syndFeeds.remove(event.getFeed());
             }
         }
     }
