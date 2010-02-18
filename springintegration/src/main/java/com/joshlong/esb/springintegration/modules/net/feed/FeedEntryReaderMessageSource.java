@@ -17,36 +17,137 @@
 package com.joshlong.esb.springintegration.modules.net.feed;
 
 import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.integration.core.Message;
+import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
 
+import java.net.URL;
+import java.util.Collection;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
+
 /**
+ * this is a slightly different use case than {@link com.joshlong.esb.springintegration.modules.net.feed.FeedReaderMessageSource}.
+ * This returns which entries are added, which is a more nuanced use case requiring some of our own caching.
+ * <em>NB:</em> this does <strong>not</strong> somehow detect entry removal from a feed.
+ *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class FeedEntryReaderMessageSource implements InitializingBean, MessageSource<SyndEntry>, Lifecycle {
 
+    private volatile Collection<SyndEntry> receivedEntries;
     private volatile FeedReaderMessageSource feedReaderMessageSource;
     private volatile boolean running;
+    private String feedUrl;
+    private URL feedUrlObject;
+    private Queue<SyndEntry> entries;
+    private long maximumBacklogCacheSize = -1;
+
+    public FeedEntryReaderMessageSource() {
+        this.receivedEntries = new ConcurrentSkipListSet<SyndEntry>();
+        this.entries = new ConcurrentLinkedQueue<SyndEntry>();
+    }
 
     public void start() {
+        this.feedReaderMessageSource.start();
         this.running = true;
     }
 
     public void afterPropertiesSet() throws Exception {
 
+        assert !StringUtils.isEmpty(this.feedUrl) : "the feedUrl can't be null!";
+        this.feedUrlObject = new URL(this.feedUrl);
+
+        this.feedReaderMessageSource = new FeedReaderMessageSource();
+        this.feedReaderMessageSource.setFeedUrl(this.feedUrl);
+
     }
 
     public void stop() {
+        this.feedReaderMessageSource.stop();
         this.running = false;
     }
 
     public boolean isRunning() {
-        return running;  //To change body of implemented methods use File | Settings | File Templates.
+        return running;
     }
 
     public Message<SyndEntry> receive() {
-        return null;
+        return MessageBuilder.withPayload(receiveSyndEntry()).build();
+    }
+
+    @SuppressWarnings("unchecked")
+    public SyndEntry receiveSyndEntry() {
+        // priority goes to the backlog
+        SyndEntry nextUp = pollAndCache();
+        if (nextUp != null) {
+            return nextUp;
+        }
+
+        // otherwise, fill the backlog up
+        SyndFeed syndFeed = this.feedReaderMessageSource.receiveSyndFeed();
+        if (syndFeed == null) return null;
+        Collection<SyndEntry> feedEntries = (Collection<SyndEntry>) syndFeed.getEntries();
+        for (SyndEntry se : feedEntries) {
+            if (!this.receivedEntries.contains(se)) {
+                entries.add(se);
+            }
+        }
+        return pollAndCache();
+    }
+
+    private SyndEntry pollAndCache() {
+
+        SyndEntry next = this.entries.poll();
+
+        if (this.maximumBacklogCacheSize != -1 && this.receivedEntries.size() > this.maximumBacklogCacheSize) {
+            // whats the correct havior here
+            // if we were doing LRU wed evict as many entries from the end as needed until the collection was appropriately sized
+            // however, i dont see why we cant just remove them all
+            // this component doesn't guarantee once and only once semantics. were doing our level headed best to ensure dupes arent sent
+            // but if its really an issue then the user can leave {@link maximumBacklogCacheSize } at -1.
+            this.receivedEntries.clear();
+        }
+        if (next != null) {
+            this.receivedEntries.add(next);
+        }
+        return next;
+    }
+
+    public FeedReaderMessageSource getFeedReaderMessageSource() {
+        return feedReaderMessageSource;
+    }
+
+    public void setFeedReaderMessageSource(final FeedReaderMessageSource feedReaderMessageSource) {
+        this.feedReaderMessageSource = feedReaderMessageSource;
+    }
+
+    public String getFeedUrl() {
+        return feedUrl;
+    }
+
+    public void setFeedUrl(final String feedUrl) {
+        this.feedUrl = feedUrl;
+    }
+
+    public URL getFeedUrlObject() {
+        return feedUrlObject;
+    }
+
+    public void setFeedUrlObject(final URL feedUrlObject) {
+        this.feedUrlObject = feedUrlObject;
+    }
+
+    public long getMaximumBacklogCacheSize() {
+        return maximumBacklogCacheSize;
+    }
+
+    public void setMaximumBacklogCacheSize(final long maximumBacklogCacheSize) {
+        this.maximumBacklogCacheSize = maximumBacklogCacheSize;
     }
 }
