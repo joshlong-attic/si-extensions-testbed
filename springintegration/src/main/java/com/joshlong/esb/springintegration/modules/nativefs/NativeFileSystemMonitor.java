@@ -28,7 +28,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
- *
  * TODO make this class use SI hooks ({@link org.springframework.context.Lifecycle#start()}, {@link org.springframework.beans.factory.InitializingBean#afterPropertiesSet()}, etc
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -54,6 +53,14 @@ public class NativeFileSystemMonitor {
 
     public File getDirectoryToMonitor() {
         return directoryToMonitor;
+    }
+
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
     }
 
     public void init() {
