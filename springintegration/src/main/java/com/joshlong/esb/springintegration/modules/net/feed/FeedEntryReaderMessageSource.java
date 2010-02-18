@@ -106,10 +106,10 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
         SyndEntry next = this.entries.poll();
 
         if (this.maximumBacklogCacheSize != -1 && this.receivedEntries.size() > this.maximumBacklogCacheSize) {
-            // whats the correct havior here
-            // if we were doing LRU wed evict as many entries from the end as needed until the collection was appropriately sized
-            // however, i dont see why we cant just remove them all
-            // this component doesn't guarantee once and only once semantics. were doing our level headed best to ensure dupes arent sent
+            // whats the correct behavior here?
+
+            // if we were doing LRU we'd evict as many entries from the end as needed until the collection was appropriately sized (N<maximumBacklogCacheSize)
+            // however, i dont see why we cant just remove them all this component doesn't guarantee once and only once semantics. were doing our level headed best to ensure dupes arent sent
             // but if its really an issue then the user can leave {@link maximumBacklogCacheSize } at -1.
             this.receivedEntries.clear();
         }
