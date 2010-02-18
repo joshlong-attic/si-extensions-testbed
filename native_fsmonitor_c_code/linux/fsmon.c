@@ -18,7 +18,7 @@
   Contributed by:
 
    Josh Long (josh@joshlong.com)
-
+   Mario Gray (mario.gray@gmail.com)
  */
 
 #include <jni.h>

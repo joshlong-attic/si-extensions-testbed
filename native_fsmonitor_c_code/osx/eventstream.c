@@ -13,8 +13,14 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
- 
- #include <eventstream.h>
+
+/*
+ Contributed by:
+
+ Mario Gray (mario.gray@gmail.com)
+*/
+
+#include <eventstream.h>
 								 
 
 void createEventStream(const char path[]) 
@@ -101,5 +107,4 @@ void myCallbackFunction( ConstFSEventStreamRef streamRef,
 																	 eventFlags[i]);
 						}
 					}
-					
 					
