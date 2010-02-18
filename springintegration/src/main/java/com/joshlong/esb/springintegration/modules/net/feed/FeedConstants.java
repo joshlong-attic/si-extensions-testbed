@@ -17,15 +17,10 @@
 package com.joshlong.esb.springintegration.modules.net.feed;
 
 /**
- * I'm thinking we might want one level of indirection between our clients and the RSS/ATOM library that we use. I'm not
- * really sure though. I'll err on the side of caution and use a wrapper for {@link
- * com.sun.syndication.feed.synd.SyndFeed} I'll make it so that you can get to it through the {@link
- * com.joshlong.esb.springintegration.modules.net.feed.Feed#getDelegate()} method. TODO how much should I go through
- * with?
+ * Provides a place to store the header keys for {@link com.joshlong.esb.springintegration.modules.net.feed.FeedReaderMessageSource}
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-public interface Feed {
-    Object getDelegate();
-
+public class FeedConstants {
+    static public final String FEED_URL = "FEED_URL";
 }

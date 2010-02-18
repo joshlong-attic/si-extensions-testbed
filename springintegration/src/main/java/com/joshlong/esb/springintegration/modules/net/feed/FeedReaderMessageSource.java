@@ -16,7 +16,7 @@
 
 package com.joshlong.esb.springintegration.modules.net.feed;
 
-import com.sun.syndication.fetcher.FeedFetcher;
+import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.fetcher.FetcherEvent;
 import com.sun.syndication.fetcher.FetcherListener;
 import com.sun.syndication.fetcher.impl.FeedFetcherCache;
@@ -27,36 +27,46 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.integration.core.Message;
+import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
 
-import java.util.Queue;
+import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The idea behind this class is that {@link org.springframework.integration.message.MessageSource#receive()} will only
  * return a {@link SyndFeed} when the event listener tells us that a feed has been updated. If we can ascertain that
- * it's been updated, then we can add the item to the {@link java.util.Queue} implementation.
+ * it's been updated, then we can add the item to the {@link java.util.Queue} implementation. lol
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-public class FeedReaderMessageSource<SyndFeed> implements InitializingBean, Lifecycle, MessageSource<Feed> {
+public class FeedReaderMessageSource implements InitializingBean, Lifecycle, MessageSource<SyndFeed> {
     private static final Logger logger = Logger.getLogger(FeedReaderMessageSource.class);
     private volatile boolean running;
     private volatile String feedUrl;
+    private volatile URL feedURLObject;
     private volatile FeedFetcherCache fetcherCache;
-    private volatile FeedFetcher fetcher;
-    private volatile Queue<SyndFeed> syndFeeds;
+    private volatile HttpURLFeedFetcher fetcher;
+    private volatile ConcurrentLinkedQueue<SyndFeed> syndFeeds;
+    private volatile MyFetcherListener myFetcherListener;
 
     public FeedReaderMessageSource() {
+
         syndFeeds = new ConcurrentLinkedQueue<SyndFeed>();
     }
 
     public void afterPropertiesSet() throws Exception {
+        myFetcherListener = new MyFetcherListener();
         fetcherCache = HashMapFeedInfoCache.getInstance();
-        fetcher = new HttpURLFeedFetcher(fetcherCache);
+
+        fetcher = new HttpURLFeedFetcher();
+        fetcher.setFeedInfoCache(fetcherCache);
+
+        // fetcher.set
+        fetcher.addFetcherEventListener(myFetcherListener);
 
         assert !StringUtils.isEmpty(feedUrl) : "the feedUrl can't be null!";
-
+        feedURLObject = new URL(this.feedUrl);
     }
 
     public void start() {
@@ -67,7 +77,22 @@ public class FeedReaderMessageSource<SyndFeed> implements InitializingBean, Life
         this.running = false;
     }
 
-    public Message<Feed> receive() {
+    public Message<SyndFeed> receive() {
+        try {
+            fetcher.retrieveFeed(this.feedURLObject);
+            logger.debug("attempted to retrieve feed '" + this.feedUrl + "'");
+            SyndFeed returnedSyndFeed = syndFeeds.poll();
+            if (null == returnedSyndFeed) {
+                logger.debug("no feeds updated, return null!");
+                return null;
+            }
+            return MessageBuilder.withPayload(returnedSyndFeed).setHeader(FeedConstants.FEED_URL,
+                                                                          this.feedURLObject).build();
+        }
+        catch (Throwable e) {
+            logger.debug("Exception thrown when trying to retrive feed at url '" + this.feedURLObject + "'", e);
+        }
+
         return null;
     }
 
@@ -80,7 +105,6 @@ public class FeedReaderMessageSource<SyndFeed> implements InitializingBean, Life
     }
 
     public void setFeedUrl(final String feedUrl) {
-
         this.feedUrl = feedUrl;
     }
 
@@ -95,10 +119,39 @@ public class FeedReaderMessageSource<SyndFeed> implements InitializingBean, Life
             }
             else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
                 logger.debug("\tEVENT: Feed Retrieved. URL = " + event.getUrlString());
+                syndFeeds.add(event.getFeed());
             }
             else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
                 logger.debug("\tEVENT: Feed Unchanged. URL = " + event.getUrlString());
+                //   syndFeeds.remove(event.getFeed());
+
             }
         }
+    }
+
+    static private void test(String url, long delay) throws Throwable {
+
+        FeedReaderMessageSource feedReaderMessageSource = new FeedReaderMessageSource();
+        feedReaderMessageSource.setFeedUrl(url);
+        feedReaderMessageSource.afterPropertiesSet();
+        feedReaderMessageSource.start();
+        while (true) {
+            Message<SyndFeed> msgWithSyndFeed = feedReaderMessageSource.receive();
+
+            if (msgWithSyndFeed != null) {
+                SyndFeed feed = msgWithSyndFeed.getPayload();
+                for (Object o : feed.getEntries()) {
+                    logger.debug(o);
+                }
+            }
+
+            Thread.sleep(delay);
+        }
+    }
+
+    public static void main(String[] args) throws Throwable {
+
+        String siweb = "http://feeds.feedburner.com/TechCrunch";//http://localhost:8080/siweb/foo.atom";
+        test(siweb, 10000);
     }
 }
