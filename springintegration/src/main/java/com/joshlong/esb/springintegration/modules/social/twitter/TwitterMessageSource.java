@@ -48,7 +48,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
     private volatile long lastStatusIdRetreived = -1;
 
     public void afterPropertiesSet() throws Exception {
-        System.out.println("after properties set for TwitterMessageSource!!");
+        logger.debug("after properties set for TwitterMessageSource!!");
 
         if (twitter == null) {
             Assert.state(!StringUtils.isEmpty(userId));
@@ -156,14 +156,5 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
         return tweet;
     }
 
-    /*
-
-        public Twitter getTwitter() {
-            return twitter;
-        }
-
-        public void setTwitter(Twitter twitter) {
-            this.twitter = twitter;
-        }
-    */
+   
 }
