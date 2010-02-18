@@ -36,7 +36,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 /**
  * this is a slightly different use case than {@link com.joshlong.esb.springintegration.modules.net.feed.FeedReaderMessageSource}.
  * This returns which entries are added, which is a more nuanced use case requiring some of our own caching.
- * <em>NB:</em> this does <strong>not</strong> somehow detect entry removal from a feed.
+ * <em>NB:</em> this does <strong>not</strong> somehow detect entry removal from a feed. TODO we need to find a bounded
+ * FIFO Set implementaton because we want to do dupe checking, as well as expiry of old records after a certain amount
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
