@@ -22,25 +22,20 @@ package com.joshlong.esb.springintegration.modules.net.feed;
  *         taking outbound messages and updating a resource
  */
 public class Main {
-
     // to watch it all work, see:
 
     // https://rome.dev.java.net/source/browse/rome/subprojects/fetcher/src/java/com/sun/syndication/fetcher/samples/FeedReaderMessageSource.java?rev=HEAD&content-type=text/vnd.viewcvs-markup
 
     /**
      * Ive setup a test app (run using mvn jetty:run, in the worst case) that generates a constantly changing rss/atom
-     * feed.
-     * Now i need to writ ean adapter for it
+     * feed. Now i need to writ ean adapter for it
      *
      * @throws Throwable
      */
     static public void rssReading1() throws Throwable {
-
     }
 
     static public void main(String[] ar) throws Throwable {
-
         rssReading1();
     }
-
 }

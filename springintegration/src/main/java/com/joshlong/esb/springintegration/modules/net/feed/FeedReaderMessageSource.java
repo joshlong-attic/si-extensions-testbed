@@ -51,7 +51,6 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
     private volatile MyFetcherListener myFetcherListener;
 
     public FeedReaderMessageSource() {
-
         syndFeeds = new ConcurrentLinkedQueue<SyndFeed>();
     }
 
@@ -63,7 +62,6 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
 
         // fetcher.set
         fetcher.addFetcherEventListener(myFetcherListener);
-
         assert !StringUtils.isEmpty(feedUrl) : "the feedUrl can't be null!";
         feedURLObject = new URL(this.feedUrl);
     }
@@ -80,9 +78,12 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
         try {
             fetcher.retrieveFeed(this.feedURLObject);
             logger.debug("attempted to retrieve feed '" + this.feedUrl + "'");
+
             SyndFeed returnedSyndFeed = syndFeeds.poll();
+
             if (null == returnedSyndFeed) {
                 logger.debug("no feeds updated, return null!");
+
                 return null;
             }
         }
@@ -95,6 +96,7 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
 
     public Message<SyndFeed> receive() {
         SyndFeed syndFeed = this.receiveSyndFeed();
+
         return MessageBuilder.withPayload(syndFeed).setHeader(FeedConstants.FEED_URL, this.feedURLObject).build();
     }
 
@@ -110,38 +112,18 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
         this.feedUrl = feedUrl;
     }
 
-    class MyFetcherListener implements FetcherListener {
-        /**
-         * @see com.sun.syndication.fetcher.FetcherListener#fetcherEvent(com.sun.syndication.fetcher.FetcherEvent)
-         */
-        public void fetcherEvent(final FetcherEvent event) {
-            String eventType = event.getEventType();
-            if (FetcherEvent.EVENT_TYPE_FEED_POLLED.equals(eventType)) {
-                logger.debug("\tEVENT: Feed Polled. URL = " + event.getUrlString());
-            }
-            else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
-                logger.debug("\tEVENT: Feed Retrieved. URL = " + event.getUrlString());
-                syndFeeds.add(event.getFeed());
-            }
-            else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
-                logger.debug("\tEVENT: Feed Unchanged. URL = " + event.getUrlString());
-                //   syndFeeds.remove(event.getFeed());
-
-            }
-        }
-    }
-
     static private void test(String url, long delay) throws Throwable {
-
         FeedReaderMessageSource feedReaderMessageSource = new FeedReaderMessageSource();
         feedReaderMessageSource.setFeedUrl(url);
         feedReaderMessageSource.afterPropertiesSet();
         feedReaderMessageSource.start();
+
         while (true) {
             Message<SyndFeed> msgWithSyndFeed = feedReaderMessageSource.receive();
 
             if (msgWithSyndFeed != null) {
                 SyndFeed feed = msgWithSyndFeed.getPayload();
+
                 for (Object o : feed.getEntries()) {
                     //    logger.debug(o);
                 }
@@ -152,8 +134,29 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
     }
 
     public static void main(String[] args) throws Throwable {
-
-        String siweb = "http://twitter.com/statuses/public_timeline.atom";//http://localhost:8080/siweb/foo.atom";
+        String siweb = "http://twitter.com/statuses/public_timeline.atom"; //http://localhost:8080/siweb/foo.atom";
         test(siweb, 1000);
+    }
+
+    class MyFetcherListener implements FetcherListener {
+        /**
+         * @see com.sun.syndication.fetcher.FetcherListener#fetcherEvent(com.sun.syndication.fetcher.FetcherEvent)
+         */
+        public void fetcherEvent(final FetcherEvent event) {
+            String eventType = event.getEventType();
+
+            if (FetcherEvent.EVENT_TYPE_FEED_POLLED.equals(eventType)) {
+                logger.debug("\tEVENT: Feed Polled. URL = " + event.getUrlString());
+            }
+            else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
+                logger.debug("\tEVENT: Feed Retrieved. URL = " + event.getUrlString());
+                syndFeeds.add(event.getFeed());
+            }
+            else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
+                logger.debug("\tEVENT: Feed Unchanged. URL = " + event.getUrlString());
+
+                //   syndFeeds.remove(event.getFeed());
+            }
+        }
     }
 }

@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class FeedEntryReaderMessageSource implements InitializingBean, MessageSource<SyndEntry>, Lifecycle {
-
     private volatile Collection<SyndEntry> receivedEntries;
     private volatile FeedReaderMessageSource feedReaderMessageSource;
     private volatile boolean running;
@@ -59,13 +58,11 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     }
 
     public void afterPropertiesSet() throws Exception {
-
         assert !StringUtils.isEmpty(this.feedUrl) : "the feedUrl can't be null!";
         this.feedUrlObject = new URL(this.feedUrl);
 
         this.feedReaderMessageSource = new FeedReaderMessageSource();
         this.feedReaderMessageSource.setFeedUrl(this.feedUrl);
-
     }
 
     public void stop() {
@@ -78,34 +75,46 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     }
 
     public Message<SyndEntry> receive() {
-        return MessageBuilder.withPayload(receiveSyndEntry()).build();
+        SyndEntry se = receiveSyndEntry();
+
+        if (se == null) {
+            return null;
+        }
+
+        return MessageBuilder.withPayload(se).build();
     }
 
     @SuppressWarnings("unchecked")
     public SyndEntry receiveSyndEntry() {
         // priority goes to the backlog
         SyndEntry nextUp = pollAndCache();
+
         if (nextUp != null) {
             return nextUp;
         }
 
         // otherwise, fill the backlog up
         SyndFeed syndFeed = this.feedReaderMessageSource.receiveSyndFeed();
-        if (syndFeed == null) return null;
+
+        if (syndFeed == null) {
+            return null;
+        }
+
         Collection<SyndEntry> feedEntries = (Collection<SyndEntry>) syndFeed.getEntries();
+
         for (SyndEntry se : feedEntries) {
             if (!this.receivedEntries.contains(se)) {
                 entries.add(se);
             }
         }
+
         return pollAndCache();
     }
 
     private SyndEntry pollAndCache() {
-
         SyndEntry next = this.entries.poll();
 
-        if (this.maximumBacklogCacheSize != -1 && this.receivedEntries.size() > this.maximumBacklogCacheSize) {
+        if ((this.maximumBacklogCacheSize != -1) && (this.receivedEntries.size() > this.maximumBacklogCacheSize)) {
             // whats the correct behavior here?
 
             // if we were doing LRU we'd evict as many entries from the end as needed until the collection was appropriately sized (N<maximumBacklogCacheSize)
@@ -113,18 +122,28 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
             // but if its really an issue then the user can leave {@link maximumBacklogCacheSize } at -1.
             this.receivedEntries.clear();
         }
+
         if (next != null) {
             this.receivedEntries.add(next);
         }
+
         return next;
     }
 
-    public FeedReaderMessageSource getFeedReaderMessageSource() {
-        return feedReaderMessageSource;
-    }
+    public static void main(String[] args) throws Throwable {
+        String siweb = "http://twitter.com/statuses/public_timeline.atom"; //http://localhost:8080/siweb/foo.atom";
+        FeedEntryReaderMessageSource feedEntryReaderMessageSource = new FeedEntryReaderMessageSource();
+        feedEntryReaderMessageSource.setFeedUrl(siweb);
+        feedEntryReaderMessageSource.afterPropertiesSet();
+        feedEntryReaderMessageSource.start();
 
-    public void setFeedReaderMessageSource(final FeedReaderMessageSource feedReaderMessageSource) {
-        this.feedReaderMessageSource = feedReaderMessageSource;
+        while (true) {
+            Message<SyndEntry> entries = feedEntryReaderMessageSource.receive();
+
+            if (entries != null) {
+
+            }
+        }
     }
 
     public String getFeedUrl() {
@@ -133,14 +152,6 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
 
     public void setFeedUrl(final String feedUrl) {
         this.feedUrl = feedUrl;
-    }
-
-    public URL getFeedUrlObject() {
-        return feedUrlObject;
-    }
-
-    public void setFeedUrlObject(final URL feedUrlObject) {
-        this.feedUrlObject = feedUrlObject;
     }
 
     public long getMaximumBacklogCacheSize() {
