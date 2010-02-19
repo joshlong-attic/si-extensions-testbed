@@ -36,6 +36,9 @@
     <modules>
         <module>pingfm4j</module>
         <module>siweb</module>
+
+        <module>sesia_smack_jabber_api_3_1_0</module>
+
         <module>springintegration</module>
     </modules>
     <dependencyManagement>
