@@ -172,7 +172,8 @@ public class OutgoingFileTransfer extends FileTransfer {
 				}
 			}
 		}, "File Transfer Negotiation " + streamID);
-		transferThread.start();
+		this.getExecutor().execute(
+        transferThread);//.start();
 	}
 
 	private void checkTransferThread() {
@@ -252,7 +253,8 @@ public class OutgoingFileTransfer extends FileTransfer {
 				}
 
 		}, "File Transfer " + streamID);
-		transferThread.start();
+	//	transferThread.start();
+        this.getExecutor().execute(transferThread);
 	}
 
     /**
@@ -311,7 +313,7 @@ public class OutgoingFileTransfer extends FileTransfer {
 				}
 
 		}, "File Transfer " + streamID);
-		transferThread.start();
+		this.getExecutor().execute(transferThread);
 	}
 
 	private void handleXMPPException(XMPPException e) {

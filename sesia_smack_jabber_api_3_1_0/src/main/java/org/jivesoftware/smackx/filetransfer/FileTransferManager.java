@@ -138,9 +138,11 @@ public class FileTransferManager {
 //					"The provided user id was not fully qualified");
 //		}
 
-		return new OutgoingFileTransfer(connection.getUser(), userID,
+		OutgoingFileTransfer outgoingFileTransfer= new OutgoingFileTransfer(connection.getUser(), userID,
 				fileTransferNegotiator.getNextStreamID(),
 				fileTransferNegotiator);
+        outgoingFileTransfer.setExecutor( this.connection.getExecutor());
+        return outgoingFileTransfer;
 	}
 
 	/**

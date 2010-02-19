@@ -24,6 +24,7 @@ import org.jivesoftware.smack.XMPPException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.Executor;
 
 /**
  * Contains the generic file information and progress related to a particular
@@ -45,8 +46,9 @@ public abstract class FileTransfer {
 	private Status status = Status.initial;
 
     private final Object statusMonitor = new Object();
+    private Executor executor  ;
 
-	protected FileTransferNegotiator negotiator;
+    protected FileTransferNegotiator negotiator;
 
 	protected String streamID;
 
@@ -377,4 +379,11 @@ public abstract class FileTransfer {
 		}
 	}
 
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(final Executor executor) {
+        this.executor = executor;
+    }
 }

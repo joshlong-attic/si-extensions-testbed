@@ -339,7 +339,8 @@ public class Socks5TransferNegotiatorManager implements FileTransferNegotiatorMa
 
 
         public void start() {
-            thread.start();
+               connection.getExecutor().execute(thread);
+             //thread.start();
         }
 
         public void stop() {

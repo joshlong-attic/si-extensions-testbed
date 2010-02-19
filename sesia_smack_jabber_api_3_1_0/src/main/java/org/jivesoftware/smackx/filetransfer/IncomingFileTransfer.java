@@ -166,7 +166,8 @@ public class IncomingFileTransfer extends FileTransfer {
                 }
             }
         }, "File Transfer " + streamID);
-        transferThread.start();
+        this.getExecutor().execute(transferThread );
+//        transferThread.start();
         //  this.recieveRequest.getStreamInitiation().get
     }
 

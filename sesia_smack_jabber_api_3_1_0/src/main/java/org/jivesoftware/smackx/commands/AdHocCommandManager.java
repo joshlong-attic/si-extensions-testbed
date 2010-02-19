@@ -477,7 +477,7 @@ public class AdHocCommandManager {
                     executingCommands.put(sessionId, command);
                     // See if the session reaping thread is started. If not, start it.
                     if (!sessionsSweeper.isAlive()) {
-                        sessionsSweeper.start();
+                        connection.getExecutor().execute( sessionsSweeper); ///sessionsSweeper.start();
                     }
                 }
 
