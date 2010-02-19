@@ -25,6 +25,8 @@ import org.springframework.integration.endpoint.AbstractEndpoint;
 import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -33,11 +35,12 @@ import java.io.File;
 public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitoringEndpoint.class);
     private final MessageChannelTemplate channelTemplate = new MessageChannelTemplate();
-    private transient MessageChannel requestChannel;
-    private transient NativeFileSystemMonitor nativeFileSystemMonitor;
-    private transient Resource directory;
-    private transient boolean autoCreateDirectory;
-    private transient int maxQueuedValue;
+    private volatile MessageChannel requestChannel;
+    private volatile NativeFileSystemMonitor nativeFileSystemMonitor;
+    private volatile  Resource directory;
+    private volatile boolean autoCreateDirectory;
+    private volatile int maxQueuedValue;
+    private volatile Executor executor = Executors.newSingleThreadExecutor();
 
     public Resource getDirectory() {
         return directory;
@@ -79,7 +82,7 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     @Override
     protected void doStart() {
         try {
-            new Thread(
+          executor .execute(
                     new Runnable() {
                         public void run() {
                             nativeFileSystemMonitor.monitor(
@@ -91,7 +94,7 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
                                         }
                                     });
                         }
-                    }).start();
+                    });//.start();
         }
         catch (Throwable th) {
             throw new RuntimeException(th);
