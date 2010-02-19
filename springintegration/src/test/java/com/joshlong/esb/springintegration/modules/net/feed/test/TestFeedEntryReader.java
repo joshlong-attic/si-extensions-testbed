@@ -25,8 +25,8 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@ContextConfiguration(locations = {"/net/feed/test_inbound_feeds.xml"})
-public class TestFeedReader extends AbstractJUnit4SpringContextTests {
+@ContextConfiguration(locations = {"/net/feed/test_inbound_feed_entries.xml"})
+public class TestFeedEntryReader extends AbstractJUnit4SpringContextTests {
     @Test
     public void testItGood() throws Throwable {
         if (System.in.read() <= 0) {

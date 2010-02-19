@@ -47,7 +47,6 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     private volatile FeedReaderMessageSource feedReaderMessageSource;
     private volatile boolean running;
     private String feedUrl;
-    // private URL feedUrlObject;
     private Queue<SyndEntry> entries;
     private long maximumBacklogCacheSize = -1;
 

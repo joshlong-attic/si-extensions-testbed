@@ -38,19 +38,19 @@
     <context:component-scan base-package="com.joshlong.esb.springintegration.modules.net.feed"/>
 
 
-    <channel id="inboundEntriesChannel"/>
+    <channel id="inboundFeedChannel"/>
 
 
-    <feed:inbound-channel-adapter backlog-cache-size="1000"
+    <feed:inbound-channel-adapter prefer-updated-feed-to-entries="true"
                                   feed="http://twitter.com/statuses/public_timeline.atom"
-                                  channel="inboundEntriesChannel">
+                                  channel="inboundFeedChannel">
         <poller>
             <interval-trigger interval="1000"/>
         </poller>
     </feed:inbound-channel-adapter>
 
 
-    <service-activator ref="feedUpdatedAnnouncer" method="announceEntry" input-channel="inboundEntriesChannel"/>
+    <service-activator ref="feedUpdatedAnnouncer" method="announceFeed" input-channel="inboundFeedChannel"/>
 
 
 </beans:beans>

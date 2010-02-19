@@ -17,8 +17,8 @@
 package com.joshlong.esb.springintegration.modules.net.feed;
 
 import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
 import org.apache.log4j.Logger;
-import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,8 +28,12 @@ import org.springframework.stereotype.Component;
 public class FeedUpdatedAnnouncer {
     private static final Logger logger = Logger.getLogger(FeedUpdatedAnnouncer.class);
 
-    @ServiceActivator
-    public void announce(SyndEntry entry) {
+    public void announceFeed(SyndFeed feed) {
+        logger.debug(String.format("feed.url=%s", feed.getUri()));
+
+    }
+
+    public void announceEntry(SyndEntry entry) {
 
         logger.debug(String.format("received entry with uri: %s and title:%s and contents: %s",
                                    entry.getUri(), entry.getTitle(), entry.getContents().toString()
