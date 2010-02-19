@@ -45,6 +45,8 @@ import java.security.Security;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -79,8 +81,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * you can use {@link #connect()} to manually connect to the server.
  *
  * @author Matt Tucker
+ * @author <a href="josh@joshlong.com">Josh Long </a>
+ *
  */
 public class XMPPConnection {
+
+    /**
+     * Adding an {@link java.util.concurrent.Executor} that all components should delegate to
+     */
+    private  volatile Executor executor =  Executors.newFixedThreadPool(100) ;
 
     /**
      * Value that indicates whether debugging is enabled. When enabled, a debug
@@ -1394,6 +1403,18 @@ public class XMPPConnection {
         synchronized (this) {
             this.notify();
         }
+    }
+
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(final Executor executor) {
+        this.executor = executor;
+    }
+
+    private void initializeExecutorIfNecessary() {
+    if(getExecutor() == null) this.setExecutor(  Executors.newFixedThreadPool(10));
     }
 
     /**

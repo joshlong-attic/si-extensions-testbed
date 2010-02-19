@@ -180,7 +180,7 @@ class PacketWriter {
      * error occurs.
      */
     public void startup() {
-        writerThread.start();
+        this.connection.getExecutor().execute(this.writerThread);
     }
 
     /**
@@ -198,7 +198,8 @@ class PacketWriter {
             task.setThread(keepAliveThread);
             keepAliveThread.setDaemon(true);
             keepAliveThread.setName("Smack Keep Alive (" + connection.connectionCounterValue + ")");
-            keepAliveThread.start();
+            this.connection.getExecutor().execute(keepAliveThread);
+           // keepAliveThread.start();
         }
     }
 

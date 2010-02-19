@@ -20,23 +20,15 @@
 
 package org.jivesoftware.smack.sasl;
 
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.SASLAuthentication;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.util.Base64;
 
+import javax.security.auth.callback.*;
+import javax.security.sasl.*;
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.sasl.RealmCallback;
-import javax.security.sasl.RealmChoiceCallback;
-import javax.security.sasl.Sasl;
-import javax.security.sasl.SaslClient;
-import javax.security.sasl.SaslException;
+import java.util.Map;
 
 /**
  * Base class for SASL mechanisms. Subclasses must implement these methods:
@@ -146,13 +138,28 @@ public abstract class SASLMechanism implements CallbackHandler {
         if(challenge != null) {
             response = sc.evaluateChallenge(Base64.decode(challenge));
         } else {
-            response = sc.evaluateChallenge(null);
+            response = sc.evaluateChallenge(new byte[0]);
         }
 
-        String authenticationText = Base64.encodeBytes(response,Base64.DONT_BREAK_LINES);
+      /*  String authenticationText = Base64.encodeBytes(response,Base64.DONT_BREAK_LINES);
         if(authenticationText.equals("")) {
             authenticationText = "=";
         }
+
+
+
+*/
+
+
+        String authenticationText = null;
+
+       if(null!=response)
+       {
+           authenticationText = Base64.encodeBytes( response , Base64.DONT_BREAK_LINES);
+       }
+
+        if( null == authenticationText|| authenticationText.equals(""))
+      authenticationText = "=";
 
         stanza.append("<response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
         stanza.append(authenticationText);

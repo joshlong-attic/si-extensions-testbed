@@ -44,7 +44,7 @@ import java.util.concurrent.*;
 class PacketReader {
 
     private Thread readerThread;
-    private ExecutorService listenerExecutor;
+    private Executor/*Service */listenerExecutor;
 
     private XMPPConnection connection;
     private XmlPullParser parser;
@@ -81,7 +81,9 @@ class PacketReader {
 
         // Create an executor to deliver incoming packets to listeners. We'll use a single
         // thread with an unbounded queue.
-        listenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+
+        // TODO how do I make this delegate to our Executor?
+        listenerExecutor = Executors.newSingleThreadExecutor (new ThreadFactory() {
 
             public Thread newThread(Runnable runnable) {
                 Thread thread = new Thread(runnable,
@@ -89,7 +91,7 @@ class PacketReader {
                 thread.setDaemon(true);
                 return thread;
             }
-        });
+        });//*/
 
         resetParser();
     }
@@ -144,7 +146,8 @@ class PacketReader {
     public void startup() throws XMPPException {
         connectionSemaphore = new Semaphore(1);
 
-        readerThread.start();
+        this.connection.getExecutor().execute(readerThread);
+//        readerThread.start();
         // Wait for stream tag before returing. We'll wait a couple of seconds before
         // giving up and throwing an error.
         try {
@@ -188,7 +191,7 @@ class PacketReader {
         done = true;
 
         // Shut down the listener executor.
-        listenerExecutor.shutdown();
+        //listenerExecutor.();
     }
 
     /**
@@ -408,7 +411,7 @@ class PacketReader {
         }
 
         // Deliver the incoming packet to listeners.
-        listenerExecutor.submit(new ListenerNotification(packet));
+        listenerExecutor.execute(new ListenerNotification(packet));
     }
 
     private StreamError parseStreamError(XmlPullParser parser) throws IOException,
