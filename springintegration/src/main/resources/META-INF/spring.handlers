@@ -2,4 +2,4 @@ http\://www.joshlong.com/schema/integration/social/twitter=com.joshlong.esb.spri
 http\://www.joshlong.com/schema/integration/nativefs=com.joshlong.esb.springintegration.modules.nativefs.config.NativeFileSystemNamespaceHandler
 http\://www.joshlong.com/schema/integration/net/sftp=com.joshlong.esb.springintegration.modules.net.sftp.config.SFTPNamespaceHandler
 http\://www.joshlong.com/schema/integration/services/amazon/sqs=com.joshlong.esb.springintegration.modules.services.amazon.sqs.config.SQSNamespaceHandler
-
+http\://www.joshlong.com/schema/integration/net/feed=com.joshlong.esb.springintegration.modules.net.feed.config.FeedNamespaceHandler

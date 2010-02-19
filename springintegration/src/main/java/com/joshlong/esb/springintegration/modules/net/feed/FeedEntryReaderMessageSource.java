@@ -26,7 +26,6 @@ import org.springframework.integration.core.Message;
 import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
 
-import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Queue;
@@ -48,7 +47,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     private volatile FeedReaderMessageSource feedReaderMessageSource;
     private volatile boolean running;
     private String feedUrl;
-    private URL feedUrlObject;
+    // private URL feedUrlObject;
     private Queue<SyndEntry> entries;
     private long maximumBacklogCacheSize = -1;
 
@@ -64,7 +63,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
 
     public void afterPropertiesSet() throws Exception {
         assert !StringUtils.isEmpty(this.feedUrl) : "the feedUrl can't be null!";
-        this.feedUrlObject = new URL(this.feedUrl);
+        //   this.feedUrlObject = new URL(this.feedUrl);
 
         this.feedReaderMessageSource = new FeedReaderMessageSource();
         this.feedReaderMessageSource.setFeedUrl(this.feedUrl);
@@ -127,6 +126,9 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
             // however, i dont see why we cant just remove them all this component doesn't guarantee once and only once semantics. were doing our level headed best to ensure dupes arent sent
             // but if its really an issue then the user can leave {@link maximumBacklogCacheSize } at -1.
             this.receivedEntries.clear();
+            logger.debug(String.format(
+                    "the size of backlog (receivedEntries) has exceed the maximum of %s, calling receivedEntries.clear().",
+                    "" + this.maximumBacklogCacheSize));
         }
 
         if (next != null) {
@@ -169,6 +171,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
 
     public void setMaximumBacklogCacheSize(final long maximumBacklogCacheSize) {
         this.maximumBacklogCacheSize = maximumBacklogCacheSize;
+        logger.debug("backlogCacheSize=" + this.maximumBacklogCacheSize);
     }
 
     class MyComparator implements Comparator<SyndEntry> {
