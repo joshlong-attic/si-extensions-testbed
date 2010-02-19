@@ -30,11 +30,9 @@ public class FeedUpdatedAnnouncer {
 
     public void announceFeed(SyndFeed feed) {
         logger.debug(String.format("feed.url=%s", feed.getUri()));
-
     }
 
     public void announceEntry(SyndEntry entry) {
-
         logger.debug(String.format("received entry with uri: %s and title:%s and contents: %s",
                                    entry.getUri(), entry.getTitle(), entry.getContents().toString()
         ));
