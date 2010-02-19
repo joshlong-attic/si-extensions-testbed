@@ -13,6 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.commons.lang.SystemUtils;
@@ -24,18 +25,19 @@ import org.springframework.util.ErrorHandler;
 
 import java.io.File;
 
-
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  */
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String[] args) throws Throwable {
         boolean testKey = true;
-        SFTPSessionFactory factory = testKey ? sftpSessionFactory("joshlong.co    m", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22)
-                : // this wont work on your machine. get yer own!
-                sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
+        SFTPSessionFactory factory = testKey ? sftpSessionFactory("joshlong.co    m", null, "ubuntu",
+                                                                  SystemUtils.getUserHome() + "/jlongec2.pem", null, 22)
+                                             : // this wont work on your machine. get yer own!
+                                     sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
 
         String suffix = (testKey ? "key" : "pass");
         run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);
@@ -99,7 +101,12 @@ public class Main {
         */
     }
 
-    static SFTPSessionFactory sftpSessionFactory(String host, String pw, String usr, String pvKey, String pvKeyPass, int port)
+    static SFTPSessionFactory sftpSessionFactory(String host,
+                                                 String pw,
+                                                 String usr,
+                                                 String pvKey,
+                                                 String pvKeyPass,
+                                                 int port)
             throws Throwable {
         SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
         sftpSessionFactory.setPassword(pw);

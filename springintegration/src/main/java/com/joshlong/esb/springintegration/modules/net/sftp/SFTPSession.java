@@ -27,6 +27,7 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  */
 public class SFTPSession {
     private static final Logger logger = Logger.getLogger(SFTPSession.class);

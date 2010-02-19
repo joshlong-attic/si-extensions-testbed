@@ -13,6 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
@@ -25,9 +26,9 @@ import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
 
-
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  */
 public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitoringEndpoint.class);
@@ -91,7 +92,8 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
                                     });
                         }
                     }).start();
-        } catch (Throwable th) {
+        }
+        catch (Throwable th) {
             throw new RuntimeException(th);
         }
     }
@@ -108,7 +110,8 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
             channelTemplate.afterPropertiesSet();
-        } catch (Throwable th) {
+        }
+        catch (Throwable th) {
             throw new RuntimeException(th);
         }
     }

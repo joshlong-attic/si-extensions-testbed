@@ -13,6 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -33,9 +34,9 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.concurrent.ScheduledFuture;
 
-
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  */
 public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/ {
     private static final Logger logger = Logger.getLogger(SFTPInboundSynchronizer.class);
@@ -62,7 +63,8 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
         if (!localDir.exists()) {
             if (autoCreatePath) {
                 if (!localDir.mkdirs()) {
-                    throw new RuntimeException(String.format("couldn't create localDirectory %s", this.localDirectory.getFile().getAbsolutePath()));
+                    throw new RuntimeException(String.format("couldn't create localDirectory %s",
+                                                             this.localDirectory.getFile().getAbsolutePath()));
                 }
             }
         }
@@ -165,9 +167,11 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
                     copyFromRemoteToLocalDirectory(session, lsEntry, this.localDirectory);
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new MessagingException("couldn't synchronize remote to local directory", e);
-        } finally {
+        }
+        finally {
             if (session != null && pool != null) {
                 pool.release(session);
             }
@@ -180,6 +184,7 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
      * to create it. Otherwise, it fails fast.
      *
      * @param rPath the path on the remote SSH / SFTP server to create.
+     *
      * @return whether or not the directory is there (regardless of whether we created it in this method or it already
      *         existed.)
      */
@@ -197,8 +202,11 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
             assert attrs != null && attrs.isDir() : "attrs can't be null, and should indicate that it's a directory!";
 
             return true;
-        } catch (Throwable th) {
-            logger.debug("exception throwing when trying to verify the presence of the remote rPath '" + rPath + "'. Will try to create the directory.", th);
+        }
+        catch (Throwable th) {
+            logger.debug(
+                    "exception throwing when trying to verify the presence of the remote rPath '" + rPath + "'. Will try to create the directory.",
+                    th);
 
             if (this.autoCreatePath && pool != null && session != null) {
                 try {
@@ -211,11 +219,13 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
                             return true;
                         }
                     }
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     return false;
                 }
             }
-        } finally {
+        }
+        finally {
             if (pool != null && session != null) {
                 pool.release(session);
             }
@@ -225,9 +235,12 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
     }
 
     @SuppressWarnings("ignored")
-    private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession, ChannelSftp.LsEntry entry, Resource localDir)
+    private boolean copyFromRemoteToLocalDirectory(SFTPSession sftpSession,
+                                                   ChannelSftp.LsEntry entry,
+                                                   Resource localDir)
             throws Exception {
-        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s", remotePath, entry.getFilename(), localDir.getFile().getAbsolutePath()));
+        logger.debug(String.format("attempting to sync remote file %s/%s to local file %s", remotePath,
+                                   entry.getFilename(), localDir.getFile().getAbsolutePath()));
 
         File fileForLocalDir = localDir.getFile();
 
@@ -249,18 +262,23 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
                 if (tmpLocalTarget.renameTo(localFile)) {
                     // last step
                     if (isShouldDeleteDownloadedRemoteFiles()) {
-                        logger.debug(String.format("isShouldDeleteDownloadedRemoteFiles == true; " + "attempting to remove remote path '%s'", remoteFqPath));
+                        logger.debug(String.format(
+                                "isShouldDeleteDownloadedRemoteFiles == true; " + "attempting to remove remote path '%s'",
+                                remoteFqPath));
                         sftpSession.getChannel().rm(remoteFqPath);
                     }
                 }
 
                 return true;
-            } catch (Throwable th) {
+            }
+            catch (Throwable th) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(fos);
             }
-        } else {
-            logger.debug(String.format("local file %s already exists. Not re-downloading it.", localFile.getAbsolutePath()));
+        }
+        else {
+            logger.debug(String.format("local file %s already exists. Not re-downloading it.",
+                                       localFile.getAbsolutePath()));
 
             return true;
         }
@@ -276,7 +294,8 @@ public class SFTPInboundSynchronizer implements InitializingBean /*, Lifecycle*/
         public void run() {
             try {
                 synchronize();
-            } catch (Throwable e) {
+            }
+            catch (Throwable e) {
                 logger.debug("couldn't invoke synchronize()", e);
             }
         }

@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * it's been updated, then we can add the item to the {@link java.util.Queue} implementation. lol
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  */
 public class FeedReaderMessageSource implements InitializingBean, Lifecycle, MessageSource<SyndFeed> {
     private static final Logger logger = Logger.getLogger(FeedReaderMessageSource.class);
