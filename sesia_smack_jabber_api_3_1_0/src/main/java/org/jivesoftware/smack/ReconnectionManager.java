@@ -132,7 +132,8 @@ public class ReconnectionManager implements ConnectionListener {
             };
             reconnectionThread.setName("Smack Reconnection Manager");
             reconnectionThread.setDaemon(true);
-            reconnectionThread.start();
+            //reconnectionThread.start();
+            this.connection.getExecutor().execute(reconnectionThread);
         }
     }
 

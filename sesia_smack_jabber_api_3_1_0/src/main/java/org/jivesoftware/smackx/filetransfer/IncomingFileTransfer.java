@@ -167,6 +167,7 @@ public class IncomingFileTransfer extends FileTransfer {
             }
         }, "File Transfer " + streamID);
         transferThread.start();
+        //  this.recieveRequest.getStreamInitiation().get
     }
 
     private void handleXMPPException(XMPPException e) {
