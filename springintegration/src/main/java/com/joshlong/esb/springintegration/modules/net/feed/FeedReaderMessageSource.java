@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * The idea behind this class is that {@link org.springframework.integration.message.MessageSource#receive()} will only
  * return a {@link SyndFeed} when the event listener tells us that a feed has been updated. If we can ascertain that
- * it's been updated, then we can add the item to the {@link java.util.Queue} implementation. lol
+ * it's been updated, then we can add the item to the {@link java.util.Queue} implementation.
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
