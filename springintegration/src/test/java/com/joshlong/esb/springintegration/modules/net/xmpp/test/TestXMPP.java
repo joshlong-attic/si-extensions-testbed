@@ -48,7 +48,7 @@ public class TestXMPP extends AbstractJUnit4SpringContextTests {
                         logger.debug("thread's done waiting! Disconnecting!");
                         xmppConnection.disconnect();
                         connected = false;
-                        Assert.assertTrue("the connection should have been made by now", !xmppConnection.isConnected());
+                        Assert.assertTrue("the connection should have been cut by now", !xmppConnection.isConnected());
                     }
                 });
     }
