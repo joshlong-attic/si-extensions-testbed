@@ -36,18 +36,15 @@
 						http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
 
     <context:component-scan base-package="com.joshlong.esb.springintegration.modules.net.xmpp"/>
-        <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
                 p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
 
-    <channel id="inboundXMPPMessages"/>
-    <channel id="errorChannel"/>
+    <channel id="xmppInbound"/>
 
-    <!--"talk.google.com", 5222, "gmail.com", "resource",
-                                                      "PLAIN", 0);
-                                                      -->
-    <xmpp:xmpp-inbound-endpoint channel="inboundXMPPMessages"
-                                user="shaunandjoshseogenie@gmail.com"
-                                password="cowbell08"
+    <xmpp:xmpp-inbound-endpoint channel="xmppInbound"
+                                user="${test.smack.user}"
+                                password="${test.smack.password}}"
                                 host="talk.google.com" port="5222"
                                 resource="resource"
                                 sasl-mechanism-supported="PLAIN"
@@ -55,22 +52,7 @@
                                 service-name="gmail.com"/>
 
 
-    <service-activator input-channel="inboundXMPPMessages" ref="XMPPAnnouncer"/>
+    <service-activator input-channel="xmppInbound" ref="XMPPAnnouncer"/>
 
-    <!--  <sftp:inbound-channel-adapter
-            key-file="/home/jlong/jlongec2.pem"
-            remote-directory="/home/ubuntu/remote_mount_key"
-            auto-create-directories="true"
-            channel="inboundFilesChannel"
-            username="ubuntu"
-            host="joshlong.com">
-        <poller>
-            <interval-trigger interval="10"/>
-        </poller>
-    </sftp:inbound-channel-adapter>
--->
-
-    <!--<service-activator input-channel="inboundFilesChannel" ref="sftpFileAnnouncer"/>-->
-     <service-activator ref="errorAnnouncer" input-channel="errorChannel"/>
 
 </beans:beans>

@@ -1,13 +1,10 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp.config;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
-
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
-
 import org.w3c.dom.Element;
 
 
@@ -36,12 +33,12 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
      * @param parserContext
      */
     private static void configureXMPPConnection(Element elementForXmppConnectionAttrs, BeanDefinitionBuilder targetBuilder, ParserContext parserContext) {
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(com.joshlong.esb.springintegration.modules.net.xmpp.XMPPConnectionFactory.class);
+        BeanDefinitionBuilder builder = targetBuilder;// BeanDefinitionBuilder.genericBeanDefinition(com.joshlong.esb.springintegration.modules.net.xmpp.XMPPConnectionFactory.class);
         for (String attr : "user,password,host,service-name,resource,sasl-mechanism-supported,sasl-mechanism-supported-index,port".split(",")) {
             IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, elementForXmppConnectionAttrs, attr);
         }
-        String registeredBean = BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
-        targetBuilder.addPropertyValue("xmppConnection", registeredBean);
+       // String registeredBean = BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
+      //  targetBuilder.addPropertyValue("xmppConnection", registeredBean);
     }
 
     private static class XMPPInboundEndpointParser extends AbstractSingleBeanDefinitionParser {
