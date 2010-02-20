@@ -16,6 +16,11 @@ import org.springframework.integration.message.MessageBuilder;
 
 
 /**
+ *
+ *
+ * TODO rework this so that instead of injecting a bean we just configure it in place in this bean to see if that works 
+ *
+ *
  * this message source logs in as a user and forwards any messages <em>to</em> that user on to downstream components.
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -26,7 +31,6 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
     private final MessageChannelTemplate channelTemplate;
     private volatile MessageChannel requestChannel;
     private volatile XMPPConnection xmppConnection;
-
 
     public XMPPMessageEndpoint() {
         channelTemplate = new MessageChannelTemplate();
@@ -48,6 +52,8 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
 
     @Override
     protected void doStart() {
+        logger.debug("start ");
+        logger.debug("start: " + xmppConnection.isConnected() + ":" + xmppConnection.isAuthenticated());
     }
 
     public XMPPConnection getXmppConnection() {
@@ -55,29 +61,10 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
     }
 
     public void setXmppConnection(final XMPPConnection xmppConnection) {
-        logger.debug("xmppConnection="+ xmppConnection);
+        logger.debug("xmppConnection=" + ToStringBuilder.reflectionToString(xmppConnection));
         this.xmppConnection = xmppConnection;
-    }
-
-    @Override
-    protected void doStop() {
-        if (xmppConnection.isConnected()) {
-         //   xmppConnection.disconnect();
-        }
-    }
-
-    @Override
-    protected void onInit() throws Exception {
-        assert xmppConnection != null : "the xmppCnnection shouldn't be null";
-        channelTemplate.afterPropertiesSet();
-
-        logger.debug(
-                xmppConnection.isConnected() + ":" +
-                xmppConnection. isAuthenticated());
-        do{
-        Thread.sleep(100);
-        } while(!xmppConnection.isConnected() || !xmppConnection.isAuthenticated());
-
+        logger.debug("setXMPPConnection: " + xmppConnection.isConnected() + ":" + xmppConnection.isAuthenticated());
+        logger.debug("XMPPMessageEndpoint: thread ID :" + Thread.currentThread().getId());
         ChatManager chatManager = xmppConnection.getChatManager();
         chatManager.addChatListener(new ChatManagerListener() {
                 public void chatCreated(final Chat chat, final boolean createdLocally) {
@@ -89,5 +76,20 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
                         });
                 }
             });
+    }
+
+    @Override
+    protected void doStop() {
+        //  if (xmppConnection.isConnected()) {
+        //   xmppConnection.disconnect();
+        // }
+    }
+
+    @Override
+    protected void onInit() throws Exception {
+        assert xmppConnection != null : "the xmppCnnection shouldn't be null";
+        channelTemplate.afterPropertiesSet();
+
+        logger.debug("Init:" + xmppConnection.isConnected() + ":" + xmppConnection.isAuthenticated());
     }
 }

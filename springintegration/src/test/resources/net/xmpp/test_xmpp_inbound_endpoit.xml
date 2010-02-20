@@ -40,13 +40,17 @@
                 p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
 
     <channel id="inboundXMPPMessages"/>
+    <channel id="errorChannel"/>
 
     <!--"talk.google.com", 5222, "gmail.com", "resource",
                                                       "PLAIN", 0);
                                                       -->
-    <xmpp:xmpp-inbound-endpoint channel="inboundXMPPMessages" user="${test.smack.user}"
-                                password="${test.smack.pw}"
-                                host="talk.google.com" port="5222" resource="resource" sasl-mechanism-supported="PLAIN"
+    <xmpp:xmpp-inbound-endpoint channel="inboundXMPPMessages"
+                                user="shaunandjoshseogenie@gmail.com"
+                                password="cowbell08"
+                                host="talk.google.com" port="5222"
+                                resource="resource"
+                                sasl-mechanism-supported="PLAIN"
                                 sasl-mechanism-supported-index="0"
                                 service-name="gmail.com"/>
 
@@ -67,6 +71,6 @@
 -->
 
     <!--<service-activator input-channel="inboundFilesChannel" ref="sftpFileAnnouncer"/>-->
-
+     <service-activator ref="errorAnnouncer" input-channel="errorChannel"/>
 
 </beans:beans>

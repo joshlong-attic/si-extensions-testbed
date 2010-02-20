@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
@@ -101,6 +100,8 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
                                                                  this.getSaslMechanismSupported(),
                                                                  this.getSaslMechanismSupportedIndex());
 
+        logger.debug("creating instance:: connected=" + xmppConnection.isConnected()+", authorized="+xmppConnection.isAuthenticated());
+         logger.debug( "XMPPConnectonFactory: thread ID :" +Thread.currentThread().getId());
         return xmppConnection;
     }
 
