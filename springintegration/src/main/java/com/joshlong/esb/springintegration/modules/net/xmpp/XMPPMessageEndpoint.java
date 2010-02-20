@@ -72,7 +72,7 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
 
     @Override
     protected void onInit() throws Exception {
-        assert xmppConnection != null : "the xmppCnnection shouldn't be null";
+     //   assert xmppConnection != null : "the xmppCnnection shouldn't be null";
         channelTemplate.afterPropertiesSet();
 
         XMPPConnectionFactory xmppConnectionFactory = new XMPPConnectionFactory(this.getUser(), this.getPassword(), this.getHost(), this.getServiceName(), this.getResource(),
