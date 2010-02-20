@@ -3,4 +3,5 @@ http\://www.joshlong.com/schema/integration/nativefs/joshlong-nativefs-1.0.xsd=c
 http\://www.joshlong.com/schema/integration/net/sftp/joshlong-sftp-1.0.xsd=com/joshlong/esb/springintegration/modules/net/sftp/config/joshlong-sftp-1.0.xsd
 http\://www.joshlong.com/schema/integration/services/amazon/sqs/joshlong-sqs2-1.0.xsd=com/joshlong/esb/springintegration/modules/services/amazon/sqs/config/joshlong-sqs2-1.0.xsd
 http\://www.joshlong.com/schema/integration/net/feed/joshlong-feed-1.0.xsd=com/joshlong/esb/springintegration/modules/net/feed/config/joshlong-feed-1.0.xsd
+http\://www.joshlong.com/schema/integration/net/xmpp/joshlong-xmpp-1.0.xsd=com/joshlong/esb/springintegration/modules/net/xmpp/config/joshlong-xmpp-1.0.xsd
 

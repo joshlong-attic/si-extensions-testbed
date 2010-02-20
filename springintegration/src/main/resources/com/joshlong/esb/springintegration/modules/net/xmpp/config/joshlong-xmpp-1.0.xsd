@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2010 the original author or authors
+  ~
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
+  -->
+
+<xsd:schema xmlns="http://www.joshlong.com/schema/integration/net/xmpp"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            xmlns:integration="http://www.springframework.org/schema/integration"
+            targetNamespace="http://www.joshlong.com/schema/integration/net/xmpp"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool"/>
+    <xsd:import namespace="http://www.springframework.org/schema/integration"
+                schemaLocation="http://www.springframework.org/schema/integration/spring-integration-1.0.xsd"/>
+
+    <!--
+    This defines the beans we have for working with Twitter
+
+    native-fs-event-driven-endpoint
+    -->
+
+
+    <xsd:element name="xmpp-inbound-endpoint">
+        <xsd:annotation>
+            <xsd:documentation>
+                Configures an endpoint that will receive messages sent to a given XMPP user's account and then forward those messages onto the bus
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+
+            <xsd:attribute name="id" type="xsd:string"/>
+            <xsd:attribute name="channel" use="required" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="user" type="xsd:string"  use="required" />
+            <xsd:attribute name="password" type="xsd:string" use="required"/>
+            <xsd:attribute name="host" type="xsd:string"  use="required"/>
+            <xsd:attribute name="service-name" type="xsd:string"  use="optional" />
+            <xsd:attribute name="resource" type="xsd:string"  use="optional"/>
+            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string" use="optional" />
+            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"  use="optional"/>
+            <xsd:attribute name="port" type="xsd:int"  use="required"/>
+
+
+        </xsd:complexType>
+    </xsd:element>
+    <!--
+
+        <xsd:element name="inbound-channel-adapter">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Configures an inbound channel adapter that consumes mesages from twitter and sends Messages whose
+                    payloads are Tweet objects.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="integration:poller" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+                <xsd:attribute name="id" type="xsd:string"/>
+                <xsd:attribute name="channel" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <tool:annotation kind="ref">
+                                <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                            </tool:annotation>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="username" type="xsd:string" use="required"/>
+                <xsd:attribute name="password" type="xsd:string" use="required"/>
+            </xsd:complexType>
+        </xsd:element>
+    -->
+
+
+</xsd:schema>

@@ -16,9 +16,7 @@ import java.util.concurrent.Executors;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-/*@ContextConfiguration(locations =  {
-    "/net/xmpp/test_xmpp.xml"}
-)*/
+
 public class TestXMPP /*extends AbstractJUnit4SpringContextTests*/ {
     private static final Logger logger = Logger.getLogger(TestXMPP.class);
     private String user;

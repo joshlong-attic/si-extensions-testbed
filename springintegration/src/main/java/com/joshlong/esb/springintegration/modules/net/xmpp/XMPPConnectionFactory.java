@@ -34,6 +34,11 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
                                                String resource,
                                                String saslMechanismSupported,
                                                int saslMechanismSupportedIndex) {
+
+
+        logger.debug(String.format("usr=%s, pw=%s, host=%s, port=%s, serviceName=%s, resource=%s, saslMechanismSupported=%s, saslMechanismSupportedIndex=%s",
+                                   usr,pw,host,port,serviceName,resource, saslMechanismSupported,saslMechanismSupportedIndex ));
+
         ConnectionConfiguration cc = new ConnectionConfiguration(host, port, serviceName);
         XMPPConnection connection = new XMPPConnection(cc);
 
