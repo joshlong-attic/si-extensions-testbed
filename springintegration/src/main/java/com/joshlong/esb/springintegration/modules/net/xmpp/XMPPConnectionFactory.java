@@ -61,7 +61,7 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
             // See if you are authenticated
             logger.debug("authenticated? " + connection.isAuthenticated());
         }
-        catch (XMPPException e1) {
+        catch ( Throwable e1) {
             logger.debug("exception occurred trying to connnect", e1);
         }
 

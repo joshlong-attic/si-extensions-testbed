@@ -7,8 +7,6 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 
-import org.springframework.beans.factory.InitializingBean;
-
 import org.springframework.context.Lifecycle;
 
 import org.springframework.integration.channel.MessageChannelTemplate;
@@ -23,20 +21,12 @@ import org.springframework.integration.message.MessageBuilder;
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  * @see {@link org.jivesoftware.smack.XMPPConnection} the xmpconnection classs
  */
-public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle, InitializingBean {
+public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
     static private Logger logger = Logger.getLogger(XMPPMessageEndpoint.class);
     private final MessageChannelTemplate channelTemplate;
     private volatile MessageChannel requestChannel;
     private volatile XMPPConnection xmppConnection;
-    private volatile XMPPConnectionFactory xmppConnectionFactory ;
 
-    public XMPPConnectionFactory getXmppConnectionFactory() {
-        return xmppConnectionFactory;
-    }
-
-    public void setXmppConnectionFactory(final XMPPConnectionFactory xmppConnectionFactory) {
-        this.xmppConnectionFactory = xmppConnectionFactory;
-    }
 
     public XMPPMessageEndpoint() {
         channelTemplate = new MessageChannelTemplate();
@@ -51,25 +41,13 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle, 
         this.requestChannel = requestChannel;
     }
 
-    private void send(Chat chat, Message msg) {
+    private void forwardInboundXMPPMessageToSI(Chat chat, Message msg) {
         org.springframework.integration.core.Message<Message> xmppSIMsg = MessageBuilder.withPayload(msg).setHeader(XMPPConstants.CHAT, chat).build();
         channelTemplate.send(xmppSIMsg, requestChannel);
     }
 
     @Override
     protected void doStart() {
-        ChatManager chatManager = xmppConnection.getChatManager();
-        chatManager.addChatListener(new ChatManagerListener() {
-                public void chatCreated(final Chat chat, final boolean createdLocally) {
-                    chat.addMessageListener(new MessageListener() {
-                            public void processMessage(final Chat chat, final Message message) {
-                                logger.debug(String.format("%s says %s. Message toString() = %s",
-                            chat.getParticipant(), message.getBody(), ToStringBuilder.reflectionToString(message)));
-                                send(chat, message);
-                            }
-                        });
-                }
-            });
     }
 
     public XMPPConnection getXmppConnection() {
@@ -77,13 +55,14 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle, 
     }
 
     public void setXmppConnection(final XMPPConnection xmppConnection) {
+        logger.debug("xmppConnection="+ xmppConnection);
         this.xmppConnection = xmppConnection;
     }
 
     @Override
     protected void doStop() {
         if (xmppConnection.isConnected()) {
-            xmppConnection.disconnect();
+         //   xmppConnection.disconnect();
         }
     }
 
@@ -91,5 +70,24 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle, 
     protected void onInit() throws Exception {
         assert xmppConnection != null : "the xmppCnnection shouldn't be null";
         channelTemplate.afterPropertiesSet();
+
+        logger.debug(
+                xmppConnection.isConnected() + ":" +
+                xmppConnection. isAuthenticated());
+        do{
+        Thread.sleep(100);
+        } while(!xmppConnection.isConnected() || !xmppConnection.isAuthenticated());
+
+        ChatManager chatManager = xmppConnection.getChatManager();
+        chatManager.addChatListener(new ChatManagerListener() {
+                public void chatCreated(final Chat chat, final boolean createdLocally) {
+                    chat.addMessageListener(new MessageListener() {
+                            public void processMessage(final Chat chat, final Message message) {
+                                logger.debug(String.format("%s says %s. Message toString() = %s", chat.getParticipant(), message.getBody(), ToStringBuilder.reflectionToString(message)));
+                                forwardInboundXMPPMessageToSI(chat, message);
+                            }
+                        });
+                }
+            });
     }
 }

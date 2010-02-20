@@ -44,8 +44,8 @@
     <!--"talk.google.com", 5222, "gmail.com", "resource",
                                                       "PLAIN", 0);
                                                       -->
-    <xmpp:xmpp-inbound-endpoint channel="inboundXMPPMessages" user="${xmpp.test.smack.user}"
-                                password="${xmpp.test.smack.pw}"
+    <xmpp:xmpp-inbound-endpoint channel="inboundXMPPMessages" user="${test.smack.user}"
+                                password="${test.smack.pw}"
                                 host="talk.google.com" port="5222" resource="resource" sasl-mechanism-supported="PLAIN"
                                 sasl-mechanism-supported-index="0"
                                 service-name="gmail.com"/>

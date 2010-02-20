@@ -24,12 +24,13 @@
     </parent>
     <artifactId>springintegration</artifactId>
     <name>springintegration</name>
-    <dependencies>   <dependency>
-
-                 <groupId>jivesoftware</groupId>
-    <artifactId>smack</artifactId>
-
-            </dependency>
+    <dependencies>
+        <dependency>   <groupId>jivesoftware</groupId>
+    <artifactId>smackx</artifactId></dependency>
+        <dependency>
+            <groupId>jivesoftware</groupId>
+            <artifactId>smack</artifactId>
+        </dependency>
         <dependency>
             <groupId>rome</groupId>
             <artifactId>rome</artifactId>
