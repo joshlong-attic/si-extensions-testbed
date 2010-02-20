@@ -1,5 +1,7 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp.config;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
@@ -17,28 +19,47 @@ import org.w3c.dom.Element;
 @SuppressWarnings("unused")
 public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
     static private final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.net.xmpp";
+    static private Logger logger = Logger.getLogger( XMPPNamespaceHandler.class);
 
     public void init() {
         registerBeanDefinitionParser("xmpp-inbound-endpoint", new XMPPInboundEndpointParser());
+        registerBeanDefinitionParser("xmpp-connection", new XMPPConnectionParser());
     }
 
-    
-
-    /**
-     * This has a pre-condition that the bean being configured supports an property named xmppConnection of type {@link
-     * org.jivesoftware.smack.XMPPConnection}
-     *
-     * @param elementForXmppConnectionAttrs the element to parse
-     * @param targetBuilder                 the
-     * @param parserContext
-     */
     private static void configureXMPPConnection(Element elementForXmppConnectionAttrs, BeanDefinitionBuilder targetBuilder, ParserContext parserContext) {
-        BeanDefinitionBuilder builder = targetBuilder;// BeanDefinitionBuilder.genericBeanDefinition(com.joshlong.esb.springintegration.modules.net.xmpp.XMPPConnectionFactory.class);
-        for (String attr : "user,password,host,service-name,resource,sasl-mechanism-supported,sasl-mechanism-supported-index,port".split(",")) {
-            IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, elementForXmppConnectionAttrs, attr);
+
+        String ref = elementForXmppConnectionAttrs.getAttribute( "xmpp-connection");
+        logger.debug("ref="+ ref);
+        if (!StringUtils.isEmpty(ref)) {
+            targetBuilder.addPropertyReference("xmppConnection", ref);
+        } else {
+            for (String attr : "user,password,host,service-name,resource,sasl-mechanism-supported,sasl-mechanism-supported-index,port".split(",")) {
+                IntegrationNamespaceUtils.setValueIfAttributeDefined(targetBuilder, elementForXmppConnectionAttrs, attr);
+            }
         }
-       // String registeredBean = BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
-      //  targetBuilder.addPropertyValue("xmppConnection", registeredBean);
+    }
+
+    private static class XMPPConnectionParser extends AbstractSingleBeanDefinitionParser {
+        @Override
+        protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+            logger.debug("element = "+ element.toString());
+            configureXMPPConnection(element, builder, parserContext);
+        }
+
+        @Override
+        protected String getBeanClassName(Element element) {
+            return PACKAGE_NAME + ".XMPPConnectionFactory";
+        }
+
+        @Override
+        protected boolean shouldGenerateId() {
+            return false;
+        }
+
+        @Override
+        protected boolean shouldGenerateIdAsFallback() {
+            return true;
+        }
     }
 
     private static class XMPPInboundEndpointParser extends AbstractSingleBeanDefinitionParser {
@@ -46,7 +67,6 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
         protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
             configureXMPPConnection(element, builder, parserContext);
             IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel", "requestChannel");
-
         }
 
         @Override

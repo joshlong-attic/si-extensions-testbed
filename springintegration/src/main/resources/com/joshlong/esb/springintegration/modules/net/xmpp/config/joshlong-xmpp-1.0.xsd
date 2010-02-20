@@ -35,6 +35,29 @@
     native-fs-event-driven-endpoint
     -->
 
+        <xsd:element name="xmpp-connection">
+        <xsd:annotation>
+            <xsd:documentation>
+           Configures an XMPP connection that can in turn be referenced by other components
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+
+            <xsd:attribute name="id" type="xsd:string"/>
+
+            <xsd:attribute name="user" type="xsd:string" use="required"   />
+            <xsd:attribute name="password" type="xsd:string" use="required"   />
+            <xsd:attribute name="host" type="xsd:string" use="required"   />
+            <xsd:attribute name="service-name" type="xsd:string"    />
+            <xsd:attribute name="resource" type="xsd:string"  />
+            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"   />
+            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"   />
+            <xsd:attribute name="port" type="xsd:int" use="required"    />
+
+
+        </xsd:complexType>
+    </xsd:element>
+
 
     <xsd:element name="xmpp-inbound-endpoint">
         <xsd:annotation>
@@ -55,15 +78,24 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="user" type="xsd:string"  use="required" />
-            <xsd:attribute name="password" type="xsd:string" use="required"/>
-            <xsd:attribute name="host" type="xsd:string"  use="required"/>
-            <xsd:attribute name="service-name" type="xsd:string"  use="optional" />
-            <xsd:attribute name="resource" type="xsd:string"  use="optional"/>
-            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string" use="optional" />
-            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"  use="optional"/>
-            <xsd:attribute name="port" type="xsd:int"  use="required"/>
+            <xsd:attribute name="user" type="xsd:string"    />
+            <xsd:attribute name="password" type="xsd:string"  />
+            <xsd:attribute name="host" type="xsd:string"  />
+            <xsd:attribute name="service-name" type="xsd:string"    />
+            <xsd:attribute name="resource" type="xsd:string"  />
+            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"   />
+            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"   />
+            <xsd:attribute name="port" type="xsd:int"   />
 
+            <xsd:attribute name="xmpp-connection" type="xsd:string">
+                <xsd:annotation>
+						<xsd:appinfo>
+							<tool:annotation kind="ref">
+								<tool:expected-type type="org.jivesoftware.smack.XMPPConnection" />
+							</tool:annotation>
+						</xsd:appinfo>
+					</xsd:annotation>
+            </xsd:attribute>
 
         </xsd:complexType>
     </xsd:element>

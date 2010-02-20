@@ -42,14 +42,15 @@
 
     <channel id="xmppInbound"/>
 
-    <xmpp:xmpp-inbound-endpoint channel="xmppInbound"
-                                user="${test.smack.user}"
+    <xmpp:xmpp-connection  id="myConn" user="${test.smack.user}"
                                 password="${test.smack.password}"
                                 host="talk.google.com" port="5222"
                                 resource="resource"
                                 sasl-mechanism-supported="PLAIN"
                                 sasl-mechanism-supported-index="0"
                                 service-name="gmail.com"/>
+
+    <xmpp:xmpp-inbound-endpoint channel="xmppInbound" xmpp-connection="myConn" />
 
 
     <service-activator input-channel="xmppInbound" ref="XMPPAnnouncer"/>
