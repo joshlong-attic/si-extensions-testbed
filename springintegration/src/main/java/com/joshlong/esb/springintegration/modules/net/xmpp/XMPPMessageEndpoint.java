@@ -1,14 +1,9 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.apache.log4j.Logger;
-
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
-
 import org.springframework.context.Lifecycle;
-
 import org.springframework.integration.channel.MessageChannelTemplate;
 import org.springframework.integration.core.MessageChannel;
 import org.springframework.integration.endpoint.AbstractEndpoint;
@@ -89,7 +84,7 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
                 public void chatCreated(final Chat chat, final boolean createdLocally) {
                     chat.addMessageListener(new MessageListener() {
                             public void processMessage(final Chat chat, final Message message) {
-                                logger.debug(String.format("%s says %s. Message toString() = %s", chat.getParticipant(), message.getBody(), ToStringBuilder.reflectionToString(message)));
+                              //  logger.debug(String.format("%s says %s. Message toString() = %s", chat.getParticipant(), message.getBody(), ToStringBuilder.reflectionToString(message)));
                                 forwardInboundXMPPMessageToSI(chat, message);
                             }
                         });
