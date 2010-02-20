@@ -40,7 +40,7 @@ public class NativeFileSystemMonitor {
     }
 
     private File directoryToMonitor;
-    private transient LinkedBlockingQueue<String> additions;
+    private volatile LinkedBlockingQueue<String> additions;
     private boolean autoCreateDirectory;
     private int maxQueueValue;
     private volatile Executor executor;
