@@ -1,11 +1,15 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
+
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+
 
 /**
  * This class configures an {@link org.jivesoftware.smack.XMPPConnection} object. This object is used for all scenarios
@@ -25,18 +29,24 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
     private int saslMechanismSupportedIndex;
     private int port;
 
-    private XMPPConnection configureAndConnect(String usr,
-                                               String pw,
-                                               String host,
-                                               int port,
-                                               String serviceName,
-                                               String resource,
-                                               String saslMechanismSupported,
-                                               int saslMechanismSupportedIndex) {
+    public XMPPConnectionFactory() {
+    }
 
+    public XMPPConnectionFactory(final String user, final String password, final String host, final String serviceName, final String resource, final String saslMechanismSupported,
+        final int saslMechanismSupportedIndex, final int port) {
+        this.user = user;
+        this.password = password;
+        this.host = host;
+        this.serviceName = serviceName;
+        this.resource = resource;
+        this.saslMechanismSupported = saslMechanismSupported;
+        this.saslMechanismSupportedIndex = saslMechanismSupportedIndex;
+        this.port = port;
+    }
 
-       logger.debug(String.format("usr=%s, pw=%s, host=%s, port=%s, serviceName=%s, resource=%s, saslMechanismSupported=%s, saslMechanismSupportedIndex=%s",
-                                usr,pw,host,port,serviceName,resource, saslMechanismSupported,saslMechanismSupportedIndex ));
+    private XMPPConnection configureAndConnect(String usr, String pw, String host, int port, String serviceName, String resource, String saslMechanismSupported, int saslMechanismSupportedIndex) {
+        logger.debug(String.format("usr=%s, pw=%s, host=%s, port=%s, serviceName=%s, resource=%s, saslMechanismSupported=%s, saslMechanismSupportedIndex=%s", usr, pw, host, port, serviceName,
+                resource, saslMechanismSupported, saslMechanismSupportedIndex));
 
         ConnectionConfiguration cc = new ConnectionConfiguration(host, port, serviceName);
         XMPPConnection connection = new XMPPConnection(cc);
@@ -52,15 +62,13 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
             // You have to specify your gmail addres WITH @gmail.com at the end
             if (!StringUtils.isEmpty(resource)) {
                 connection.login(usr, pw, resource);
-            }
-            else {
+            } else {
                 connection.login(usr, pw);
             }
 
             // See if you are authenticated
             logger.debug("authenticated? " + connection.isAuthenticated());
-        }
-        catch ( Throwable e1) {
+        } catch (Throwable e1) {
             logger.debug("exception occurred trying to connnect", e1);
         }
 
@@ -68,40 +76,14 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
     }
 
     @Override
-    public Class<? extends XMPPConnection> getObjectType() {
+    public Class<?extends XMPPConnection> getObjectType() {
         return XMPPConnection.class;
-    }
-
-    public XMPPConnectionFactory(){ }
-    
-    public XMPPConnectionFactory(final String user,
-                                 final String password,
-                                 final String host,
-                                 final String serviceName,
-                                 final String resource,
-                                 final String saslMechanismSupported,
-                                 final int saslMechanismSupportedIndex,
-                                 final int port) {
-        this.user = user;
-        this.password = password;
-        this.host = host;
-        this.serviceName = serviceName;
-        this.resource = resource;
-        this.saslMechanismSupported = saslMechanismSupported;
-        this.saslMechanismSupportedIndex = saslMechanismSupportedIndex;
-        this.port = port;
     }
 
     @Override
     protected XMPPConnection createInstance() throws Exception {
-        XMPPConnection xmppConnection = this.configureAndConnect(this.getUser(), this.getPassword(), this.getHost(),
-                                                                 this.getPort(), this.getServiceName(),
-                                                                 this.getResource(),
-                                                                 this.getSaslMechanismSupported(),
-                                                                 this.getSaslMechanismSupportedIndex());
-
-        logger.debug("creating instance:: connected=" + xmppConnection.isConnected()+", authorized="+xmppConnection.isAuthenticated());
-         logger.debug( "XMPPConnectonFactory: thread ID :" +Thread.currentThread().getId());
+        XMPPConnection xmppConnection = this.configureAndConnect(this.getUser(), this.getPassword(), this.getHost(), this.getPort(), this.getServiceName(), this.getResource(),
+                this.getSaslMechanismSupported(), this.getSaslMechanismSupportedIndex());
         return xmppConnection;
     }
 

@@ -24,9 +24,6 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
     private final MessageChannelTemplate channelTemplate;
     private volatile MessageChannel requestChannel;
     private volatile XMPPConnection xmppConnection;
-
-    // transplanted from the factory
-    //private static final Logger logger = Logger.getLogger(XMPPConnectionFactory.class);
     private String user;
     private String password;
     private String host;
@@ -93,7 +90,6 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
                 public void chatCreated(final Chat chat, final boolean createdLocally) {
                     chat.addMessageListener(new MessageListener() {
                             public void processMessage(final Chat chat, final Message message) {
-                                //  logger.debug(String.format("%s says %s. Message toString() = %s", chat.getParticipant(), message.getBody(), ToStringBuilder.reflectionToString(message)));
                                 forwardInboundXMPPMessageToSI(chat, message);
                             }
                         });

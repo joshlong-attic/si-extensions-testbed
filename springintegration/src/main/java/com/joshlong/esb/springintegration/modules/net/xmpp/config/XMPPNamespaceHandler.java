@@ -1,12 +1,16 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp.config;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
+
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
+
 import org.w3c.dom.Element;
 
 
@@ -19,7 +23,7 @@ import org.w3c.dom.Element;
 @SuppressWarnings("unused")
 public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
     static private final String PACKAGE_NAME = "com.joshlong.esb.springintegration.modules.net.xmpp";
-    static private Logger logger = Logger.getLogger( XMPPNamespaceHandler.class);
+    static private Logger logger = Logger.getLogger(XMPPNamespaceHandler.class);
 
     public void init() {
         registerBeanDefinitionParser("xmpp-inbound-adapter", new XMPPInboundEndpointParser());
@@ -27,9 +31,9 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
     }
 
     private static void configureXMPPConnection(Element elementForXmppConnectionAttrs, BeanDefinitionBuilder targetBuilder, ParserContext parserContext) {
+        String ref = elementForXmppConnectionAttrs.getAttribute("xmpp-connection");
+        logger.debug("ref=" + ref);
 
-        String ref = elementForXmppConnectionAttrs.getAttribute( "xmpp-connection");
-        logger.debug("ref="+ ref);
         if (!StringUtils.isEmpty(ref)) {
             targetBuilder.addPropertyReference("xmppConnection", ref);
         } else {
@@ -42,7 +46,7 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
     private static class XMPPConnectionParser extends AbstractSingleBeanDefinitionParser {
         @Override
         protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
-            logger.debug("element = "+ element.toString());
+            logger.debug("element = " + element.toString());
             configureXMPPConnection(element, builder, parserContext);
         }
 
