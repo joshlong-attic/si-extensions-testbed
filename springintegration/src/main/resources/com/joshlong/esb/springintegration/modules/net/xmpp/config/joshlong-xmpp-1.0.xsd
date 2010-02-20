@@ -29,40 +29,31 @@
     <xsd:import namespace="http://www.springframework.org/schema/integration"
                 schemaLocation="http://www.springframework.org/schema/integration/spring-integration-1.0.xsd"/>
 
-    <!--
-    This defines the beans we have for working with Twitter
-
-    native-fs-event-driven-endpoint
-    -->
-
-        <xsd:element name="xmpp-connection">
+    <xsd:element name="xmpp-connection">
         <xsd:annotation>
             <xsd:documentation>
-           Configures an XMPP connection that can in turn be referenced by other components
+                Configures an XMPP connection that can in turn be referenced by other components
             </xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
-
             <xsd:attribute name="id" type="xsd:string"/>
-
-            <xsd:attribute name="user" type="xsd:string" use="required"   />
-            <xsd:attribute name="password" type="xsd:string" use="required"   />
-            <xsd:attribute name="host" type="xsd:string" use="required"   />
-            <xsd:attribute name="service-name" type="xsd:string"    />
-            <xsd:attribute name="resource" type="xsd:string"  />
-            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"   />
-            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"   />
-            <xsd:attribute name="port" type="xsd:int" use="required"    />
-
-
+            <xsd:attribute name="user" type="xsd:string" use="required"/>
+            <xsd:attribute name="password" type="xsd:string" use="required"/>
+            <xsd:attribute name="host" type="xsd:string" use="required"/>
+            <xsd:attribute name="service-name" type="xsd:string"/>
+            <xsd:attribute name="resource" type="xsd:string"/>
+            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"/>
+            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"/>
+            <xsd:attribute name="port" type="xsd:int" use="required"/>
         </xsd:complexType>
     </xsd:element>
 
 
-    <xsd:element name="xmpp-inbound-endpoint">
+    <xsd:element name="xmpp-inbound-adapter">
         <xsd:annotation>
             <xsd:documentation>
-                Configures an endpoint that will receive messages sent to a given XMPP user's account and then forward those messages onto the bus
+                Configures an endpoint that will receive messages sent to a given XMPP user's account and then forward
+                those messages onto the bus
             </xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
@@ -78,55 +69,27 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attribute name="user" type="xsd:string"    />
-            <xsd:attribute name="password" type="xsd:string"  />
-            <xsd:attribute name="host" type="xsd:string"  />
-            <xsd:attribute name="service-name" type="xsd:string"    />
-            <xsd:attribute name="resource" type="xsd:string"  />
-            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"   />
-            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"   />
-            <xsd:attribute name="port" type="xsd:int"   />
+            <xsd:attribute name="user" type="xsd:string"/>
+            <xsd:attribute name="password" type="xsd:string"/>
+            <xsd:attribute name="host" type="xsd:string"/>
+            <xsd:attribute name="service-name" type="xsd:string"/>
+            <xsd:attribute name="resource" type="xsd:string"/>
+            <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"/>
+            <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"/>
+            <xsd:attribute name="port" type="xsd:int"/>
 
             <xsd:attribute name="xmpp-connection" type="xsd:string">
                 <xsd:annotation>
-						<xsd:appinfo>
-							<tool:annotation kind="ref">
-								<tool:expected-type type="org.jivesoftware.smack.XMPPConnection" />
-							</tool:annotation>
-						</xsd:appinfo>
-					</xsd:annotation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="org.jivesoftware.smack.XMPPConnection"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
             </xsd:attribute>
 
         </xsd:complexType>
     </xsd:element>
-    <!--
-
-        <xsd:element name="inbound-channel-adapter">
-            <xsd:annotation>
-                <xsd:documentation>
-                    Configures an inbound channel adapter that consumes mesages from twitter and sends Messages whose
-                    payloads are Tweet objects.
-                </xsd:documentation>
-            </xsd:annotation>
-            <xsd:complexType>
-                <xsd:sequence>
-                    <xsd:element ref="integration:poller" minOccurs="0" maxOccurs="1"/>
-                </xsd:sequence>
-                <xsd:attribute name="id" type="xsd:string"/>
-                <xsd:attribute name="channel" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:appinfo>
-                            <tool:annotation kind="ref">
-                                <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
-                            </tool:annotation>
-                        </xsd:appinfo>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="username" type="xsd:string" use="required"/>
-                <xsd:attribute name="password" type="xsd:string" use="required"/>
-            </xsd:complexType>
-        </xsd:element>
-    -->
 
 
 </xsd:schema>

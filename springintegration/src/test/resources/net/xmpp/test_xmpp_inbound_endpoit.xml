@@ -50,7 +50,7 @@
                                 sasl-mechanism-supported-index="0"
                                 service-name="gmail.com"/>
 
-    <xmpp:xmpp-inbound-endpoint channel="xmppInbound" xmpp-connection="myConn" />
+    <xmpp:xmpp-inbound-adapter channel="xmppInbound" xmpp-connection="myConn" />
 
 
     <service-activator input-channel="xmppInbound" ref="XMPPAnnouncer"/>
