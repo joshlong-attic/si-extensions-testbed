@@ -1,5 +1,6 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
@@ -55,6 +56,11 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
         for( Message.Body body: msg.getBodies()){
             logger.debug( body.getMessage());            
         }
+
+        // todo is this a valid thing to do?
+        if( msg.getBodies()==null||msg.getBodies().size()==0|| StringUtils.isEmpty(msg.getBody()))
+        return ;
+
         org.springframework.integration.core.Message<Message> xmppSIMsg = MessageBuilder.withPayload(msg).setHeader(XMPPConstants.CHAT, chat).build();
         channelTemplate.send(xmppSIMsg, requestChannel);
     }
