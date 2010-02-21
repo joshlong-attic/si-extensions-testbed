@@ -31,10 +31,8 @@ public class XMPPProducer implements MessageSource<String> {
         try {
             if (counter > 10) {
                 logger.debug("return null");
-
                 return null;
             }
-
             counter += 1;
             Thread.sleep(1000 * 10);
 
