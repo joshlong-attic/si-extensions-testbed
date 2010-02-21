@@ -70,7 +70,7 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
     @Override
     protected void doStop() {
         if (xmppConnection.isConnected()) {
-            logger.debug("shutting down.");
+            logger.debug("shutting down" + XMPPMessageDrivenEndpoint.class.getName() + ".");
             xmppConnection.disconnect();
         }
     }
@@ -86,8 +86,6 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
             this.xmppConnection = xmppConnectionFactory.createInstance();
         }
 
-        logger.debug("setXMPPConnection: " + xmppConnection.isConnected() + ":" + xmppConnection.isAuthenticated());
-
         xmppConnection.addPacketListener(new PacketListener() {
                 public void processPacket(final Packet packet) {
                     org.jivesoftware.smack.packet.Message msg = (org.jivesoftware.smack.packet.Message) packet;
@@ -95,16 +93,16 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
                 }
             }, null); // we don't have any kind of predicate stuff that we want to do so no need to specify a filter
                       /*
-                ChatManager chatManager = xmppConnection.getChatManager();
-                chatManager.addChatListener(new ChatManagerListener() {
-                        public void chatCreated(final Chat chat, final boolean createdLocally) {
-                            chat.addMessageListener(new MessageListener() {
-                                    public void processMessage(final Chat chat, final Message message) {
-                                        forwardInboundXMPPMessageToSI(chat, message);
-                                    }
-                                });
+        ChatManager chatManager = xmppConnection.getChatManager();
+        chatManager.addChatListener(new ChatManagerListener() {
+            public void chatCreated(final Chat chat, final boolean createdLocally) {
+                chat.addMessageListener(new MessageListener() {
+                        public void processMessage(final Chat chat, final Message message) {
+                            forwardInboundXMPPMessageToSI(chat, message);
                         }
-                    });*/
+                    });
+            }
+        });*/
     }
 
     public String getUser() {
