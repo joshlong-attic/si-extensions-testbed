@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  */
 
 @ContextConfiguration(locations =  {
-    "/net/xmpp/test_xmpp_inbound_endpoit.xml"}
+        "/net/xmpp/test_xmpp_inbound_adapter.xml"}
 )
 public class TestInboundXMPPEndpoint extends AbstractJUnit4SpringContextTests {
 

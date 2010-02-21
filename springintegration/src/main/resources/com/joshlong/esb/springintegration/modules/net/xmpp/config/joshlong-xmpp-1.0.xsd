@@ -92,4 +92,46 @@
     </xsd:element>
 
 
+    <xsd:element name="xmpp-outbound-adapter">
+           <xsd:annotation>
+               <xsd:documentation>
+              this component will send messages to a user on behalf of components in the bus
+               </xsd:documentation>
+           </xsd:annotation>
+           <xsd:complexType>
+
+               <xsd:attribute name="id" type="xsd:string"/>
+               <xsd:attribute name="channel" use="required" type="xsd:string">
+                   <xsd:annotation>
+                       <xsd:appinfo>
+                           <tool:annotation kind="ref">
+                               <tool:expected-type type="org.springframework.integration.core.MessageChannel"/>
+                           </tool:annotation>
+                       </xsd:appinfo>
+                   </xsd:annotation>
+               </xsd:attribute>
+
+               <xsd:attribute name="user" type="xsd:string"/>
+               <xsd:attribute name="password" type="xsd:string"/>
+               <xsd:attribute name="host" type="xsd:string"/>
+               <xsd:attribute name="service-name" type="xsd:string"/>
+               <xsd:attribute name="resource" type="xsd:string"/>
+               <xsd:attribute name="sasl-mechanism-supported" type="xsd:string"/>
+               <xsd:attribute name="sasl-mechanism-supported-index" type="xsd:int"/>
+               <xsd:attribute name="port" type="xsd:int"/>
+
+               <xsd:attribute name="xmpp-connection" type="xsd:string">
+                   <xsd:annotation>
+                       <xsd:appinfo>
+                           <tool:annotation kind="ref">
+                               <tool:expected-type type="org.jivesoftware.smack.XMPPConnection"/>
+                           </tool:annotation>
+                       </xsd:appinfo>
+                   </xsd:annotation>
+               </xsd:attribute>
+
+           </xsd:complexType>
+       </xsd:element>
+
+
 </xsd:schema>

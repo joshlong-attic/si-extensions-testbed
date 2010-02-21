@@ -6,4 +6,5 @@ package com.joshlong.esb.springintegration.modules.net.xmpp;
  */
 public class XMPPConstants {
     public static final String CHAT = "chat_key";
+    public static final String TO_USER = "to_user";
 }
