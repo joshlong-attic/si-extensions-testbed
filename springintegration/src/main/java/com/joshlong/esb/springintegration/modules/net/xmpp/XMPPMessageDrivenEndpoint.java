@@ -55,11 +55,9 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
     }
 
     private void forwardInboundXMPPMessageToSI(Chat chat, Message msg) {
-        for (Message.Body body : msg.getBodies()) {
-            logger.debug(body.getMessage());
-        }
-
-       
+//        for (Message.Body body : msg.getBodies()) {
+//            logger.debug(body.getMessage());
+//        }
 
         // todo is this a valid thing to do?
 //        if ((msg.getBodies() == null) || (msg.getBodies().size() == 0) || StringUtils.isEmpty(msg.getBody())) {
@@ -71,7 +69,24 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
                  setHeader(XMPPConstants.CHAT, chat).build();
         channelTemplate.send(xmppSIMsg, requestChannel);
 
+   ///     cleanUpXMPPMessage(chat,msg);
+
+
     }
+//
+//    /**
+//     * the problem is that XMPP is inherently stateful.
+//     *
+//     * even in the Smack APIs theres a user/chat map that grows. This Map is a ReferenceMap that lets mappings get destroyed
+//     * as the references become unreachable, but this is a non-predictable behavior.
+//     *
+//     * @param chat
+//     * @param msg
+//     */
+//    private void cleanUpXMPPMessage( Chat chat, Message msg)
+//    {
+//
+//    }
 
     @Override
     protected void doStart() {
