@@ -28,8 +28,8 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
     static private Logger logger = Logger.getLogger(XMPPNamespaceHandler.class);
 
     public void init() {
-        registerBeanDefinitionParser("xmpp-inbound-adapter", new XMPPInboundEndpointParser());
-        registerBeanDefinitionParser("xmpp-outbound-adapter", new XMPPOutboundEndpointParser());
+        registerBeanDefinitionParser("inbound-channel-adapter", new XMPPInboundEndpointParser());
+        registerBeanDefinitionParser("outbound-channel-adapter", new XMPPOutboundEndpointParser());
         registerBeanDefinitionParser("xmpp-connection", new XMPPConnectionParser());
     }
 
