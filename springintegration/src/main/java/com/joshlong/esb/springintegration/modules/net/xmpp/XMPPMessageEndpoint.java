@@ -1,10 +1,14 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.channel.MessageChannelTemplate;
 import org.springframework.integration.core.MessageChannel;
 import org.springframework.integration.endpoint.AbstractEndpoint;
@@ -53,13 +57,14 @@ public class XMPPMessageEndpoint extends AbstractEndpoint implements Lifecycle {
     }
 
     private void forwardInboundXMPPMessageToSI(Chat chat, Message msg) {
-        for( Message.Body body: msg.getBodies()){
-            logger.debug( body.getMessage());            
+        for (Message.Body body : msg.getBodies()) {
+            logger.debug(body.getMessage());
         }
 
         // todo is this a valid thing to do?
-        if( msg.getBodies()==null||msg.getBodies().size()==0|| StringUtils.isEmpty(msg.getBody()))
-        return ;
+        if ((msg.getBodies() == null) || (msg.getBodies().size() == 0) || StringUtils.isEmpty(msg.getBody())) {
+            return;
+        }
 
         org.springframework.integration.core.Message<Message> xmppSIMsg = MessageBuilder.withPayload(msg).setHeader(XMPPConstants.CHAT, chat).build();
         channelTemplate.send(xmppSIMsg, requestChannel);
