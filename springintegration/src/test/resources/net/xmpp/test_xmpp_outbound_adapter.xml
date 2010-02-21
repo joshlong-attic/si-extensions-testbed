@@ -40,6 +40,10 @@
     <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
                 p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
 
+    <poller default="true">
+        <interval-trigger fixed-rate="true" interval="100" time-unit="SECONDS"/>
+    </poller>
+
     <xmpp:xmpp-connection id="myConn"
                           user="${test.smack.user}"
                           password="${test.smack.password}"
@@ -51,11 +55,7 @@
 
     <channel id="mChannel"/>
 
-    <inbound-channel-adapter ref="XMPPProducer" channel="mChannel">
-        <poller>
-            <interval-trigger interval="10" time-unit="SECONDS"/>
-        </poller>
-    </inbound-channel-adapter>
+    <inbound-channel-adapter ref="XMPPProducer" channel="mChannel"/>
 
-    <xmpp:xmpp-outbound-adapter channel="mChannel" xmpp-connection="myConn"/>
+    <xmpp:outbound-channel-adapter channel="mChannel" xmpp-connection="myConn"/>
 </beans:beans>

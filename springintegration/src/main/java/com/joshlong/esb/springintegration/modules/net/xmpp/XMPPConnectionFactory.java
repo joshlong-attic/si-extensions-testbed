@@ -28,6 +28,17 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
     private String saslMechanismSupported;
     private int saslMechanismSupportedIndex;
     private int port;
+    private boolean debug = false;
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(final boolean debug) {
+        XMPPConnection.DEBUG_ENABLED=debug;
+
+        this.debug = debug;
+    }
 
     public XMPPConnectionFactory() {
     }
@@ -47,6 +58,11 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
     private XMPPConnection configureAndConnect(String usr, String pw, String host, int port, String serviceName, String resource, String saslMechanismSupported, int saslMechanismSupportedIndex) {
         logger.debug(String.format("usr=%s, pw=%s, host=%s, port=%s, serviceName=%s, resource=%s, saslMechanismSupported=%s, saslMechanismSupportedIndex=%s", usr, pw, host, port, serviceName,
                 resource, saslMechanismSupported, saslMechanismSupportedIndex));
+
+
+        XMPPConnection.DEBUG_ENABLED =false; // default
+         
+    //    if( logger.isDebugEnabled())        XMPPConnection.DEBUG_ENABLED =true ;
 
         ConnectionConfiguration cc = new ConnectionConfiguration(host, port, serviceName);
         XMPPConnection connection = new XMPPConnection(cc);

@@ -49,7 +49,7 @@
     </xsd:element>
 
 
-    <xsd:element name="xmpp-inbound-adapter">
+    <xsd:element name="inbound-channel-adapter ">
         <xsd:annotation>
             <xsd:documentation>
                 Configures an endpoint that will receive messages sent to a given XMPP user's account and then forward
@@ -92,7 +92,7 @@
     </xsd:element>
 
 
-    <xsd:element name="xmpp-outbound-adapter">
+    <xsd:element name="outbound-channel-adapter">
            <xsd:annotation>
                <xsd:documentation>
               this component will send messages to a user on behalf of components in the bus

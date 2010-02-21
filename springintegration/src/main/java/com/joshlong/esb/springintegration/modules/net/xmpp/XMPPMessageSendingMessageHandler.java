@@ -1,15 +1,21 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.message.MessageDeliveryException;
 import org.springframework.integration.message.MessageHandler;
 import org.springframework.integration.message.MessageHandlingException;
 import org.springframework.integration.message.MessageRejectedException;
+
 import org.springframework.util.Assert;
 
 
@@ -101,6 +107,22 @@ public class XMPPMessageSendingMessageHandler implements MessageHandler, Lifecyc
         this.xmppConnection = xmppConnection;
     }
 
+    private Chat getOrCreateChatWithParticipant(String userId, String thread) {
+        Chat chat = null;
+
+        if (StringUtils.isEmpty(thread)) {
+            chat = xmppConnection.getChatManager().createChat(userId, null);
+        } else {
+            chat = xmppConnection.getChatManager().getThreadChat(thread);
+
+            if (null == chat) {
+                chat = xmppConnection.getChatManager().createChat(userId, thread, null);
+            }
+        }
+
+        return chat;
+    }
+
     public void handleMessage(final org.springframework.integration.core.Message<?> message)
         throws MessageRejectedException, MessageHandlingException, MessageDeliveryException {
         try {
@@ -117,15 +139,16 @@ public class XMPPMessageSendingMessageHandler implements MessageHandler, Lifecyc
             }
 
             destinationUser = (String) message.getHeaders().get(XMPPConstants.TO_USER);
-
             Assert.state(!StringUtils.isEmpty(destinationUser), "the destination user can't be null");
             Assert.state(!StringUtils.isEmpty(msgBody), "the message body can't be null");
 
-            Chat chat = xmppConnection.getChatManager().createChat(destinationUser, null );
+            String threadId = (String) message.getHeaders().get(XMPPConstants.THREAD_ID);
 
+            Chat chat = getOrCreateChatWithParticipant(destinationUser, threadId);
 
-            chat.sendMessage(msgBody);
-
+            if (chat != null) {
+                chat.sendMessage(msgBody);
+            }
         } catch (Throwable th) {
             logger.debug("exception thrown when trying to send a message", th);
         }
