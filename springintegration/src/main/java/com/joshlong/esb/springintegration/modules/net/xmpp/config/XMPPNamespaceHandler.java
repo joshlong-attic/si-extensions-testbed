@@ -89,7 +89,7 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
 
         @Override
         protected String getBeanClassName(Element element) {
-            return PACKAGE_NAME + ".XMPPMessageEndpoint";
+            return PACKAGE_NAME + ".XMPPMessageDrivenEndpoint";
         }
 
         @Override

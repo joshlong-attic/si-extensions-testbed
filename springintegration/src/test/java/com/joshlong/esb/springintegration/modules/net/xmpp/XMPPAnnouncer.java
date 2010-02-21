@@ -1,12 +1,11 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.apache.log4j.Logger;
-
+import org.jivesoftware.smack.Chat;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.core.Message;
-
 import org.springframework.stereotype.Component;
 
 
@@ -23,6 +22,12 @@ public class XMPPAnnouncer {
     @ServiceActivator
     public void announceXMPPMessage(Message<org.jivesoftware.smack.packet.Message> msg)
         throws Throwable {
+
+        logger.debug( StringUtils.repeat( "=" , 100));
+
+        Chat chat = (Chat)msg.getHeaders().get(XMPPConstants.CHAT);
+        logger.debug("chat=" +ToStringBuilder.reflectionToString(chat));
         logger.debug("announceXMPPMessage: " + ToStringBuilder.reflectionToString(msg));
+
     }
 }

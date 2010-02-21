@@ -8,4 +8,5 @@ public class XMPPConstants {
     public static final String CHAT = "chat_key";
     public static final String TO_USER = "to_user";
     public static final String THREAD_ID = "thread_id";
+    public static final String TYPE ="type" ;
 }
