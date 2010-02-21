@@ -13,18 +13,22 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.message.MessageDeliveryException;
 import org.springframework.integration.message.MessageHandler;
 import org.springframework.integration.message.MessageHandlingException;
 import org.springframework.integration.message.MessageRejectedException;
+
 
 /**
  * This class takes inbound messages and publishes them to the SQS service.
@@ -46,8 +50,7 @@ public class SQSMessageSendingHandler implements MessageHandler, Lifecycle, Init
         assert !StringUtils.isEmpty(this.amazonWebServicesSecretKey);
         assert !StringUtils.isEmpty(this.queueName);
 
-        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey,
-                                                     this.amazonWebServicesHost);
+        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey, this.amazonWebServicesHost);
         this.amazonSQS2Client.afterPropertiesSet();
     }
 
@@ -74,12 +77,10 @@ public class SQSMessageSendingHandler implements MessageHandler, Lifecycle, Init
         try {
             if (payload instanceof String) {
                 this.amazonSQS2Client.send(this.queueName, (String) payload);
-            }
-            else {
+            } else {
                 this.amazonSQS2Client.send(this.queueName, payload.toString());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.debug("Something happened when trying to send mesage to queueName '" + this.queueName + "'", e);
         }
     }

@@ -13,17 +13,21 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.commons.lang.SystemUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
 import org.springframework.util.ErrorHandler;
 
 import java.io.File;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -34,22 +38,21 @@ public class Main {
 
     public static void main(String[] args) throws Throwable {
         boolean testKey = true;
-        SFTPSessionFactory factory = testKey ? sftpSessionFactory("joshlong.co    m", null, "ubuntu",
-                                                                  SystemUtils.getUserHome() + "/jlongec2.pem", null, 22)
+        SFTPSessionFactory factory = testKey ? sftpSessionFactory("joshlong.co    m", null, "ubuntu", SystemUtils.getUserHome() + "/jlongec2.pem", null, 22)
                                              : // this wont work on your machine. get yer own!
-                                     sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
+            sftpSessionFactory("jlong", "cowbell", "jlong", null, null, 22);
 
         String suffix = (testKey ? "key" : "pass");
         run(factory, SystemUtils.getUserHome() + "/local_mount_" + suffix, "remote_mount_" + suffix);
     }
 
     static void run(SFTPSessionFactory sftpSessionFactory, String lp, String rp)
-            throws Throwable {
+        throws Throwable {
         // local path
         File local = new File(lp); // obviously this is just for test. Do what you need to do in your own
 
         // we are testing, after all
-        if (local.exists() && local.list().length > 0) {
+        if (local.exists() && (local.list().length > 0)) {
             for (File f : local.listFiles()) {
                 if (!f.delete()) {
                     logger.debug("couldn't delete " + f.getAbsolutePath());
@@ -66,10 +69,10 @@ public class Main {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(10);
         taskScheduler.setErrorHandler(new ErrorHandler() {
-            public void handleError(Throwable t) {
-                logger.debug("error! ", t);
-            }
-        });
+                public void handleError(Throwable t) {
+                    logger.debug("error! ", t);
+                }
+            });
 
         taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
         taskScheduler.initialize();
@@ -101,13 +104,8 @@ public class Main {
         */
     }
 
-    static SFTPSessionFactory sftpSessionFactory(String host,
-                                                 String pw,
-                                                 String usr,
-                                                 String pvKey,
-                                                 String pvKeyPass,
-                                                 int port)
-            throws Throwable {
+    static SFTPSessionFactory sftpSessionFactory(String host, String pw, String usr, String pvKey, String pvKeyPass, int port)
+        throws Throwable {
         SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
         sftpSessionFactory.setPassword(pw);
         sftpSessionFactory.setPort(port);

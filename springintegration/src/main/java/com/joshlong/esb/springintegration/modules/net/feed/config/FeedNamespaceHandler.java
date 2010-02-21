@@ -13,17 +13,20 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.feed.config;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
+
 import org.springframework.integration.config.xml.AbstractPollingInboundChannelAdapterParser;
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
+
 import org.w3c.dom.Element;
+
 
 /**
  * This is a rather tricky one. I've decided it's best to not get cute about it and to expose *one*
@@ -46,20 +49,17 @@ public class FeedNamespaceHandler extends NamespaceHandlerSupport {
     private static class FeedMessageSourceBeanDefinitionParser extends AbstractPollingInboundChannelAdapterParser {
         @Override
         protected String parseSource(final Element element, final ParserContext parserContext) {
-            String pftoe = StringUtils.defaultString(element.getAttribute(
-                    "prefer-updated-feed-to-entries")).trim().toLowerCase();
+            String pftoe = StringUtils.defaultString(element.getAttribute("prefer-updated-feed-to-entries")).trim().toLowerCase();
             boolean preferFeed = pftoe.equalsIgnoreCase(TRUE);
             String className = PACKAGE_NAME + "." + (preferFeed ? "FeedReaderMessageSource" : "FeedEntryReaderMessageSource");
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(className);
             builder.addPropertyValue("feedUrl", element.getAttribute("feed"));
 
             if (!preferFeed) {
-                IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "backlog-cache-size",
-                                                                     "maximumBacklogCacheSize");
+                IntegrationNamespaceUtils.setValueIfAttributeDefined(builder, element, "backlog-cache-size", "maximumBacklogCacheSize");
             }
 
-            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(),
-                                                                       parserContext.getRegistry());
+            return BeanDefinitionReaderUtils.registerWithGeneratedName(builder.getBeanDefinition(), parserContext.getRegistry());
         }
     }
 }

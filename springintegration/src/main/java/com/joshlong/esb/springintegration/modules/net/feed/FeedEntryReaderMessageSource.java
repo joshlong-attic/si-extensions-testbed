@@ -13,15 +13,19 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.feed;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
@@ -31,6 +35,7 @@ import java.util.Comparator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
+
 
 //TODO we need to find a bounded FIFO Set implementaton because we want to do dupe checking, as well as expiry of old records after a certain amount
 
@@ -63,7 +68,6 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
     public void afterPropertiesSet() throws Exception {
         assert !StringUtils.isEmpty(this.feedUrl) : "the feedUrl can't be null!";
         //   this.feedUrlObject = new URL(this.feedUrl);
-
         this.feedReaderMessageSource = new FeedReaderMessageSource();
         this.feedReaderMessageSource.setFeedUrl(this.feedUrl);
         this.feedReaderMessageSource.afterPropertiesSet();
@@ -125,9 +129,7 @@ public class FeedEntryReaderMessageSource implements InitializingBean, MessageSo
             // however, i dont see why we cant just remove them all this component doesn't guarantee once and only once semantics. were doing our level headed best to ensure dupes arent sent
             // but if its really an issue then the user can leave {@link maximumBacklogCacheSize } at -1.
             this.receivedEntries.clear();
-            logger.debug(String.format(
-                    "the size of backlog (receivedEntries) has exceed the maximum of %s, calling receivedEntries.clear().",
-                    "" + this.maximumBacklogCacheSize));
+            logger.debug(String.format("the size of backlog (receivedEntries) has exceed the maximum of %s, calling receivedEntries.clear().", "" + this.maximumBacklogCacheSize));
         }
 
         if (next != null) {

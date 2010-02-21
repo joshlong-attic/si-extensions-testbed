@@ -16,12 +16,16 @@
 package com.joshlong.esb.springintegration.modules.nativefs.config;
 
 import com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitoringEndpoint;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+
 import org.springframework.context.ResourceLoaderAware;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceEditor;
 import org.springframework.core.io.ResourceLoader;
+
 import org.springframework.integration.core.MessageChannel;
 
 import java.io.File;
@@ -48,7 +52,7 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
     }
 
     @Override
-    public Class<? extends NativeFileSystemMonitoringEndpoint> getObjectType() {
+    public Class<?extends NativeFileSystemMonitoringEndpoint> getObjectType() {
         return NativeFileSystemMonitoringEndpoint.class;
     }
 
@@ -90,7 +94,7 @@ public class NativeFileSystemMonitoringEndpointFactoryBean extends AbstractFacto
 
     @Override
     protected NativeFileSystemMonitoringEndpoint createInstance()
-            throws Exception {
+        throws Exception {
         File f = new File(this.directory);
 
         if (this.isAutoCreateDirectory()) {

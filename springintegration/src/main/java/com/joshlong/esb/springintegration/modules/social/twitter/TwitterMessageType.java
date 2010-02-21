@@ -19,6 +19,5 @@ package com.joshlong.esb.springintegration.modules.social.twitter;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-public enum TwitterMessageType {
-    DM, FRIENDS, MENTIONS;
+public enum TwitterMessageType {DM, FRIENDS, MENTIONS;
 }

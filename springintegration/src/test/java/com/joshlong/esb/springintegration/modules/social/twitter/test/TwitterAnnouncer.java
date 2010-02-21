@@ -16,7 +16,9 @@
 package com.joshlong.esb.springintegration.modules.social.twitter.test;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.Tweet;
+
 import org.springframework.integration.annotation.ServiceActivator;
+
 import org.springframework.stereotype.Component;
 
 

@@ -1,12 +1,18 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp.config;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
+
+import org.springframework.integration.config.xml.AbstractOutboundChannelAdapterParser;
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
+
 import org.w3c.dom.Element;
 
 
@@ -63,28 +69,17 @@ public class XMPPNamespaceHandler extends NamespaceHandlerSupport {
         }
     }
 
-    private static class XMPPOutboundEndpointParser extends AbstractSingleBeanDefinitionParser {
+    private static class XMPPOutboundEndpointParser extends AbstractOutboundChannelAdapterParser {
         @Override
-        protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+        protected AbstractBeanDefinition parseConsumer(Element element, ParserContext parserContext) {
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(PACKAGE_NAME + ".XMPPMessageSendingMessageHandler");
+
             configureXMPPConnection(element, builder, parserContext);
-            IntegrationNamespaceUtils.setReferenceIfAttributeDefined(builder, element, "channel", "requestChannel");
-        }
 
-        @Override
-        protected String getBeanClassName(Element element) {
-            return PACKAGE_NAME + ".XMPPMessageSendingMessageHandler";
-        }
-
-        @Override
-        protected boolean shouldGenerateId() {
-            return false;
-        }
-
-        @Override
-        protected boolean shouldGenerateIdAsFallback() {
-            return true;
+            return builder.getBeanDefinition();
         }
     }
+
     private static class XMPPInboundEndpointParser extends AbstractSingleBeanDefinitionParser {
         @Override
         protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {

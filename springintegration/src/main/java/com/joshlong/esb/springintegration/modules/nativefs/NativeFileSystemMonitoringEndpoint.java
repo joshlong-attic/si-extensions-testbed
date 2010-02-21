@@ -13,11 +13,12 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
+
 import org.springframework.core.io.Resource;
+
 import org.springframework.integration.channel.MessageChannelTemplate;
 import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageChannel;
@@ -25,8 +26,10 @@ import org.springframework.integration.endpoint.AbstractEndpoint;
 import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -37,7 +40,7 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     private final MessageChannelTemplate channelTemplate = new MessageChannelTemplate();
     private volatile MessageChannel requestChannel;
     private volatile NativeFileSystemMonitor nativeFileSystemMonitor;
-    private volatile  Resource directory;
+    private volatile Resource directory;
     private volatile boolean autoCreateDirectory;
     private volatile int maxQueuedValue;
     private volatile Executor executor = Executors.newSingleThreadExecutor();
@@ -82,21 +85,18 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
     @Override
     protected void doStart() {
         try {
-          executor .execute(
-                    new Runnable() {
-                        public void run() {
-                            nativeFileSystemMonitor.monitor(
-                                    new NativeFileSystemMonitor.FileAddedListener() {
-                                        public void fileAdded(File dir, String fn) {
-                                            File file = new File(dir, fn);
-                                            Message<File> fileMsg = MessageBuilder.withPayload(file).build();
-                                            channelTemplate.send(fileMsg, requestChannel);
-                                        }
-                                    });
-                        }
-                    });//.start();
-        }
-        catch (Throwable th) {
+            executor.execute(new Runnable() {
+                    public void run() {
+                        nativeFileSystemMonitor.monitor(new NativeFileSystemMonitor.FileAddedListener() {
+                                public void fileAdded(File dir, String fn) {
+                                    File file = new File(dir, fn);
+                                    Message<File> fileMsg = MessageBuilder.withPayload(file).build();
+                                    channelTemplate.send(fileMsg, requestChannel);
+                                }
+                            });
+                    }
+                }); //.start();
+        } catch (Throwable th) {
             throw new RuntimeException(th);
         }
     }
@@ -113,8 +113,7 @@ public class NativeFileSystemMonitoringEndpoint extends AbstractEndpoint {
             nativeFileSystemMonitor.setMaxQueueValue(getMaxQueuedValue());
             nativeFileSystemMonitor.init();
             channelTemplate.afterPropertiesSet();
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             throw new RuntimeException(th);
         }
     }

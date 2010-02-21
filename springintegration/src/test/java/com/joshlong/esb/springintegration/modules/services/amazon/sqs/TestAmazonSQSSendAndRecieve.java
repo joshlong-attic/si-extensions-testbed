@@ -13,18 +13,21 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import org.junit.Test;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-@ContextConfiguration(locations = {"/services/amazon/sqs/send_messages_using_ns.xml"})
 
+@ContextConfiguration(locations =  {
+    "/services/amazon/sqs/send_messages_using_ns.xml"}
+)
 public class TestAmazonSQSSendAndRecieve extends AbstractJUnit4SpringContextTests {
     @Test
     public void testFoo() throws Throwable {
-        while (true) Thread.sleep(1000);
+        while (true)
+            Thread.sleep(1000);
     }
 }

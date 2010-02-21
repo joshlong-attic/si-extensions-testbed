@@ -16,6 +16,7 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Queue;
@@ -82,7 +83,7 @@ public class QueuedSFTPSessionPool implements SFTPSessionPool, InitializingBean 
         }
 
         if (queue.contains(s)) //this should never happen, but if it does ...
-        {
+         {
             queue.remove(s);
         }
 

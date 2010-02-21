@@ -18,6 +18,7 @@ package com.joshlong.esb.springintegration.modules.net.sftp.config;
 import com.joshlong.esb.springintegration.modules.net.sftp.QueuedSFTPSessionPool;
 import com.joshlong.esb.springintegration.modules.net.sftp.SFTPSendingMessageHandler;
 import com.joshlong.esb.springintegration.modules.net.sftp.SFTPSessionFactory;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -57,8 +58,8 @@ public class SFTPMessageSendingConsumerFactoryBean implements InitializingBean, 
     }
 
     public SFTPSendingMessageHandler getObject() throws Exception {
-        SFTPSessionFactory sessionFactory = SFTPSessionUtils.buildSftpSessionFactory(
-                this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(), this.getKeyFilePassword(), this.getPort());
+        SFTPSessionFactory sessionFactory = SFTPSessionUtils.buildSftpSessionFactory(this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(), this.getKeyFilePassword(),
+                this.getPort());
 
         QueuedSFTPSessionPool queuedSFTPSessionPool = new QueuedSFTPSessionPool(15, sessionFactory);
         queuedSFTPSessionPool.afterPropertiesSet();
@@ -70,7 +71,7 @@ public class SFTPMessageSendingConsumerFactoryBean implements InitializingBean, 
         return sftpSendingMessageHandler;
     }
 
-    public Class<? extends SFTPSendingMessageHandler> getObjectType() {
+    public Class<?extends SFTPSendingMessageHandler> getObjectType() {
         return SFTPSendingMessageHandler.class;
     }
 

@@ -2,17 +2,19 @@ package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 import org.springframework.integration.core.Message;
 import org.springframework.integration.message.MessageBuilder;
+import org.springframework.integration.message.MessageSource;
+
 import org.springframework.stereotype.Component;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Component
-public class  XMPPProducer {
+public class XMPPProducer implements MessageSource<String> {
+    public Message<String> receive() {
+        String msg = "the current time is " + System.currentTimeMillis() + "";
 
-    public Message<String> messagesForIM() throws Throwable {
-     String msg  ="the current time is " + System.currentTimeMillis()+"";
-        Message<String> m = MessageBuilder.withPayload(msg).setHeader(XMPPConstants.TO_USER, System.getProperty("xmpp.test.to.user")).build() ;
-        return m;
+        return MessageBuilder.withPayload(msg).setHeader(XMPPConstants.TO_USER, System.getProperty("xmpp.test.to.user")).build();
     }
 }

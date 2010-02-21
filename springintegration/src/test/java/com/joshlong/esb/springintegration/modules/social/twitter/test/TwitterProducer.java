@@ -18,6 +18,7 @@ package com.joshlong.esb.springintegration.modules.social.twitter.test;
 import org.springframework.stereotype.Component;
 
 import java.text.DateFormat;
+
 import java.util.Date;
 
 

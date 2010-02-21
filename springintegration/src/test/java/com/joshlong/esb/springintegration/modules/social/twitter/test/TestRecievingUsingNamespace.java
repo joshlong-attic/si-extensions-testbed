@@ -16,7 +16,9 @@
 package com.joshlong.esb.springintegration.modules.social.twitter.test;
 
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
@@ -24,8 +26,9 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@ContextConfiguration(locations = {
-        "/social/twitter/recieving_tweets_using_ns.xml"})
+@ContextConfiguration(locations =  {
+    "/social/twitter/recieving_tweets_using_ns.xml"}
+)
 public class TestRecievingUsingNamespace extends AbstractJUnit4SpringContextTests {
     @Autowired
     private TwitterAnnouncer twitterAnnouncer;

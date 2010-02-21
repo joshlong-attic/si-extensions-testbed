@@ -13,16 +13,19 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
+
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+
 import org.springframework.util.Assert;
 
 import java.io.File;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
+
 
 /**
  * TODO make this class use SI hooks ({@link org.springframework.context.Lifecycle#start()}, {@link
@@ -35,8 +38,7 @@ public class NativeFileSystemMonitor {
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitor.class);
 
     static {
-        System.loadLibrary(
-                "sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
+        System.loadLibrary("sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
     }
 
     private File directoryToMonitor;
@@ -73,8 +75,7 @@ public class NativeFileSystemMonitor {
             if (!directoryToMonitor.exists()) {
                 if (this.autoCreateDirectory) {
                     if (!directoryToMonitor.mkdirs()) {
-                        logger.debug(String.format("couldn't create directory %s",
-                                                   directoryToMonitor.getAbsolutePath()));
+                        logger.debug(String.format("couldn't create directory %s", directoryToMonitor.getAbsolutePath()));
                     }
                 }
             }
@@ -84,8 +85,7 @@ public class NativeFileSystemMonitor {
             this.executor = new SimpleAsyncTaskExecutor();
         }
 
-        Assert.state(directoryToMonitor.exists(),
-                     "the directory " + directoryToMonitor.getAbsolutePath() + " doesn't exist");
+        Assert.state(directoryToMonitor.exists(), "the directory " + directoryToMonitor.getAbsolutePath() + " doesn't exist");
     }
 
     /**
@@ -103,20 +103,17 @@ public class NativeFileSystemMonitor {
         final String absPath = nFile.getAbsolutePath();
 
         // I have no idea the implications of thread safety for this sort of thing
-        this.executor.execute(
-                new Runnable() {
-                    public void run() {
-                        do {
-                            try {
-                                fal.fileAdded(nFile, additions.take());
-                            }
-                            catch (Throwable e) {
-                                e.printStackTrace();
-                            }
+        this.executor.execute(new Runnable() {
+                public void run() {
+                    do {
+                        try {
+                            fal.fileAdded(nFile, additions.take());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
                         }
-                        while (true);
-                    }
-                });
+                    } while (true);
+                }
+            });
 
         monitor(absPath);
     }

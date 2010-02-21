@@ -16,27 +16,35 @@
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import junit.framework.Assert;
+
 import org.apache.commons.io.IOUtils;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.ApplicationContext;
+
 import org.springframework.core.io.FileSystemResource;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+
+import javax.annotation.Resource;
 
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @SuppressWarnings("unchecked")
-@ContextConfiguration(locations = {
-        "/nativefs/recieving_native_fs_events_using_ns.xml"})
+@ContextConfiguration(locations =  {
+    "/nativefs/recieving_native_fs_events_using_ns.xml"}
+)
 public class TestRecievingUsingNativeFsEventing extends AbstractJUnit4SpringContextTests {
     @Autowired
     private ApplicationContext applicationContext;

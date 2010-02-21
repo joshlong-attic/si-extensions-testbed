@@ -16,6 +16,7 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.springframework.integration.annotation.ServiceActivator;
+
 import org.springframework.stereotype.Component;
 
 import java.io.File;

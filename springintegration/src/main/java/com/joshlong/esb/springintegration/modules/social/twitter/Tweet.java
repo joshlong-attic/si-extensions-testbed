@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.io.Serializable;
+
 import java.util.Date;
 
 
@@ -74,7 +75,6 @@ public class Tweet implements Serializable, Comparable<Tweet> {
         this.received = received;
     }
     */
-
     public String getUser() {
         return user;
     }

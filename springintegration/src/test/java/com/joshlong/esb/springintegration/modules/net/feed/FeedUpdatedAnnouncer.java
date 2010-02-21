@@ -13,13 +13,15 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.feed;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.stereotype.Component;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -33,9 +35,6 @@ public class FeedUpdatedAnnouncer {
     }
 
     public void announceEntry(SyndEntry entry) {
-        logger.debug(String.format("received entry with uri: %s and title:%s and contents: %s",
-                                   entry.getUri(), entry.getTitle(), entry.getContents().toString()
-        ));
-
+        logger.debug(String.format("received entry with uri: %s and title:%s and contents: %s", entry.getUri(), entry.getTitle(), entry.getContents().toString()));
     }
 }

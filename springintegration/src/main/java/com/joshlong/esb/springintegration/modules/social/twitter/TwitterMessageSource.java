@@ -17,12 +17,17 @@ package com.joshlong.esb.springintegration.modules.social.twitter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
+
 import org.springframework.util.Assert;
+
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -98,18 +103,18 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
                 List<Status> statuses = new ArrayList<Status>();
 
                 switch (getTwitterMessageType()) {
-                    case DM:
-                        throw new UnsupportedOperationException("we don't support receiving direct mentions yet!");
+                case DM:
+                    throw new UnsupportedOperationException("we don't support receiving direct mentions yet!");
 
-                    case FRIENDS:
-                        statuses = twitter.getFriendsTimeline(paging);
+                case FRIENDS:
+                    statuses = twitter.getFriendsTimeline(paging);
 
-                        break;
+                    break;
 
-                    case MENTIONS:
-                        statuses = twitter.getMentions(paging);
+                case MENTIONS:
+                    statuses = twitter.getMentions(paging);
 
-                        break;
+                    break;
                 }
 
                 if (cachedStatuses.peek() == null) {
@@ -152,8 +157,7 @@ public class TwitterMessageSource implements MessageSource<Tweet>, InitializingB
 
     private Tweet buildTweetFromStatus(Status firstPost) {
         Tweet tweet = new Tweet(firstPost.getId(), firstPost.getUser().getName(), firstPost.getCreatedAt(), firstPost.getText());
+
         return tweet;
     }
-
-   
 }

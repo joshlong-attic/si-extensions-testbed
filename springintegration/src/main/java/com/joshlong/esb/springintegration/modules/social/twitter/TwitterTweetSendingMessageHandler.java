@@ -17,15 +17,20 @@ package com.joshlong.esb.springintegration.modules.social.twitter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageHeaders;
 import org.springframework.integration.message.MessageDeliveryException;
 import org.springframework.integration.message.MessageHandler;
 import org.springframework.integration.message.MessageHandlingException;
 import org.springframework.integration.message.MessageRejectedException;
+
 import org.springframework.util.Assert;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
@@ -117,5 +122,4 @@ public class TwitterTweetSendingMessageHandler implements InitializingBean, Mess
             logger.debug(ExceptionUtils.getFullStackTrace(e));
         }
     }
-
 }

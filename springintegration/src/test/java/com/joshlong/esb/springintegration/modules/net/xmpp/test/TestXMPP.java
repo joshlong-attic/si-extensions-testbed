@@ -1,9 +1,13 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp.test;
 
 import com.joshlong.esb.springintegration.modules.net.xmpp.XMPPConnectionFactory;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.jivesoftware.smack.XMPPConnection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +20,6 @@ import java.util.concurrent.Executors;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-
 public class TestXMPP /*extends AbstractJUnit4SpringContextTests*/ {
     private static final Logger logger = Logger.getLogger(TestXMPP.class);
     private String user;

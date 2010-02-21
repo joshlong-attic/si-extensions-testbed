@@ -38,7 +38,7 @@ public class SFTPSessionUtils {
      * @throws Exception thrown in case of darned near <em>anything</em>
      */
     public static SFTPSessionFactory buildSftpSessionFactory(String host, String pw, String usr, String pvKey, String pvKeyPass, int port)
-            throws Exception {
+        throws Exception {
         SFTPSessionFactory sftpSessionFactory = new SFTPSessionFactory();
         sftpSessionFactory.setPassword(pw);
         sftpSessionFactory.setPort(port);

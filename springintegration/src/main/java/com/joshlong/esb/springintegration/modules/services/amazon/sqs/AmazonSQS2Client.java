@@ -13,23 +13,27 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import com.xerox.amazonws.sqs2.Message;
 import com.xerox.amazonws.sqs2.MessageQueue;
 import com.xerox.amazonws.sqs2.QueueService;
 import com.xerox.amazonws.sqs2.SQSUtils;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 /**
  * AMazon SQS (simple messagesNotYetRecieved service) is a powerful, REST-ful Message Queue. You can use it with no fear
@@ -86,9 +90,7 @@ public class AmazonSQS2Client implements InitializingBean {
             AmazonSQS2Client other = (AmazonSQS2Client) o;
             EqualsBuilder eqb = new EqualsBuilder();
 
-            return eqb.append(other.getAwsHost(), this.getAwsHost()).append(other.getAwsPassword(),
-                                                                            this.getAwsPassword()).append(
-                    other.getAwsUser(), this.getAwsUser()).isEquals();
+            return eqb.append(other.getAwsHost(), this.getAwsHost()).append(other.getAwsPassword(), this.getAwsPassword()).append(other.getAwsUser(), this.getAwsUser()).isEquals();
         }
 
         return false;
@@ -118,12 +120,11 @@ public class AmazonSQS2Client implements InitializingBean {
     public int hashCode() {
         HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
 
-        return hashCodeBuilder.append(this.getAwsHost()).append(this.getAwsPassword()).append(
-                this.getAwsUser()).toHashCode();
+        return hashCodeBuilder.append(this.getAwsHost()).append(this.getAwsPassword()).append(this.getAwsUser()).toHashCode();
     }
 
     public Message receive(String queueId, boolean shouldDeleteOnReceipt)
-            throws Exception {
+        throws Exception {
         return this.receive(this.queueService, queueId, shouldDeleteOnReceipt);
     }
 
@@ -162,7 +163,7 @@ public class AmazonSQS2Client implements InitializingBean {
     }
 
     private Message receive(QueueService queueService, String queueuId, boolean shouldDeleteOnReceipt)
-            throws Exception {
+        throws Exception {
         MessageQueue messageQueue = this.getAndCacheMessageQueue(queueService, queueuId);
         Message somethingToReturn = this.messagesNotYetRecieved.poll();
 
@@ -180,7 +181,7 @@ public class AmazonSQS2Client implements InitializingBean {
     }
 
     private String send(QueueService queueService, String queueId, String msgPayload)
-            throws Exception {
+        throws Exception {
         Assert.state(!StringUtils.isEmpty(queueId), "the 'queueId' can't be empty!");
 
         MessageQueue messageQueue = getAndCacheMessageQueue(queueService, queueId);

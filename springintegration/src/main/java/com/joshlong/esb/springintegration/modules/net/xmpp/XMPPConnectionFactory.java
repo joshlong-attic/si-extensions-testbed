@@ -84,6 +84,7 @@ public class XMPPConnectionFactory extends AbstractFactoryBean<XMPPConnection> {
     protected XMPPConnection createInstance() throws Exception {
         XMPPConnection xmppConnection = this.configureAndConnect(this.getUser(), this.getPassword(), this.getHost(), this.getPort(), this.getServiceName(), this.getResource(),
                 this.getSaslMechanismSupported(), this.getSaslMechanismSupportedIndex());
+
         return xmppConnection;
     }
 

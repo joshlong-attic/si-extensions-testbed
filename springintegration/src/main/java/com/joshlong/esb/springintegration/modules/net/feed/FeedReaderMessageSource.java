@@ -13,7 +13,6 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.feed;
 
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -22,16 +21,23 @@ import com.sun.syndication.fetcher.FetcherListener;
 import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpURLFeedFetcher;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
 
 import java.net.URL;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 /**
  * The idea behind this class is that {@link org.springframework.integration.message.MessageSource#receive()} will only
@@ -85,10 +91,10 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
 
             if (null == returnedSyndFeed) {
                 logger.debug("no feeds updated, return null!");
+
                 return null;
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             logger.debug("Exception thrown when trying to retrive feed at url '" + this.feedURLObject + "'", e);
         }
 
@@ -97,9 +103,11 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
 
     public Message<SyndFeed> receive() {
         SyndFeed syndFeed = this.receiveSyndFeed();
+
         if (null == syndFeed) {
             return null;
         }
+
         return MessageBuilder.withPayload(syndFeed).setHeader(FeedConstants.FEED_URL, this.feedURLObject).build();
     }
 
@@ -150,14 +158,11 @@ public class FeedReaderMessageSource implements InitializingBean, Lifecycle, Mes
 
             if (FetcherEvent.EVENT_TYPE_FEED_POLLED.equals(eventType)) {
                 logger.debug("\tEVENT: Feed Polled. URL = " + event.getUrlString());
-            }
-            else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
+            } else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
                 logger.debug("\tEVENT: Feed Retrieved. URL = " + event.getUrlString());
                 syndFeeds.add(event.getFeed());
-            }
-            else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
+            } else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
                 logger.debug("\tEVENT: Feed Unchanged. URL = " + event.getUrlString());
-
             }
         }
     }

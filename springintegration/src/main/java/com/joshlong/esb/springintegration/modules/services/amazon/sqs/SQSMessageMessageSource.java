@@ -13,19 +13,24 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import com.xerox.amazonws.sqs2.Message;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.message.MessageBuilder;
 import org.springframework.integration.message.MessageSource;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -46,8 +51,7 @@ public class SQSMessageMessageSource implements MessageSource, Lifecycle, Initia
         assert !StringUtils.isEmpty(this.amazonWebServicesSecretKey);
         assert !StringUtils.isEmpty(this.queueName);
 
-        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey,
-                                                     this.amazonWebServicesHost);
+        this.amazonSQS2Client = new AmazonSQS2Client(this.amazonWebServicesAccessKey, this.amazonWebServicesSecretKey, this.amazonWebServicesHost);
         this.amazonSQS2Client.afterPropertiesSet();
     }
 
@@ -95,10 +99,8 @@ public class SQSMessageMessageSource implements MessageSource, Lifecycle, Initia
             headers.put(SQSConstants.RECEIPT_HANDLE, msg.getReceiptHandle());
 
             return MessageBuilder.withPayload(payload).copyHeadersIfAbsent(headers).build();
-        }
-        catch (Exception e) {
-            logger.debug("exception thrown when trying to retrieve message from SQS queue '" + this.queueName + "' ",
-                         e);
+        } catch (Exception e) {
+            logger.debug("exception thrown when trying to retrieve message from SQS queue '" + this.queueName + "' ", e);
         }
 
         return null;

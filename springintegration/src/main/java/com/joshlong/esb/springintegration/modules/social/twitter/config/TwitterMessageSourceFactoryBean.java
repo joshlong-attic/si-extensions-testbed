@@ -17,6 +17,7 @@ package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageSource;
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType;
+
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 
@@ -29,7 +30,7 @@ public class TwitterMessageSourceFactoryBean extends AbstractFactoryBean<Twitter
     private TwitterMessageType type;
 
     @Override
-    public Class<? extends TwitterMessageSource> getObjectType() {
+    public Class<?extends TwitterMessageSource> getObjectType() {
         return TwitterMessageSource.class;
     }
 

@@ -13,12 +13,13 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -36,8 +37,7 @@ public class SFTPSessionFactory implements FactoryBean<SFTPSession>, Initializin
     public void afterPropertiesSet() throws Exception {
         assert !StringUtils.isEmpty(this.remoteHost) : "remoteHost can't be empty!";
         assert !StringUtils.isEmpty(this.user) : "user can't be empty!";
-        assert !StringUtils.isEmpty(this.password) || !StringUtils.isEmpty(this.privateKey) || !StringUtils.isEmpty(
-                this.privateKeyPassphrase) : "you must configure either a password or a private key and/or a private key passphrase!";
+        assert !StringUtils.isEmpty(this.password) || !StringUtils.isEmpty(this.privateKey) || !StringUtils.isEmpty(this.privateKeyPassphrase) : "you must configure either a password or a private key and/or a private key passphrase!";
         assert this.port >= 0 : "port must be a valid number! ";
     }
 
@@ -46,11 +46,10 @@ public class SFTPSessionFactory implements FactoryBean<SFTPSession>, Initializin
     }
 
     public SFTPSession getObject() throws Exception {
-        return new SFTPSession(this.getUser(), this.getRemoteHost(), this.getPassword(), this.getPort(),
-                               this.getKnownHosts(), null, this.getPrivateKey(), this.getPrivateKeyPassphrase());
+        return new SFTPSession(this.getUser(), this.getRemoteHost(), this.getPassword(), this.getPort(), this.getKnownHosts(), null, this.getPrivateKey(), this.getPrivateKeyPassphrase());
     }
 
-    public Class<? extends SFTPSession> getObjectType() {
+    public Class<?extends SFTPSession> getObjectType() {
         return SFTPSession.class;
     }
 

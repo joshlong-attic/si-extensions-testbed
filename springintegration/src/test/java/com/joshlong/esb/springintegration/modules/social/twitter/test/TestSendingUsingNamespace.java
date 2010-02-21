@@ -16,6 +16,7 @@
 package com.joshlong.esb.springintegration.modules.social.twitter.test;
 
 import org.junit.Test;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
@@ -23,8 +24,9 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@ContextConfiguration(locations = {
-        "/social/twitter/sending_tweets_using_ns.xml"})
+@ContextConfiguration(locations =  {
+    "/social/twitter/sending_tweets_using_ns.xml"}
+)
 public class TestSendingUsingNamespace extends AbstractJUnit4SpringContextTests {
     @Test
     public void testTweeting() throws Throwable {

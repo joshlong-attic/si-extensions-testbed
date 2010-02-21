@@ -16,10 +16,14 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import com.jcraft.jsch.ChannelSftp;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageHeaders;
 import org.springframework.integration.message.MessageDeliveryException;
@@ -67,14 +71,14 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
     }
 
     public void handleMessage(final Message<?> message)
-            throws MessageRejectedException, MessageHandlingException, MessageDeliveryException {
+        throws MessageRejectedException, MessageHandlingException, MessageDeliveryException {
         assert this.pool != null : "need a working pool";
         assert message.getPayload() instanceof File : "the payload needs to be java.io.File";
 
         try {
             File inboundFilePayload = (File) message.getPayload();
 
-            if (inboundFilePayload != null && inboundFilePayload.exists()) {
+            if ((inboundFilePayload != null) && inboundFilePayload.exists()) {
                 if (sendFileToRemoteEndpoint(message, inboundFilePayload)) {
                     logger.debug("sent " + ((File) message.getPayload()).getAbsolutePath() + ".");
                 } else {
@@ -92,7 +96,7 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
     }
 
     private boolean sendFileToRemoteEndpoint(Message<?> message, File file)
-            throws Throwable {
+        throws Throwable {
         assert this.pool != null : "need a working pool";
 
         SFTPSession session = this.pool.getSession();
@@ -120,7 +124,7 @@ public class SFTPSendingMessageHandler implements MessageHandler, InitializingBe
             if (message != null) {
                 messageHeaders = message.getHeaders();
 
-                if (messageHeaders != null && messageHeaders.containsKey(SFTPConstants.SFTP_REMOTE_DIRECTORY_HEADER)) {
+                if ((messageHeaders != null) && messageHeaders.containsKey(SFTPConstants.SFTP_REMOTE_DIRECTORY_HEADER)) {
                     dynRd = (String) messageHeaders.get(SFTPConstants.SFTP_REMOTE_DIRECTORY_HEADER);
 
                     if (!StringUtils.isEmpty(dynRd)) {

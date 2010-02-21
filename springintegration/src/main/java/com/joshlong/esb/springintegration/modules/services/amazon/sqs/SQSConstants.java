@@ -13,8 +13,8 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>

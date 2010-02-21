@@ -16,18 +16,23 @@
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.core.io.Resource;
+
 import org.springframework.integration.core.Message;
 import org.springframework.integration.file.AcceptOnceFileListFilter;
 import org.springframework.integration.file.CompositeFileListFilter;
 import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.integration.file.PatternMatchingFileListFilter;
 import org.springframework.integration.message.MessageSource;
+
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 
 import java.io.File;
+
 import java.util.regex.Pattern;
 
 

@@ -13,19 +13,22 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.feed.test;
 
 import org.junit.Test;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
 
 /**
  * A simple demonstration of the feed entry consumption mechanism.
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@ContextConfiguration(locations = {"/net/feed/test_inbound_feeds.xml"})
+@ContextConfiguration(locations =  {
+    "/net/feed/test_inbound_feeds.xml"}
+)
 public class TestFeedReader extends AbstractJUnit4SpringContextTests {
     @Test
     public void testItGood() throws Throwable {

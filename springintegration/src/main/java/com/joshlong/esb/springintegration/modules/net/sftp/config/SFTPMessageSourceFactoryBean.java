@@ -19,24 +19,33 @@ import com.joshlong.esb.springintegration.modules.net.sftp.QueuedSFTPSessionPool
 import com.joshlong.esb.springintegration.modules.net.sftp.SFTPInboundSynchronizer;
 import com.joshlong.esb.springintegration.modules.net.sftp.SFTPMessageSource;
 import com.joshlong.esb.springintegration.modules.net.sftp.SFTPSessionFactory;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
+
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceEditor;
 import org.springframework.core.io.ResourceLoader;
+
 import org.springframework.integration.file.FileReadingMessageSource;
+
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
 import org.springframework.util.ErrorHandler;
 
 import java.io.File;
+
 import java.util.Map;
 
 
@@ -90,7 +99,7 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
     }
 
     @Override
-    public Class<? extends SFTPMessageSource> getObjectType() {
+    public Class<?extends SFTPMessageSource> getObjectType() {
         return SFTPMessageSource.class;
     }
 
@@ -122,7 +131,6 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
     // users will configure theeir entire experience using this class and trust that a working
     // component comes out as a result of their input
     // we need to support user/pw/keys/host/port/auto-delete properties
-
     public String getUsername() {
         return username;
     }
@@ -136,7 +144,7 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
     }
 
     public void setApplicationContext(final ApplicationContext applicationContext)
-            throws BeansException {
+        throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -231,19 +239,19 @@ public class SFTPMessageSourceFactoryBean extends AbstractFactoryBean<SFTPMessag
                 ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
                 ts.setPoolSize(10);
                 ts.setErrorHandler(new ErrorHandler() {
-                    public void handleError(Throwable t) {
-                        // todo make this forward a message onto the error channel (how does that work?)
-                        logger.debug("error! ", t);
-                    }
-                });
+                        public void handleError(Throwable t) {
+                            // todo make this forward a message onto the error channel (how does that work?)
+                            logger.debug("error! ", t);
+                        }
+                    });
 
                 ts.setWaitForTasksToCompleteOnShutdown(true);
                 ts.initialize();
                 this.taskScheduler = ts;
             }
 
-            SFTPSessionFactory sessionFactory = SFTPSessionUtils.buildSftpSessionFactory(
-                    this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(), this.getKeyFilePassword(), this.getPort());
+            SFTPSessionFactory sessionFactory = SFTPSessionUtils.buildSftpSessionFactory(this.getHost(), this.getPassword(), this.getUsername(), this.getKeyFile(), this.getKeyFilePassword(),
+                    this.getPort());
 
             QueuedSFTPSessionPool pool = new QueuedSFTPSessionPool(15, sessionFactory);
             pool.afterPropertiesSet();

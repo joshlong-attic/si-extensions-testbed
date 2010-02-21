@@ -13,19 +13,23 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.services.amazon.sqs;
 
 import com.xerox.amazonws.sqs2.Message;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.springframework.integration.annotation.ServiceActivator;
+
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class Receiver {
     @ServiceActivator
     public void handleNewMessage(org.springframework.integration.core.Message<?> msg) {
         System.out.println(StringUtils.repeat("=", 100));
+
         Message payload = (Message) msg.getPayload();
         System.out.println("the payload is " + payload);
         System.out.println("the msssage is " + payload.getMessageBody());

@@ -16,14 +16,18 @@
 package com.joshlong.esb.springintegration.modules.social.twitter.config;
 
 import com.joshlong.esb.springintegration.modules.social.twitter.TwitterMessageType;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.xml.ParserContext;
+
 import org.springframework.integration.config.xml.AbstractOutboundChannelAdapterParser;
 import org.springframework.integration.config.xml.AbstractPollingInboundChannelAdapterParser;
 import org.springframework.integration.config.xml.IntegrationNamespaceUtils;
+
 import org.w3c.dom.Element;
 
 

@@ -13,17 +13,19 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-
 package com.joshlong.esb.springintegration.modules.net.sftp;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
+
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -64,15 +66,8 @@ public class SFTPSession {
      *
      * @throws Exception thrown if any of a myriad of scenarios plays out
      */
-    public SFTPSession(String userName,
-                       String hostName,
-                       String userPassword,
-                       int port,
-                       String knownHostsFile,
-                       InputStream knownHostsInputStream,
-                       String privateKey,
-                       String pvKeyPassPhrase)
-            throws Exception {
+    public SFTPSession(String userName, String hostName, String userPassword, int port, String knownHostsFile, InputStream knownHostsInputStream, String privateKey, String pvKeyPassPhrase)
+        throws Exception {
         JSch jSch = new JSch();
 
         if (port <= 0) {
@@ -87,8 +82,7 @@ public class SFTPSession {
         if (!StringUtils.isEmpty(knownHostsFile)) {
             jSch.setKnownHosts(knownHostsFile);
             logger.debug("jsch.setKnownHosts(" + knownHostsFile + ")");
-        }
-        else if (null != knownHostsInputStream) {
+        } else if (null != knownHostsInputStream) {
             jSch.setKnownHosts(knownHostsInputStream);
             logger.debug("jsch.setKnownHosts(InputSteam)");
         }
@@ -98,8 +92,7 @@ public class SFTPSession {
             if (!StringUtils.isEmpty(privateKeyPassphrase)) {
                 jSch.addIdentity(this.privateKey, privateKeyPassphrase);
                 logger.debug(" jSch.addIdentity(" + this.privateKey + ", " + privateKeyPassphrase + ");");
-            }
-            else {
+            } else {
                 jSch.addIdentity(this.privateKey);
                 logger.debug(" jSch.addIdentity(" + this.privateKey + ");");
             }

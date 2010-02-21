@@ -28,7 +28,7 @@
         xmlns:lang="http://www.springframework.org/schema/lang"
         xsi:schemaLocation="
                         http://www.joshlong.com/schema/integration/net/xmpp http://www.joshlong.com/schema/integration/net/xmpp/joshlong-xmpp-1.0.xsd
-                        http://www.springframework.org/schema/beans http://www.sxpringframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-1.0.xsd
 					 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
@@ -40,23 +40,23 @@
     <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
                 p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
 
-    <channel id="xmppOutbound"/>
-
-
 
     <xmpp:xmpp-connection  id="myConn" user="${test.smack.user}"
-                                password="${test.smack.password}"
-                                host="talk.google.com" port="5222"
-                                resource="resource"
-                                sasl-mechanism-supported="PLAIN"
-                                sasl-mechanism-supported-index="0"
-                                service-name="gmail.com"/>
-
-    <inbound-channel-adapter ref="XMPPProducer" channel="xmppOutbound"/>
-
-    <xmpp:xmpp-outbound-adapter channel="xmppOutbound" xmpp-connection="myConn" />
+                                   password="${test.smack.password}"
+                                   host="talk.google.com" port="5222"
+                                   resource="resource"
+                                   sasl-mechanism-supported="PLAIN"
+                                   sasl-mechanism-supported-index="0"
+                                   service-name="gmail.com"/>
 
 
+    <channel id="mChannel"/>
+    <inbound-channel-adapter ref="XMPPProducer" channel="mChannel">
+        <poller>
+            <interval-trigger interval="1000"/>
+        </poller>
+    </inbound-channel-adapter>
+    <xmpp:xmpp-outbound-adapter channel="mChannel" xmpp-connection="myConn"/>
 
 
 
