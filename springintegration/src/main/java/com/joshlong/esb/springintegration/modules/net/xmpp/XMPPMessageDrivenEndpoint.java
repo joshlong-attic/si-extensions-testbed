@@ -1,12 +1,15 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 import org.apache.log4j.Logger;
+
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+
 import org.springframework.context.Lifecycle;
+
 import org.springframework.integration.channel.MessageChannelTemplate;
 import org.springframework.integration.core.MessageChannel;
 import org.springframework.integration.endpoint.AbstractEndpoint;
@@ -55,38 +58,9 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
     }
 
     private void forwardInboundXMPPMessageToSI(Chat chat, Message msg) {
-//        for (Message.Body body : msg.getBodies()) {
-//            logger.debug(body.getMessage());
-//        }
-
-        // todo is this a valid thing to do?
-//        if ((msg.getBodies() == null) || (msg.getBodies().size() == 0) || StringUtils.isEmpty(msg.getBody())) {
-//            return;
-//        }
-
-        org.springframework.integration.core.Message<Message> xmppSIMsg = MessageBuilder.withPayload(msg)
-                .setHeader( XMPPConstants.TYPE,msg.getType()).
-                 setHeader(XMPPConstants.CHAT, chat).build();
+        org.springframework.integration.core.Message<Message> xmppSIMsg = MessageBuilder.withPayload(msg).setHeader(XMPPConstants.TYPE, msg.getType()).setHeader(XMPPConstants.CHAT, chat).build();
         channelTemplate.send(xmppSIMsg, requestChannel);
-
-   ///     cleanUpXMPPMessage(chat,msg);
-
-
     }
-//
-//    /**
-//     * the problem is that XMPP is inherently stateful.
-//     *
-//     * even in the Smack APIs theres a user/chat map that grows. This Map is a ReferenceMap that lets mappings get destroyed
-//     * as the references become unreachable, but this is a non-predictable behavior.
-//     *
-//     * @param chat
-//     * @param msg
-//     */
-//    private void cleanUpXMPPMessage( Chat chat, Message msg)
-//    {
-//
-//    }
 
     @Override
     protected void doStart() {
@@ -114,23 +88,23 @@ public class XMPPMessageDrivenEndpoint extends AbstractEndpoint implements Lifec
 
         logger.debug("setXMPPConnection: " + xmppConnection.isConnected() + ":" + xmppConnection.isAuthenticated());
 
-        xmppConnection.addPacketListener(new PacketListener(){
-            public void processPacket(final Packet packet) {
-                org.jivesoftware.smack.packet.Message msg = (org.jivesoftware.smack.packet.Message) packet;
-                forwardInboundXMPPMessageToSI( xmppConnection.getChatManager().getThreadChat(msg.getThread()), msg);                
-            }
-        } ,null); // we don't have any kind of predicate stuff that we want to do so no need to specify a filter
-/*
-        ChatManager chatManager = xmppConnection.getChatManager();
-        chatManager.addChatListener(new ChatManagerListener() {
-                public void chatCreated(final Chat chat, final boolean createdLocally) {
-                    chat.addMessageListener(new MessageListener() {
-                            public void processMessage(final Chat chat, final Message message) {
-                                forwardInboundXMPPMessageToSI(chat, message);
-                            }
-                        });
+        xmppConnection.addPacketListener(new PacketListener() {
+                public void processPacket(final Packet packet) {
+                    org.jivesoftware.smack.packet.Message msg = (org.jivesoftware.smack.packet.Message) packet;
+                    forwardInboundXMPPMessageToSI(xmppConnection.getChatManager().getThreadChat(msg.getThread()), msg);
                 }
-            });*/
+            }, null); // we don't have any kind of predicate stuff that we want to do so no need to specify a filter
+                      /*
+                ChatManager chatManager = xmppConnection.getChatManager();
+                chatManager.addChatListener(new ChatManagerListener() {
+                        public void chatCreated(final Chat chat, final boolean createdLocally) {
+                            chat.addMessageListener(new MessageListener() {
+                                    public void processMessage(final Chat chat, final Message message) {
+                                        forwardInboundXMPPMessageToSI(chat, message);
+                                    }
+                                });
+                        }
+                    });*/
     }
 
     public String getUser() {
