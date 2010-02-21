@@ -1,24 +1,15 @@
 package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.apache.log4j.Logger;
-
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.packet.Message;
-
 import org.springframework.beans.factory.InitializingBean;
-
 import org.springframework.context.Lifecycle;
-
 import org.springframework.integration.message.MessageDeliveryException;
 import org.springframework.integration.message.MessageHandler;
 import org.springframework.integration.message.MessageHandlingException;
 import org.springframework.integration.message.MessageRejectedException;
-
 import org.springframework.util.Assert;
 
 
@@ -131,16 +122,11 @@ public class XMPPMessageSendingMessageHandler implements MessageHandler, Lifecyc
             Assert.state(!StringUtils.isEmpty(msgBody), "the message body can't be null");
 
             Chat chat = xmppConnection.getChatManager().createChat(destinationUser,
-                    new MessageListener() {
-                        public void processMessage(final Chat chat, final Message message) {
-                            // todo what's the userful result of this
-                            // right now the component will just drop the response on the floor or, hopefully, if theres an inbound endpoint setup the message
-                            // will be forwarded in tht component
-                            logger.debug("recieved message " + ToStringBuilder.reflectionToString(message));
-                        }
-                    });
+                  null );
+
 
             chat.sendMessage(msgBody);
+
         } catch (Throwable th) {
             logger.debug("exception thrown when trying to send a message", th);
         }
