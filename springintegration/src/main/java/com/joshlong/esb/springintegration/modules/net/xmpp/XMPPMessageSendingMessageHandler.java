@@ -121,8 +121,7 @@ public class XMPPMessageSendingMessageHandler implements MessageHandler, Lifecyc
             Assert.state(!StringUtils.isEmpty(destinationUser), "the destination user can't be null");
             Assert.state(!StringUtils.isEmpty(msgBody), "the message body can't be null");
 
-            Chat chat = xmppConnection.getChatManager().createChat(destinationUser,
-                  null );
+            Chat chat = xmppConnection.getChatManager().createChat(destinationUser, null );
 
 
             chat.sendMessage(msgBody);

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class XMPPProducer implements MessageSource<String> {
+    
     public Message<String> receive() {
         String msg = "the current time is " + System.currentTimeMillis() + "";
-
         return MessageBuilder.withPayload(msg).setHeader(XMPPConstants.TO_USER, System.getProperty("xmpp.test.to.user")).build();
     }
 }

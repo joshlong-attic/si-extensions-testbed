@@ -40,24 +40,22 @@
     <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
                 p:location="/test.properties" p:ignoreUnresolvablePlaceholders="true"/>
 
-
-    <xmpp:xmpp-connection  id="myConn" user="${test.smack.user}"
-                                   password="${test.smack.password}"
-                                   host="talk.google.com" port="5222"
-                                   resource="resource"
-                                   sasl-mechanism-supported="PLAIN"
-                                   sasl-mechanism-supported-index="0"
-                                   service-name="gmail.com"/>
-
+    <xmpp:xmpp-connection id="myConn"
+                          user="${test.smack.user}"
+                          password="${test.smack.password}"
+                          host="talk.google.com" port="5222"
+                          resource="resource"
+                          sasl-mechanism-supported="PLAIN"
+                          sasl-mechanism-supported-index="0"
+                          service-name="gmail.com"/>
 
     <channel id="mChannel"/>
+
     <inbound-channel-adapter ref="XMPPProducer" channel="mChannel">
         <poller>
-            <interval-trigger interval="1000"/>
+            <interval-trigger interval="10" time-unit="SECONDS"/>
         </poller>
     </inbound-channel-adapter>
+
     <xmpp:xmpp-outbound-adapter channel="mChannel" xmpp-connection="myConn"/>
-
-
-
 </beans:beans>
