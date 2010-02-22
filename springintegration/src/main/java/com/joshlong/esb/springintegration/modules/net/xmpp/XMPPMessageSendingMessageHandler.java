@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  */
 public class XMPPMessageSendingMessageHandler implements MessageHandler, Lifecycle, InitializingBean {
     private static final Logger logger = Logger.getLogger(XMPPMessageSendingMessageHandler.class);

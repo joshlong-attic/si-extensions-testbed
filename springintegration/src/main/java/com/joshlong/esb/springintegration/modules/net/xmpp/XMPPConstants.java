@@ -2,6 +2,7 @@ package com.joshlong.esb.springintegration.modules.net.xmpp;
 
 
 /**
+ * @author <a href="mailto:mario.gray@gmail.com">Mario Gray</a>
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 public class XMPPConstants {
