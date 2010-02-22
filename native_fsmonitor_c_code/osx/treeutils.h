@@ -13,6 +13,7 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
+
  
 
  /*
@@ -33,12 +34,36 @@
 #include <search.h>
 
 
+typedef struct twalknode {
+	ino_t d_ino;			/* file number of entry */
+	__uint16_t d_reclen;		/* length of this record */
+	__uint8_t  d_type; 		/* file type, see below */
+	__uint8_t  d_namlen;		/* length of string in d_name */
+	char d_name[__DARWIN_MAXNAMLEN + 1];	/* name must be no longer than this */
+	bool walked;
+	int  nodeID;
+} treeNode;
 
 
+
+struct directory {
+
+		treeNode *treeNodes;
+		void	 *binTree;
+		int		 elements;
+		int		 myID;
+} ;
+
+
+
+
+static bool qualifyFile(char *fp, char *name);	
+void destroyDirectory(struct directory *_inDirPtr);
+void buildDirectoryBinTree(struct directory *_inDir) ;
+struct directory getDirSnapshot(void *path);
 void printtree(void);
 ino_t * getDirectoryInodes(char *path);
 static void printme(const void *node, VISIT v, int k);
-int tree_test(char testPath);
-
-
-
+void printtree(void);
+int checkFileAdded(char *testPath, struct directory *_fDir,  void (*notice)(const void *));
+static int cmpTnode(const treeNode *a, const treeNode *b) ;

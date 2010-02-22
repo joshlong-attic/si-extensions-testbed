@@ -14,14 +14,18 @@
  *     limitations under the License.
  */
 
-/*
- Contributed by:
+ 
 
- Mario Gray (mario.gray@gmail.com)
-*/
+ /*
+     Contributed by:
 
-#include <eventstream.h>
-								 
+     Mario Gray (mario.gray@gmail.com)
+ */
+
+
+ 
+ #include <fseventstream.h>
+ #include <treeutils.h>								 
 
 void createEventStream(const char path[]) 
 {
@@ -85,6 +89,7 @@ void createEventStreamWithCallback(const char path[], FSEventStreamCallback call
 	
 }
 
+char thedir[50]="/tmp/foo";
 
 /**
 	Example call back function.  Use only to DISPLAY what events are being triggered.
@@ -107,4 +112,5 @@ void myCallbackFunction( ConstFSEventStreamRef streamRef,
 																	 eventFlags[i]);
 						}
 					}
+					
 					

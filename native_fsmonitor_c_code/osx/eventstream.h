@@ -14,11 +14,14 @@
  *     limitations under the License.
  */
 
-  /*
-   Contributed by:
+ 
 
-    Mario Gray (mario.gray@gmail.com)
-  */
+ /*
+     Contributed by:
+
+     Mario Gray (mario.gray@gmail.com)
+ */
+
 
 
 #include <CoreServices/CoreServices.h>
