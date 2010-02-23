@@ -39,10 +39,10 @@
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
         </dependency>
-        <dependency>
+      <!--  <dependency>
             <groupId>apache-vfs</groupId>
             <artifactId>commons-vfs</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.joshlong.esb.springintegration</groupId>
             <artifactId>pingfm4j</artifactId>

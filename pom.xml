@@ -58,16 +58,16 @@
             </dependency>
             <dependency>
 
-                 <groupId>jivesoftware</groupId>
-    <artifactId>smack</artifactId>
-    <version>3.1.0</version> 
+                <groupId>jivesoftware</groupId>
+                <artifactId>smack</artifactId>
+                <version>3.1.0</version>
 
             </dependency>
             <dependency>
 
-                 <groupId>jivesoftware</groupId>
-    <artifactId>smackx</artifactId>
-    <version>3.1.0</version>
+                <groupId>jivesoftware</groupId>
+                <artifactId>smackx</artifactId>
+                <version>3.1.0</version>
 
             </dependency>
             <dependency>
@@ -75,11 +75,11 @@
                 <artifactId>servlet-api</artifactId>
                 <version>2.5</version>
             </dependency>
-            <dependency>
+            <!--   <dependency>
                 <groupId>apache-vfs</groupId>
                 <artifactId>commons-vfs</artifactId>
                 <version>1.0-dev</version>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
@@ -333,4 +333,10 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+    </repositories>
 </project>
