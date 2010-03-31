@@ -34,6 +34,7 @@
 #include <search.h>
 
 
+// Contains intelligence for building a binaryTree of files
 typedef struct twalknode {
 	ino_t d_ino;			/* file number of entry */
 	__uint16_t d_reclen;		/* length of this record */
@@ -45,7 +46,7 @@ typedef struct twalknode {
 } treeNode;
 
 
-
+// Contains all VALID the nodes of a directory, plus the binary Tree of those nodes.
 struct directory {
 
 		treeNode *treeNodes;

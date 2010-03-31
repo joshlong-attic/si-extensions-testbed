@@ -29,10 +29,10 @@
 	
 	TreeUtils will work by giving differences in Directory structure from the last scan. 
 	(state change inference).
-	The primary object is to determine that a file has been added or remove.
+	The primary object is to determine that a file has been added or removed.
 	with the following additions in mind for the future:
 	- determine whether a file is 'HOT', that is actively being written.
-	- we may/not need to worry about renaming files (E.x. temp file rename after download)
+	- we may/not need to worry about renaming files (E.x. temp file rename after download) as long as inodes are the same, then we're OK.
 **/
 
 static const int	TEST_SLEEP_MS = 500;
@@ -41,8 +41,8 @@ static const int	TEST_SLEEP_MS = 500;
 	What if a or b were NULL ?
 */
 static int cmpTnode(const treeNode *a, const treeNode *b) 
-{		
-	printf("Compare a=%s , b=%s\n", a->d_name, b->d_name);
+{
+	//printf("Compare a=%s , b=%s\n", a->d_name, b->d_name);
 	if( a->d_ino > b->d_ino )  
 		return 1;
 	if( a->d_ino < b->d_ino )  
@@ -51,6 +51,9 @@ static int cmpTnode(const treeNode *a, const treeNode *b)
 
 }
 
+int cmpNodes(const void *a, const void *b) {
+	return cmpTnode((const treeNode *)a, (const treeNode *)b);
+}
 
 // Create snapshot buffer ( of dirents + metadata) of FILES for a single level directory
 struct directory getDirSnapshot(void *path) {
@@ -96,11 +99,15 @@ void buildDirectoryBinTree(struct directory *_inDirPtr) {
 	struct directory _inDir = *_inDirPtr;
 	void *binTree = *(void **)&_inDir.binTree;			// Make dereference to the binaryTree;
 	treeNode *treeNodes = _inDir.treeNodes;	
+	
 	int i= 0;
-	for(i=0;i<_inDir.elements; i++) {		
-			tsearch(treeNodes, binTree, (int (*)(const void*,const void*))cmpTnode);
+	for(i=0;i<_inDir.elements; i++) {	
+			tsearch(treeNodes, &binTree,  (int (*)(const void*,const void*))cmpTnode);
 			treeNodes++;
 	}
+	
+	tsearch(_inDir.treeNodes, &binTree,  (int (*)(const void*,const void*))cmpTnode);
+
 }
 
 // Destroys everything within a directory ( buffer + tree )
@@ -112,7 +119,7 @@ void destroyDirectory(struct directory *_inDirPtr) {
 		
 	int i=0;
 	for(i=0;i<_inDir.elements; i++) {
-		tdelete(treeNodes, binTree, (int (*)(const void*,const void*))cmpTnode);
+		tdelete(treeNodes, &binTree, (int (*)(const void*,const void*))cmpTnode);
 		treeNodes++;
 	}
 
@@ -131,7 +138,7 @@ int checkFileAdded(char *testPath,  struct directory *_fDirPtr, void (*notice)(c
 // re-scan (build tree) afterwards.
 	struct directory _fDir		= *_fDirPtr;
 	void *binTree				= *(void **)&_fDir.binTree;			// Make dereference to the binaryTree;
-printf("POINTER TO %p\n", cmpTnode);	
+//printf("POINTER TO %p\n", cmpTnode);	
 	struct directory _newDir	= getDirSnapshot(testPath);
 	void		*newBinTree		= *(void **)&_newDir.binTree;
 	treeNode	*newTreeNodes	= _newDir.treeNodes;
@@ -142,14 +149,13 @@ printf("POINTER TO %p\n", cmpTnode);
 	// Searches the old tree by using newtree keys (Will notify of keys that are in new tree but not in oldtree )
 	for( i =0;i<_newDir.elements; i++) {		
 		// Automagically add it to the new tree
-				
-		tsearch(newTreeNodes, newBinTree, (int (*)(const void*,const void*))cmpTnode);
+		tsearch(newTreeNodes, &newBinTree, (int (*)(const void*,const void*))cmpTnode);
 		  	
 			// Case 1:  All files must be at least 5 seconds old!
 			
 		// Search for a file in the old tree
 		// Not found in old tree == New File!	
-		void *fnd = tfind(newTreeNodes, binTree, (int (*)(const void*,const void*))cmpTnode);
+		void *fnd = tfind(newTreeNodes, &binTree, (int (*)(const void*,const void*))cmpTnode);
 		if(fnd==NULL) {
 			 if(notice!=NULL)
 					notice( newTreeNodes);
@@ -162,7 +168,7 @@ printf("POINTER TO %p\n", cmpTnode);
 	// Now look for removed files
 	for(i =0 ; i<_fDir.elements; i++) {
 	//printf("Scandel: %s\n", oldTreeNodes->d_name);
-		void *fnd = tfind(oldTreeNodes, newBinTree, (int (*)(const void*,const void*))cmpTnode);
+		void *fnd = tfind(oldTreeNodes, &newBinTree, (int (*)(const void*,const void*))cmpTnode);
 		if(fnd == NULL) {
 			printf("A file was deemed removed: %s\n", oldTreeNodes->d_name);
 		}
@@ -182,6 +188,9 @@ printf("POINTER TO %p\n", cmpTnode);
 	Test time between modificaitons to determine that a files has finished being written.
 	( fisrt == second ) : COMPLETE
 	( first != second ) : INCOMPLETE
+	
+	Strategy: Perhaps we take a series of files, then check them over a 1 second interval for the above 
+			condition. (perhaps a dispatch node which sleeps for N seconds, then wakes up looking for changes )
 **/
 bool testWriteComplete(const char *path) {
 	bool isWriteComplete = false;

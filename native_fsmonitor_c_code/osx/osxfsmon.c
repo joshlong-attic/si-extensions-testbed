@@ -38,6 +38,12 @@ void monitoringCallback(ConstFSEventStreamRef streamRef,
 						 const FSEventStreamEventId eventIds[]);
 void init();
 
+JNIEnv * genv;
+jobject *gobj;
+jstring *gjavaSpecifiedPath;
+jclass *gcls;
+jmethodID *gmid;
+
 /*
  * Class:     com_joshlong_esb_springintegration_modules_nativefs_NativeFileSystemMonitor
  * Method:    monitor
@@ -45,6 +51,10 @@ void init();
  */
 JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_NativeFileSystemMonitor_monitor
   (JNIEnv * env, jobject obj, jstring javaSpecifiedPath){
+
+genv = env;
+gobj = obj;
+gjavaSpecifiedPath = javaSpecifiedPath;
 
 	// Startup FSEvents, and monitor
 	// TODO: fix thread context so that we dont fork a child during runLoop initialization 
@@ -61,13 +71,16 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
 	jclass cls = (*env)->GetObjectClass(env, obj);
 	jmethodID mid = (*env)->GetMethodID(env, cls, "nativeFileRecieved", "(Ljava/lang/String;)V");
 
+gcls = cls;
+gmid = mid;
+
 	if( mid == 0 ) {
 	      printf( "method callback is not valid!") ;
 	      return ;
     	}
  	
 	init();		
-
+/*
 	while(true) {
 	
 		bool newEntryExists = false;
@@ -85,12 +98,12 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
 					(*env)->CallVoidMethod(env, obj, mid, jpath );
 
 					if ((*env)->MonitorExit(env, obj) != JNI_OK) {
-						printf("couldn't release lock!"); /* error handling */
+						printf("couldn't release lock!"); // error handling
 					};
 
 			}
 	}
-	
+	*/
 	destroyDirectory(&myDirectory);
 
 }
@@ -105,10 +118,22 @@ void init() {
 }
 
 
-
+// TODO: this is an 'add' notice only currently
 void FSnotice(const treeNode *tnode) {
 	if(tnode==NULL) return;
-		printf("Filename we noticed is: %s \n", tnode->d_name);
+									
+					if ((*genv)->MonitorEnter(genv, *gobj) != JNI_OK) {
+						printf( "couldn't accquire lock!");
+					}
+
+					
+					(*genv)->CallVoidMethod(genv, *gobj, *gmid, &tnode->d_name );
+
+					if ((*genv)->MonitorExit(genv, *gobj) != JNI_OK) {
+						printf("couldn't release lock!"); /* error handling */
+					};
+
+		
 	// TODO: Perform FOCQ add event
 	
 }
@@ -126,10 +151,14 @@ void monitoringCallback(ConstFSEventStreamRef streamRef,
 							// use the  'nativeFileRecieved' method once we've determined a file has been 
 							// fully added to the tree.
 							
+							int i=0;
 							// every event for write/attribe will trigger a directory state inspection function
 							//  ( this is where we determine files being added/removed )
+							for( i =0; i < numEvents; i++ ) {
 							
-							checkFileAdded(path, &myDirectory,(void (*)(const void *))FSnotice);						 
+								checkFileAdded(path, &myDirectory,(void (*)(const void *))FSnotice);						 
+							
+							}
 						}
 						 
 						 
