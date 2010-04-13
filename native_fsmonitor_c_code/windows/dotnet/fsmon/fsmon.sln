@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fsmon", "fsmon\fsmon.vcxproj", "{720B5FCF-3908-409A-A8D5-8E2FDC1327DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A5DBD983-FC88-4186-999E-CA360452C36A}"
+	ProjectSection(SolutionItems) = preProject
+		fsmon.vsmdi = fsmon.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = fsmon.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{720B5FCF-3908-409A-A8D5-8E2FDC1327DE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{720B5FCF-3908-409A-A8D5-8E2FDC1327DE}.Debug|Win32.Build.0 = Debug|Win32
+		{720B5FCF-3908-409A-A8D5-8E2FDC1327DE}.Release|Win32.ActiveCfg = Release|Win32
+		{720B5FCF-3908-409A-A8D5-8E2FDC1327DE}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
