@@ -67,7 +67,7 @@ JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_
 
 	
 // cache these
-	jclass cls = (t*env)->GetObjectClass(env, obj);
+	jclass cls = ( *env)->GetObjectClass(env, obj);
 	jmethodID mid = (*env)->GetMethodID(env, cls, "nativeFileRecieved", "(Ljava/lang/String;)V");
  	/* to figure out method signature, i ran:  javap -s -p -classpath . com.joshlong.esb.springintegration.modules.nativefs.NativeFileSystemMonitor  */
 	if( mid == 0 ) {
