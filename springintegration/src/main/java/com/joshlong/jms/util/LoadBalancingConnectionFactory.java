@@ -1,21 +1,14 @@
 package com.joshlong.jms.util;
 
-import org.apache.commons.lang.math.RandomUtils;
-
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.Serializable;
-
+import javax.jms.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.jms.*;
 
 
 /**
@@ -51,18 +44,22 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
     public void afterPropertiesSet() throws Exception {
         logger.debug("afterPropertiesSet()");
 
-        ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory> adaptedCfMap = new ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory>();
+        ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory> adaptedCfMap = 
+                new ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory>();
 
         for (ConnectionFactory connectionFactory : this.receivingConnectionFactories) {
-            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = adaptedCfMap.putIfAbsent(connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory));
-            adaptedDelegatedConnectionFactory.setUseForReceive(true);
+
+            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = adaptedCfMap.putIfAbsent(
+                    connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory) );
+          //  adaptedDelegatedConnectionFactory.setUseForReceive(true);
 
             //adaptedDelegatedConnectionFactory.afterPropertiesSet();
         }
 
         for (ConnectionFactory connectionFactory : this.sendingConnectionFactories) {
-            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = adaptedCfMap.putIfAbsent(connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory));
-            adaptedDelegatedConnectionFactory.setUseForSend(true);
+            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = adaptedCfMap.putIfAbsent(
+                    connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory));
+        //    adaptedDelegatedConnectionFactory.setUseForSend(true);
 
             // adaptedDelegatedConnectionFactory.afterPropertiesSet();
         }
