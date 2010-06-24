@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoadBalancingConnectionFactory implements QueueConnectionFactory, TopicConnectionFactory, ExceptionListener, InitializingBean, DisposableBean {
     private static final Logger logger = Logger.getLogger(LoadBalancingConnectionFactory.class);
     private CopyOnWriteArrayList<AdaptedDelegatedConnectionFactory> delegatedConnectionFactories = new CopyOnWriteArrayList<AdaptedDelegatedConnectionFactory>();
+
+    // these are temporary, do not use 
     private Set<ConnectionFactory> sendingConnectionFactories = new HashSet<ConnectionFactory>();
     private Set<ConnectionFactory> receivingConnectionFactories = new HashSet<ConnectionFactory>();
 
@@ -101,14 +103,13 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
 
     @Override
     public Connection createConnection() throws JMSException {
-        return null;
+        return this.createConnection(null,null);
     }
 
     @Override
     public Connection createConnection(String usr, String pw)
         throws JMSException {
         LoadBalancingConnection loadBalancingConnection = new LoadBalancingConnection(this.delegatedConnectionFactories);
-
         try {
             loadBalancingConnection.setPassword(pw);
             loadBalancingConnection.setUser(usr);
@@ -132,9 +133,11 @@ class LoadBalancingConnection implements Connection, InitializingBean {
     private String user;
     private String password;
     private ConcurrentSkipListSet<AdaptedDelegatedConnectionFactory> connectionFactories = new ConcurrentSkipListSet<AdaptedDelegatedConnectionFactory>();
-    private ConcurrentSkipListSet<Connection> connections = new ConcurrentSkipListSet<Connection>();
+    private CopyOnWriteArrayList<Connection> connections = new CopyOnWriteArrayList<Connection>();
     private ExceptionListener exceptionListener;
     private boolean shouldAutoVaryClientID = true;
+
+    private SelectionStrategy<Connection> selectionStrategy = new RoundRobinSelectionStrategy<Connection>();
 
     public LoadBalancingConnection(Collection<AdaptedDelegatedConnectionFactory> cfSet) {
         Assert.notEmpty(cfSet, "the collection of ConnectionFactory instances can not be empty");
@@ -231,7 +234,7 @@ class LoadBalancingConnection implements Connection, InitializingBean {
     }
 
     Connection nextConnection() {
-        return this.connections.iterator().next();
+        return  this.selectionStrategy.which( this.connections);
     }
 
     @Override
