@@ -1,17 +1,15 @@
 package com.joshlong.jms.util;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.jms.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.jms.*;
 
 
 /**
@@ -80,24 +78,29 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
 
     @Override
     public QueueConnection createQueueConnection() throws JMSException {
-        return null;
+        return  loadBalancingConnection;
     }
 
     @Override
     public QueueConnection createQueueConnection(String s, String s1)
         throws JMSException {
-        return null;
+
+        throw new UnsupportedOperationException("invalid semantics: you can't create a QueueConnection with a user and " +
+                                            "password using '" + LoadBalancingConnection.class.getName() + "'");
     }
 
     @Override
     public TopicConnection createTopicConnection() throws JMSException {
-        return null;
+        return  loadBalancingConnection ;
     }
 
     @Override
     public TopicConnection createTopicConnection(String s, String s1)
         throws JMSException {
-        return null;
+
+        throw new UnsupportedOperationException("invalid semantics: you can't create a TopicConnection with a user and " +
+                                            "password using '" + LoadBalancingConnection.class.getName() + "'");
+
     }
 
     @Override
@@ -109,6 +112,7 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
     public Connection createConnection(String usr, String pw)
         throws JMSException {
         // todo 
-        throw new UnsupportedOperationException("invalid semantics: you can't create '" + LoadBalancingConnection.class.getName() + "'");
+        throw new UnsupportedOperationException("invalid semantics: you can't create a Connection with a user and " +
+                                            "password using '" + LoadBalancingConnection.class.getName() + "'");
     }
 }

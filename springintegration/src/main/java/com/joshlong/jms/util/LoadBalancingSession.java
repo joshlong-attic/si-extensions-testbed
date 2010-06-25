@@ -167,11 +167,7 @@ public class LoadBalancingSession implements Session {
         throws JMSException {
         return getSession().createDurableSubscriber(topic, s, s1, b);
     }
-
- /*   private Session getReceiveSession() {
-        return this.receiveSession;
-    }*/
-
+ 
     private Session getSession() {
         return this.sendSession;
     }

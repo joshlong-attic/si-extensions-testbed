@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author jlong
  */
-public class LoadBalancingConnection implements Connection, InitializingBean {
+public class LoadBalancingConnection implements Connection, QueueConnection, TopicConnection, InitializingBean {
     private String user;
     private String password;
     private ConcurrentSkipListSet<AdaptedDelegatedConnectionFactory> connectionFactories = new ConcurrentSkipListSet<AdaptedDelegatedConnectionFactory>();
@@ -92,8 +92,7 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     @Override
     public Session createSession(boolean transacted, int ackMode)
         throws JMSException {
-        Connection c = this.nextConnection();
-        return new LoadBalancingSession(this,  c, transacted, ackMode);
+        return new LoadBalancingSession(this, this.nextConnection(), transacted, ackMode);
     }
 
     @Override
@@ -112,6 +111,7 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     @Override
     public void setClientID(String s) throws JMSException {
         int ctr = 0;
+
         for (Connection connection : this.connections) {
             connection.setClientID(s + (this.shouldAutoVaryClientID ? StringUtils.EMPTY : ctr++));
         }
@@ -125,10 +125,6 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     private Connection nextConnection() {
         return this.selectionStrategy.which(this.connections);
     }
-
-  /*  private Connection nextSendConnection() {
-        return this.selectionStrategy.which(this.connections);
-    }*/
 
     @Override
     public ExceptionListener getExceptionListener() throws JMSException {
@@ -168,5 +164,29 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i)
         throws JMSException {
         return nextConnection().createConnectionConsumer(topic, s, serverSessionPool, i);
+    }
+
+    @Override
+    public QueueSession createQueueSession(final boolean transacted, final int acknowledgeMode)
+        throws JMSException {
+        return ((QueueConnection) this.nextConnection()).createQueueSession( transacted , acknowledgeMode );
+    }
+
+    @Override
+    public ConnectionConsumer createConnectionConsumer(final Topic topic, final String messageSelector, final ServerSessionPool sessionPool, final int maxMessages)
+        throws JMSException {
+        return  this.nextConnection().createConnectionConsumer(topic, messageSelector , sessionPool , maxMessages);
+    }
+
+    @Override
+    public TopicSession createTopicSession(final boolean transacted, final int acknowledgeMode)
+        throws JMSException {
+       return ((TopicConnection) this.nextConnection()).createTopicSession( transacted , acknowledgeMode );
+    }
+
+    @Override
+    public ConnectionConsumer createConnectionConsumer(final Queue queue, final String messageSelector, final ServerSessionPool sessionPool, final int maxMessages)
+        throws JMSException {
+        return nextConnection().createConnectionConsumer(queue,messageSelector , sessionPool , maxMessages ) ;
     }
 }
