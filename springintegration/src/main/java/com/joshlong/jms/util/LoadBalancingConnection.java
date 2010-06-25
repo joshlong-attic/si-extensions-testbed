@@ -1,16 +1,13 @@
 package com.joshlong.jms.util;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.beans.factory.InitializingBean;
-
 import org.springframework.util.Assert;
 
+import javax.jms.*;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.jms.*;
 
 
 /**
@@ -95,7 +92,8 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     @Override
     public Session createSession(boolean transacted, int ackMode)
         throws JMSException {
-        return new LoadBalancingSession(this, transacted, ackMode);
+        Connection c = this.nextConnection();
+        return new LoadBalancingSession(this,  c, transacted, ackMode);
     }
 
     @Override
@@ -114,7 +112,6 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     @Override
     public void setClientID(String s) throws JMSException {
         int ctr = 0;
-
         for (Connection connection : this.connections) {
             connection.setClientID(s + (this.shouldAutoVaryClientID ? StringUtils.EMPTY : ctr++));
         }
@@ -125,9 +122,13 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
         throw new UnsupportedOperationException("invalid semantics. Can't call 'getMetaData' on '" + LoadBalancingConnection.class + "'");
     }
 
-    Connection nextConnection() {
+    private Connection nextConnection() {
         return this.selectionStrategy.which(this.connections);
     }
+
+  /*  private Connection nextSendConnection() {
+        return this.selectionStrategy.which(this.connections);
+    }*/
 
     @Override
     public ExceptionListener getExceptionListener() throws JMSException {
@@ -160,12 +161,12 @@ public class LoadBalancingConnection implements Connection, InitializingBean {
     @Override
     public ConnectionConsumer createConnectionConsumer(Destination destination, String s, ServerSessionPool serverSessionPool, int i)
         throws JMSException {
-        return null;
+        return nextConnection().createConnectionConsumer(destination, s, serverSessionPool, i);
     }
 
     @Override
     public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i)
         throws JMSException {
-        return null;
+        return nextConnection().createConnectionConsumer(topic, s, serverSessionPool, i);
     }
 }

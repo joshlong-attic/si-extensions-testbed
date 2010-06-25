@@ -1,15 +1,17 @@
 package com.joshlong.jms.util;
 
 import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.jms.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.jms.*;
 
 
 /**
@@ -22,15 +24,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class LoadBalancingConnectionFactory implements QueueConnectionFactory, TopicConnectionFactory, ExceptionListener, InitializingBean, DisposableBean {
     private static final Logger logger = Logger.getLogger(LoadBalancingConnectionFactory.class);
     private CopyOnWriteArrayList<AdaptedDelegatedConnectionFactory> delegatedConnectionFactories = new CopyOnWriteArrayList<AdaptedDelegatedConnectionFactory>();
+    private LoadBalancingConnection loadBalancingConnection;
+
+    // these are temporary, do not use
+    private Set<ConnectionFactory> sendingConnectionFactories = new HashSet<ConnectionFactory>();
+    private Set<ConnectionFactory> receivingConnectionFactories = new HashSet<ConnectionFactory>();
+    private SelectionStrategy<AdaptedDelegatedConnectionFactory> selectionStrategy = new RoundRobinSelectionStrategy<AdaptedDelegatedConnectionFactory>();
 
     public List<AdaptedDelegatedConnectionFactory> getDelegatedConnectionFactories() {
         return delegatedConnectionFactories;
     }
-// these are temporary, do not use
-    private Set<ConnectionFactory> sendingConnectionFactories = new HashSet<ConnectionFactory>();
-    private Set<ConnectionFactory> receivingConnectionFactories = new HashSet<ConnectionFactory>();
-
-    private SelectionStrategy<AdaptedDelegatedConnectionFactory> selectionStrategy = new RoundRobinSelectionStrategy<AdaptedDelegatedConnectionFactory>();
 
     public void setReceivingConnectionFactories(final Set<ConnectionFactory> receivingConnectionFactories) {
         this.receivingConnectionFactories = receivingConnectionFactories;
@@ -52,12 +55,12 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
         ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory> adaptedCfMap = new ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory>();
 
         for (ConnectionFactory connectionFactory : this.receivingConnectionFactories) {
-            adaptedCfMap.putIfAbsent(connectionFactory,  new AdaptedDelegatedConnectionFactory(connectionFactory) );
+            adaptedCfMap.putIfAbsent(connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory));
             adaptedCfMap.get(connectionFactory).setUseForReceive(true);
         }
 
         for (ConnectionFactory connectionFactory : this.sendingConnectionFactories) {
-           adaptedCfMap.putIfAbsent(connectionFactory,  new AdaptedDelegatedConnectionFactory(connectionFactory) );
+            adaptedCfMap.putIfAbsent(connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory));
             adaptedCfMap.get(connectionFactory).setUseForSend(true);
         }
 
@@ -65,8 +68,12 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
 
         this.sendingConnectionFactories.clear();
         this.receivingConnectionFactories.clear();
+
+        loadBalancingConnection = new LoadBalancingConnection(this.delegatedConnectionFactories);
+        loadBalancingConnection.afterPropertiesSet();
     }
 
+    // todo whats this do? 
     @Override
     public void onException(final JMSException e) {
     }
@@ -95,23 +102,13 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
 
     @Override
     public Connection createConnection() throws JMSException {
-        return this.createConnection(null, null);
+        return loadBalancingConnection;
     }
 
     @Override
     public Connection createConnection(String usr, String pw)
         throws JMSException {
-        LoadBalancingConnection loadBalancingConnection = new LoadBalancingConnection(this.delegatedConnectionFactories);
-
-        try {
-            loadBalancingConnection.setPassword(pw);
-            loadBalancingConnection.setUser(usr);
-            loadBalancingConnection.afterPropertiesSet();
-        } catch (Exception e) {
-            logger.debug("exception thrown when trying to initialize LoadBalancingConnection instance", e);
-            loadBalancingConnection = null;
-        }
-
-        return loadBalancingConnection;
+        // todo 
+        throw new UnsupportedOperationException("invalid semantics: you can't create '" + LoadBalancingConnection.class.getName() + "'");
     }
 }
