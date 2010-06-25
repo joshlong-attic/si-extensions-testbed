@@ -29,8 +29,9 @@
     </description>
     <properties>
         <maven.test.skip>true</maven.test.skip>
-        <spring.version>3.0.0.RELEASE</spring.version>                <xbean.version>3.6</xbean.version>
-    <activemq.version>5.3.2</activemq.version>
+        <spring.version>3.0.3.RELEASE</spring.version>
+        <xbean.version>3.6</xbean.version>
+        <activemq.version>5.3.2</activemq.version>
         <junit.version>3.8.2</junit.version>
         <spring.integration.version>1.0.3.RELEASE</spring.integration.version>
     </properties>

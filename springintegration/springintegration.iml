@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -25,11 +30,13 @@
     <orderEntry type="library" exported="" name="Maven: org.springframework.osgi:spring-osgi-core:1.2.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.springframework.osgi:spring-osgi-io:1.2.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.apache.geronimo.specs:geronimo-j2ee-management_1.0_spec:1.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-context:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-beans:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-core:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-asm:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-expression:3.0.0.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-context:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-aop:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-asm:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-beans:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-core:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-expression:3.0.3.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-net:commons-net:2.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.apache.activemq:activemq-ra:5.3.2" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.apache.geronimo.specs:geronimo-j2ee-connector_1.5_spec:2.0.0" level="project" />
@@ -42,9 +49,8 @@
     <orderEntry type="library" exported="" name="Maven: oro:oro:2.0.8" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.sf.josql:josql:1.5" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.sf.josql:gentlyweb-utils:1.5" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-jms:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: aopalliance:aopalliance:1.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-aop:3.0.0.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-jms:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-tx:3.0.3.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.thoughtworks.xstream:xstream:1.3.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" exported="" name="Maven: xmlpull:xmlpull:1.1.3.4d_b4_min" level="project" />
@@ -75,18 +81,17 @@
     <orderEntry type="library" exported="" name="Maven: commons-io:commons-io:1.3" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-beanutils:commons-beanutils:1.7.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: c3p0:c3p0:0.9.0.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-test:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-instrument:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-tx:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-oxm:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-orm:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-jdbc:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-webmvc:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-web:3.0.0.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-context-support:3.0.0.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-test:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-instrument:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-oxm:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-orm:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-jdbc:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-webmvc:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-context-support:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-web:3.0.3.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.annotation:jsr250-api:1.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.transaction:jta:1.0.1B" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-aspects:3.0.0.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.springframework:spring-aspects:3.0.3.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-digester:commons-digester:1.7" level="project" />
     <orderEntry type="library" exported="" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.springframework.integration:spring-integration-core:1.0.3.RELEASE" level="project" />

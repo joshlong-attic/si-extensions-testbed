@@ -1,10 +1,6 @@
 package com.joshlong.jms.util;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
+import javax.jms.*;
 
 
 /**
@@ -12,10 +8,10 @@ import javax.jms.JMSException;
  *
  * @author Josh Long
  */
-public class AdaptedDelegatedConnectionFactory implements ConnectionFactory, Comparable {
-    private boolean useForSend = false;
+public class AdaptedDelegatedConnectionFactory implements ConnectionFactory, TopicConnectionFactory, QueueConnectionFactory, Comparable {
+    private boolean useForSend;
     private ConnectionFactory connectionFactory;
-    private boolean useForReceive = false;
+    private boolean useForReceive;
 
     public AdaptedDelegatedConnectionFactory(ConnectionFactory targetConnectionFactory, boolean s, boolean c) {
         this.connectionFactory = targetConnectionFactory;
@@ -29,40 +25,27 @@ public class AdaptedDelegatedConnectionFactory implements ConnectionFactory, Com
 
     @Override
     public int compareTo(final Object o) {
-        ConnectionFactory thatCf = (ConnectionFactory) o,
-                            thisCf =this;
         if (o instanceof AdaptedDelegatedConnectionFactory) {
-            thatCf = ((AdaptedDelegatedConnectionFactory) o).connectionFactory;
-            thisCf = this.connectionFactory;
+            AdaptedDelegatedConnectionFactory thatCf = (AdaptedDelegatedConnectionFactory) o;
+            AdaptedDelegatedConnectionFactory thisCf = (AdaptedDelegatedConnectionFactory) this;
 
-            if(thatCf instanceof Comparable && thisCf instanceof Comparable){
-
-                Comparable a = ((Comparable) thisCf) ;
-                Comparable b = ((Comparable) thatCf) ;
-                return a.compareTo(b) ;
-            }
-
+            return thatCf.hashCode() - thisCf.hashCode();
         }
-        int compareTo = CompareToBuilder.reflectionCompare(  thatCf, thisCf );
-        return compareTo ;
 
+        return -1;
     }
 
     @Override
     public int hashCode() {
-        return this.connectionFactory.hashCode();
+        return this.getConnectionFactory().hashCode();
     }
 
     @Override
     public boolean equals(final Object o) {
         if (o instanceof AdaptedDelegatedConnectionFactory) {
-            if (o == this) {
-                return true;
-            }
+            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = (AdaptedDelegatedConnectionFactory) o;
 
-            if (((AdaptedDelegatedConnectionFactory) o).connectionFactory.equals(this.connectionFactory)) {
-                return true;
-            }
+            return (o == this) || (adaptedDelegatedConnectionFactory.compareTo(this) == 0);
         }
 
         return false;
@@ -70,13 +53,13 @@ public class AdaptedDelegatedConnectionFactory implements ConnectionFactory, Com
 
     @Override
     public Connection createConnection() throws JMSException {
-        return this.connectionFactory.createConnection();
+        return this.getConnectionFactory().createConnection();
     }
 
     @Override
     public Connection createConnection(final String s, final String s1)
         throws JMSException {
-        return this.connectionFactory.createConnection(s, s1);
+        return this.getConnectionFactory().createConnection(s, s1);
     }
 
     public boolean isUseForReceive() {
@@ -93,5 +76,47 @@ public class AdaptedDelegatedConnectionFactory implements ConnectionFactory, Com
 
     public void setUseForSend(final boolean useForSend) {
         this.useForSend = useForSend;
+    }
+
+    private ConnectionFactory getConnectionFactory() {
+        return this.connectionFactory;
+    }
+
+    private QueueConnectionFactory getQueueConnectionFactory() {
+        if (this.connectionFactory instanceof QueueConnectionFactory) {
+            return (QueueConnectionFactory) this.connectionFactory;
+        }
+
+        return null;
+    }
+
+    private TopicConnectionFactory getTopicConnectionFactory() {
+        if (this.connectionFactory instanceof TopicConnectionFactory) {
+            return (TopicConnectionFactory) this.connectionFactory;
+        }
+
+        return null;
+    }
+
+    @Override
+    public QueueConnection createQueueConnection() throws JMSException {
+        return this.getQueueConnectionFactory().createQueueConnection();
+    }
+
+    @Override
+    public QueueConnection createQueueConnection(final String userName, final String password)
+        throws JMSException {
+        return this.getQueueConnectionFactory().createQueueConnection(userName, password);
+    }
+
+    @Override
+    public TopicConnection createTopicConnection() throws JMSException {
+        return this.getTopicConnectionFactory().createTopicConnection();
+    }
+
+    @Override
+    public TopicConnection createTopicConnection(final String userName, final String password)
+        throws JMSException {
+        return this.getTopicConnectionFactory().createTopicConnection(userName, password);
     }
 }

@@ -1,18 +1,16 @@
 package com.joshlong.jms.util;
 
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
-
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -42,8 +40,7 @@ public class Main {
 
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.afterPropertiesSet();
-        jmsTemplate.send("testLoadBalancer",
-            new MessageCreator() {
+        jmsTemplate.send("testLoadBalancer", new MessageCreator() {
                 @Override
                 public Message createMessage(final Session session)
                     throws JMSException {

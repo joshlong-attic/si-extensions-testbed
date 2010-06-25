@@ -6,6 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.jms.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,9 +23,13 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
     private static final Logger logger = Logger.getLogger(LoadBalancingConnectionFactory.class);
     private CopyOnWriteArrayList<AdaptedDelegatedConnectionFactory> delegatedConnectionFactories = new CopyOnWriteArrayList<AdaptedDelegatedConnectionFactory>();
 
-    // these are temporary, do not use 
+    public List<AdaptedDelegatedConnectionFactory> getDelegatedConnectionFactories() {
+        return delegatedConnectionFactories;
+    }
+// these are temporary, do not use
     private Set<ConnectionFactory> sendingConnectionFactories = new HashSet<ConnectionFactory>();
     private Set<ConnectionFactory> receivingConnectionFactories = new HashSet<ConnectionFactory>();
+
     private SelectionStrategy<AdaptedDelegatedConnectionFactory> selectionStrategy = new RoundRobinSelectionStrategy<AdaptedDelegatedConnectionFactory>();
 
     public void setReceivingConnectionFactories(final Set<ConnectionFactory> receivingConnectionFactories) {
@@ -44,24 +49,16 @@ public class LoadBalancingConnectionFactory implements QueueConnectionFactory, T
     public void afterPropertiesSet() throws Exception {
         logger.debug("afterPropertiesSet()");
 
-        ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory> adaptedCfMap = 
-                new ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory>();
+        ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory> adaptedCfMap = new ConcurrentHashMap<ConnectionFactory, AdaptedDelegatedConnectionFactory>();
 
         for (ConnectionFactory connectionFactory : this.receivingConnectionFactories) {
-
-            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = adaptedCfMap.putIfAbsent(
-                    connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory) );
-          //  adaptedDelegatedConnectionFactory.setUseForReceive(true);
-
-            //adaptedDelegatedConnectionFactory.afterPropertiesSet();
+            adaptedCfMap.putIfAbsent(connectionFactory,  new AdaptedDelegatedConnectionFactory(connectionFactory) );
+            adaptedCfMap.get(connectionFactory).setUseForReceive(true);
         }
 
         for (ConnectionFactory connectionFactory : this.sendingConnectionFactories) {
-            AdaptedDelegatedConnectionFactory adaptedDelegatedConnectionFactory = adaptedCfMap.putIfAbsent(
-                    connectionFactory, new AdaptedDelegatedConnectionFactory(connectionFactory));
-        //    adaptedDelegatedConnectionFactory.setUseForSend(true);
-
-            // adaptedDelegatedConnectionFactory.afterPropertiesSet();
+           adaptedCfMap.putIfAbsent(connectionFactory,  new AdaptedDelegatedConnectionFactory(connectionFactory) );
+            adaptedCfMap.get(connectionFactory).setUseForSend(true);
         }
 
         this.delegatedConnectionFactories.addAll(adaptedCfMap.values());
