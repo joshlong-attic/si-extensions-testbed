@@ -24,7 +24,7 @@ LDFLAGS=-dynamiclib ${LIBFLAGS}
 LIBRARY=osxfsmon.dylib
 
 test: 
-	${CC} ${CFLAGS} ${LIBFLAGS} -o fseTest fseventstream.c treeutils.c main.c
+	${CC} ${CFLAGS} ${LIBFLAGS} -o fseTest eventstream.c treeutils.c main.c
 
 all: 
-	${CC} ${CFLAGS} ${LIBFLAGS} ${LDFLAGS} -o ${LIBRARY}  fseventstream.c treeutils.c osxfsmon.c
+	${CC} ${CFLAGS} ${LIBFLAGS} ${LDFLAGS} -o ${LIBRARY}  EVENtstream.c treeutils.c osxfsmon.c
