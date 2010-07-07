@@ -24,7 +24,7 @@
 
 
  
- #include <fseventstream.h>
+ #include <eventstream.h>
  #include <treeutils.h>								 
 
 void createEventStream(const char path[]) 
