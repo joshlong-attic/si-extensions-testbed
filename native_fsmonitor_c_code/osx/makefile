@@ -18,7 +18,7 @@
 
 CC=gcc
 INCFLAGS=-I.
-CFLAGS=-I.
+CFLAGS=-I. -I${JAVA_HOME}/include
 LIBFLAGS=-framework CoreServices -framework CoreFoundation -framework Carbon
 LDFLAGS=-dynamiclib ${LIBFLAGS}
 LIBRARY=osxfsmon.dylib
