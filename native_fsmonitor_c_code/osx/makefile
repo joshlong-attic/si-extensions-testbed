@@ -15,16 +15,19 @@
 #     Contributed by:
 #     Mario Gray (mario.gray@gmail.com)
 #     
-
 CC=gcc
 INCFLAGS=-I.
-CFLAGS=-I. -I${JAVA_HOME}/include
+JAVAHOME=/System/Library/Frameworks/JavaVM.framework/Home
+CFLAGS=-I. -I${JAVAHOME}/include
 LIBFLAGS=-framework CoreServices -framework CoreFoundation -framework Carbon
 LDFLAGS=-dynamiclib ${LIBFLAGS}
-LIBRARY=osxfsmon.dylib
+LIBRARY=libsifsmon.dylib
+INSTALLNAME=-install_name /usr/local/lib/libsifsmon.dylib
+ARCH=-arch i386 -arch x86_64
+
+all:
+	${CC} ${ARCH} ${CFLAGS} ${LIBFLAGS} ${LDFLAGS} -o ${LIBRARY}  fseventstream.c treeutils.c sifsmon.c ${INSTALLNAME}
 
 test: 
-	${CC} ${CFLAGS} ${LIBFLAGS} -o fseTest eventstream.c treeutils.c main.c
+	${CC} ${CFLAGS} ${LIBFLAGS} -o fseTest fseventstream.c treeutils.c main.c
 
-all: 
-	${CC} ${CFLAGS} ${LIBFLAGS} ${LDFLAGS} -o ${LIBRARY}  EVENtstream.c treeutils.c osxfsmon.c
