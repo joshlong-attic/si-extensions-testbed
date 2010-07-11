@@ -54,6 +54,8 @@ jmethodID *gmid;
 JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_NativeFileSystemMonitor_monitor
   (JNIEnv * env, jobject obj, jstring javaSpecifiedPath){
 
+    printf (" HELLO WORLD !!! \n");
+
 genv = env;
 gobj = obj;
 gjavaSpecifiedPath = javaSpecifiedPath;
@@ -81,7 +83,7 @@ gmid = mid;
 	      return ;
     	}
  		
-	init();		
+	initMonitor();		
 /*
 	while(true) {
 	
@@ -111,7 +113,7 @@ gmid = mid;
 }
 	
 	
-void init() {
+void initMonitor() {
 	myDirectory = getDirSnapshot(path);
 	buildDirectoryBinTree(&myDirectory);
 	
