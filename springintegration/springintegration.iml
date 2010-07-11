@@ -5,7 +5,7 @@
       <configuration />
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -89,6 +89,8 @@
     <orderEntry type="library" exported="" name="Maven: org.springframework:spring-webmvc:3.0.3.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.springframework:spring-context-support:3.0.3.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.springframework:spring-web:3.0.3.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Maven: stax:stax:1.2.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.annotation:jsr250-api:1.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.transaction:jta:1.0.1B" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.springframework:spring-aspects:3.0.3.RELEASE" level="project" />

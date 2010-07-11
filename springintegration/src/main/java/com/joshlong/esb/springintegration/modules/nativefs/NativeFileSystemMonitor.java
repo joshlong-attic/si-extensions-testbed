@@ -15,6 +15,7 @@
  */
 package com.joshlong.esb.springintegration.modules.nativefs;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -25,6 +26,8 @@ import java.io.File;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.commons.lang.SystemUtils;
 
 
 /**
@@ -38,8 +41,13 @@ public class NativeFileSystemMonitor {
     private static final Logger logger = Logger.getLogger(NativeFileSystemMonitor.class);
 
     static {
+        try {
         System.loadLibrary("sifsmon"); // todo  : should I make this in turn delegate to a System.getProperty call so we can move this data to launch arguments?
-    }
+    }       catch (Throwable  t){
+           logger. info ( "Received exception " + ExceptionUtils.getFullStackTrace( t)); ;
+
+        }}
+
 
     private File directoryToMonitor;
     private volatile LinkedBlockingQueue<String> additions;
@@ -104,16 +112,16 @@ public class NativeFileSystemMonitor {
 
         // I have no idea the implications of thread safety for this sort of thing
         this.executor.execute(new Runnable() {
-                public void run() {
-                    do {
-                        try {
-                            fal.fileAdded(nFile, additions.take());
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-                    } while (true);
-                }
-            });
+            public void run() {
+                do {
+                    try {
+                        fal.fileAdded(nFile, additions.take());
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                } while (true);
+            }
+        });
 
         monitor(absPath);
     }
@@ -135,5 +143,25 @@ public class NativeFileSystemMonitor {
 
     static interface FileAddedListener {
         void fileAdded(File dir, String fn);
+    }
+
+
+    public static void main(String[] args) throws Throwable {
+        NativeFileSystemMonitor nfsm = new NativeFileSystemMonitor();
+        nfsm.psvm();
+    }
+
+    public void psvm() throws Throwable {
+
+        File desktop = new File(new File(SystemUtils.getUserHome(), "Desktop"), "test");
+        NativeFileSystemMonitor nativeFileSystemMonitor = new NativeFileSystemMonitor(desktop);
+        nativeFileSystemMonitor.setAutoCreateDirectory(true);
+        nativeFileSystemMonitor.setMaxQueueValue(1000);
+        nativeFileSystemMonitor.init();
+        nativeFileSystemMonitor.monitor(new FileAddedListener() {
+            public void fileAdded(File dir, String fn) {
+                System.out.println("Added" + fn);
+            }
+        });
     }
 }

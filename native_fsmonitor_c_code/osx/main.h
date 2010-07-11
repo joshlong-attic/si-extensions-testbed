@@ -6,7 +6,7 @@
  *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
- #include <fseventstream.h>
+ #include <eventstream.h>
  #include <treeutils.h>
 
 void testDirectoryStateNotifications(char *_dir) ;

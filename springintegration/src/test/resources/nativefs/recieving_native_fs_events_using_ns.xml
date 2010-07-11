@@ -35,9 +35,9 @@
 						http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd">
 
     <context:component-scan base-package="com.joshlong.esb.springintegration.modules.nativefs"/>
-
+     
     <beans:bean class="org.springframework.core.io.FileSystemResource" id="fileSystemResource">
-        <beans:constructor-arg value="file:///home/jlong/Desktop/testFsEvents"/>
+        <beans:constructor-arg value="file://#{systemProperties['user.home']}/Desktop/testFsEvents"/>
     </beans:bean>
 
     <channel id="inboundFilesChannel"/>

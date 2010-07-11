@@ -16,9 +16,7 @@
 package com.joshlong.esb.springintegration.modules.nativefs;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.core.io.Resource;
-
 import org.springframework.integration.channel.MessageChannelTemplate;
 import org.springframework.integration.core.Message;
 import org.springframework.integration.core.MessageChannel;
@@ -26,7 +24,6 @@ import org.springframework.integration.endpoint.AbstractEndpoint;
 import org.springframework.integration.message.MessageBuilder;
 
 import java.io.File;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
