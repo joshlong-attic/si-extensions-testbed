@@ -36,13 +36,20 @@
 **/
 
 static const int	TEST_SLEEP_MS = 500;
+static bool __DEBUG = false;
+ struct directory FOO_DIRECTORY = { .validation=0x65012 , .treeNodes=NULL, .binTree=NULL, .elements=0,.myID= 0};
+ struct twalknode FOO_WALKNODE  = { .validation=0x65012, .d_ino= 0,.d_namlen= 0,.d_reclen= 0,.d_type= 0,.d_name = NULL,.walked= false, .nodeID= 0 };
 
 /*
 	What if a or b were NULL ?
 */
-static int cmpTnode(const treeNode *a, const treeNode *b) 
+static int cmpTnode(const treeNode *a, const treeNode *b)
 {
-	//printf("Compare a=%s , b=%s\n", a->d_name, b->d_name);
+
+        if(__DEBUG)
+            printf("What is: a=%p, b=%p", a, b);
+        if(__DEBUG)
+            printf("Compare a=%s , b=%s\n", a->d_name, b->d_name);
 	if( a->d_ino > b->d_ino )  
 		return 1;
 	if( a->d_ino < b->d_ino )  
@@ -52,13 +59,22 @@ static int cmpTnode(const treeNode *a, const treeNode *b)
 }
 
 int cmpNodes(const void *a, const void *b) {
+    if(__DEBUG)
+        printf("a is: %d , and b is: %d\n",((const treeNode *)a)->validation, ((const treeNode *)b)->validation); return 0;
+    
+    if( (a!=NULL && b!=NULL) && ((const treeNode *)a)->validation==0x65012 && ((const treeNode *)b)->validation==0x65012  )
 	return cmpTnode((const treeNode *)a, (const treeNode *)b);
+    else
+    {
+        printf("This is NULL, or fishy data!\n");
+        return 0;
+    }
 }
 
 // Create snapshot buffer ( of dirents + metadata) of FILES for a single level directory
 struct directory getDirSnapshot(void *path) {
 	
-	struct directory myDirStruct;
+	struct directory myDirStruct = FOO_DIRECTORY;
 	int dirSize = 0;
 							// Allocate memory for the buffer of 'dirent's
 							// by 1st determining the size of the directory
@@ -71,11 +87,17 @@ struct directory getDirSnapshot(void *path) {
 	}
 	rewinddir(mydir);
 	myDirStruct.elements = dirSize;
+        int bufSize = (1+dirSize )* sizeof(treeNode);
 	
 	void *_fBuffer = calloc(1+dirSize, sizeof(treeNode));
 	myDirStruct.treeNodes= _fBuffer;
-	treeNode *treeNodes= _fBuffer;				// make dereference to buffer of 'dirent's		
-	
+	treeNode *treeNodes= _fBuffer;				// make dereference to buffer of 'dirent's
+
+
+        // Initialize buffer with FOO_WALKNODE, and reset pointer
+        while(treeNodes<(_fBuffer+bufSize)) 
+                memcpy(treeNodes++,&FOO_WALKNODE,sizeof(FOO_WALKNODE));
+        treeNodes = _fBuffer;
 
 	// Fill treeNodes with dirent entries
 	int i= 0;
@@ -84,7 +106,7 @@ struct directory getDirSnapshot(void *path) {
 			if(qualifyFile(path, file->d_name) ) {
 				memcpy(treeNodes,file, sizeof(struct dirent));			
 				treeNodes->nodeID = (i++)*2;
-				//printf("Treenode= %s\n", treeNodes->d_name);
+				//printf("Treenode= %s, validation=%d \n", treeNodes->d_name, treeNodes->validation);
 				treeNodes++;
 			}
 		}
@@ -102,24 +124,25 @@ void buildDirectoryBinTree(struct directory *_inDirPtr) {
 	
 	int i= 0;
 	for(i=0;i<_inDir.elements; i++) {	
-			tsearch(treeNodes, &binTree,  (int (*)(const void*,const void*))cmpTnode);
+			tsearch(treeNodes, &binTree, cmpNodes);// (int (*)(const void*,const void*))cmpTnode);
 			treeNodes++;
 	}
 	
-	tsearch(_inDir.treeNodes, &binTree,  (int (*)(const void*,const void*))cmpTnode);
+	tsearch(_inDir.treeNodes, &binTree, cmpNodes); //(int (*)(const void*,const void*))cmpTnode);
 
 }
 
 // Destroys everything within a directory ( buffer + tree )
 void destroyDirectory(struct directory *_inDirPtr) {
 
+    printf("Gave me a pointer for deletion to: %p\n", _inDirPtr);
 	struct directory _inDir = *_inDirPtr;
 	void *binTree = *(void **)&_inDir.binTree;			// Make dereference to the binaryTree;
 	treeNode *treeNodes = _inDir.treeNodes;
 		
 	int i=0;
 	for(i=0;i<_inDir.elements; i++) {
-		tdelete(treeNodes, &binTree, (int (*)(const void*,const void*))cmpTnode);
+		tdelete(treeNodes, &binTree, cmpNodes); //(int (*)(const void*,const void*))cmpTnode);
 		treeNodes++;
 	}
 
@@ -136,26 +159,29 @@ int checkFileAdded(char *testPath,  struct directory *_fDirPtr, void (*notice)(c
 {
 // Scan by (not adding nodes) and notify when something's not found.  
 // re-scan (build tree) afterwards.
+        if(__DEBUG)
+            printf("testpath = %s \n", testPath);
 	struct directory _fDir		= *_fDirPtr;
 	void *binTree				= *(void **)&_fDir.binTree;			// Make dereference to the binaryTree;
-//printf("POINTER TO %p\n", cmpTnode);	
+        if(__DEBUG)
+            printf("POINTER TO %p\n", cmpTnode);
 	struct directory _newDir	= getDirSnapshot(testPath);
 	void		*newBinTree		= *(void **)&_newDir.binTree;
 	treeNode	*newTreeNodes	= _newDir.treeNodes;
-	
-			
+        if(__DEBUG)
+            printf("POINTER TO newTn= %p, newBt= %p \n", newTreeNodes, newBinTree);
 			
 	int i =0;
 	// Searches the old tree by using newtree keys (Will notify of keys that are in new tree but not in oldtree )
 	for( i =0;i<_newDir.elements; i++) {		
 		// Automagically add it to the new tree
-		tsearch(newTreeNodes, &newBinTree, (int (*)(const void*,const void*))cmpTnode);
+		tsearch(newTreeNodes, &newBinTree, cmpNodes); //(int (*)(const void*,const void*))cmpTnode);
 		  	
 			// Case 1:  All files must be at least 5 seconds old!
 			
 		// Search for a file in the old tree
 		// Not found in old tree == New File!	
-		void *fnd = tfind(newTreeNodes, &binTree, (int (*)(const void*,const void*))cmpTnode);
+		void *fnd = tfind(newTreeNodes, &binTree, cmpNodes);// (int (*)(const void*,const void*))cmpTnode);
 		if(fnd==NULL) {
 			 if(notice!=NULL)
 					notice( newTreeNodes);
@@ -168,7 +194,7 @@ int checkFileAdded(char *testPath,  struct directory *_fDirPtr, void (*notice)(c
 	// Now look for removed files
 	for(i =0 ; i<_fDir.elements; i++) {
 	//printf("Scandel: %s\n", oldTreeNodes->d_name);
-		void *fnd = tfind(oldTreeNodes, &newBinTree, (int (*)(const void*,const void*))cmpTnode);
+		void *fnd = tfind(oldTreeNodes, &newBinTree, cmpNodes);//(int (*)(const void*,const void*))cmpTnode);
 		if(fnd == NULL) {
 			printf("A file was deemed removed: %s\n", oldTreeNodes->d_name);
 		}
@@ -194,7 +220,7 @@ int checkFileAdded(char *testPath,  struct directory *_fDirPtr, void (*notice)(c
 **/
 bool testWriteComplete(const char *path) {
 	bool isWriteComplete = false;
-	
+        printf("Entered isWriteComplete");
 	struct stat frstStat;
 	struct stat secondStat;
 	int statRet = stat( path, &frstStat);

@@ -23,11 +23,15 @@ LIBFLAGS=-framework CoreServices -framework CoreFoundation -framework Carbon
 LDFLAGS=-dynamiclib ${LIBFLAGS}
 LIBRARY=libsifsmon.dylib
 INSTALLNAME=-install_name /usr/local/lib/libsifsmon.dylib
-ARCH=-arch i386 -arch x86_64
+ARCH=-arch x86_64
+TESTBINARY=fseTest
 
-all:
-	${CC} ${ARCH} ${CFLAGS} ${LIBFLAGS} ${LDFLAGS} -o ${LIBRARY}  fseventstream.c treeutils.c sifsmon.c ${INSTALLNAME}
+all: clean
+	${CC} ${ARCH} ${CFLAGS} ${LIBFLAGS} ${LDFLAGS} -o ${LIBRARY}  eventstream.c treeutils.c sifsmon.c ${INSTALLNAME}
 
 test: 
-	${CC} ${CFLAGS} ${LIBFLAGS} -o fseTest fseventstream.c treeutils.c main.c
+	${CC} ${ARCH} ${LIBFLAGS} -L ${LIBRARY} ${CFLAGS} -o ${TESTBINARY} treeutils.c eventstream.c main.c
+
+clean: 
+	${RM} ${LIBRARY} ${TESTBINARY}
 

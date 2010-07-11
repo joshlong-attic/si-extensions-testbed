@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
-#include "fseventstream.h"
+#include "eventstream.h"
 #include "treeutils.h"
 
 

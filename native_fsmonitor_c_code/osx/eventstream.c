@@ -47,7 +47,8 @@ void createEventStreamWithCallback(const char path[], FSEventStreamCallback call
 
      */
 	
-	const UInt8 *pptr = &path;
+	const UInt8 *pptr = path;
+	printf("path is: %s\n", pptr);
     CFStringRef mypath = CFStringCreateWithBytes(kCFAllocatorDefault,
 												 pptr,
 												 sizeof(path),
@@ -62,8 +63,7 @@ void createEventStreamWithCallback(const char path[], FSEventStreamCallback call
 
     CFAbsoluteTime latency = 1.0; /* Latency in seconds */
 
- 
-
+   
     /* Create the stream, passing in a callback */
 
     stream = FSEventStreamCreate(NULL,
@@ -89,7 +89,7 @@ void createEventStreamWithCallback(const char path[], FSEventStreamCallback call
 	
 }
 
-char thedir[50]="/tmp/foo";
+
 
 /**
 	Example call back function.  Use only to DISPLAY what events are being triggered.
@@ -101,16 +101,18 @@ void myCallbackFunction( ConstFSEventStreamRef streamRef,
 						 const FSEventStreamEventFlags eventFlags[],
 						 const FSEventStreamEventId eventIds[])
 					{
+   
 						int i;
 						char **paths = eventPaths;
-						
+						printf("%i events:\n", numEvents);
 						// printf("Callback called\n");
 						for(i = 0; i < numEvents; i++ ) {
 							//int count;
 							/* flags are unsigned long, ids ARE ALL UINT64_T */
-							printf("Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
+							printf("A Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
 																	 eventFlags[i]);
-						}
+
+   						}
 					}
 					
 					

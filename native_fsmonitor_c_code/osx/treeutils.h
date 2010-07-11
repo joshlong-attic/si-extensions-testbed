@@ -35,7 +35,7 @@
 
 
 /* Contains intelligence for building a binaryTree of files */
-typedef struct twalknode {
+typedef struct twalknode {        
 	ino_t d_ino;			/* file number of entry */
 	__uint16_t d_reclen;		/* length of this record */
 	__uint8_t  d_type; 		/* file type, see below */
@@ -43,17 +43,20 @@ typedef struct twalknode {
 	char d_name[__DARWIN_MAXNAMLEN + 1];	/* name must be no longer than this */
 	bool walked;
 	int  nodeID;
+        int validation;
 } treeNode;
 
 
 /* Contains all VALID the nodes of a directory, plus the binary Tree of those nodes. */
-struct directory {
+ struct directory {
 
+                int validation;
 		treeNode *treeNodes;
 		void	 *binTree;
 		int		 elements;
 		int		 myID;
 } ;
+
 
 
 
