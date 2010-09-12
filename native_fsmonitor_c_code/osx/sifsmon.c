@@ -23,6 +23,7 @@
 
 
 
+
 #ifndef _Included_com_joshlong_esb_springintegration_modules_nativefs_NativeFileSystemMonitor
 #define _Included_com_joshlong_esb_springintegration_modules_nativefs_NativeFileSystemMonitor
 #ifdef __cplusplus
@@ -54,9 +55,10 @@ jmethodID *gmid;
 JNIEXPORT void JNICALL Java_com_joshlong_esb_springintegration_modules_nativefs_NativeFileSystemMonitor_monitor
   (JNIEnv * env, jobject obj, jstring javaSpecifiedPath){
 
-    printf (" HELLO WORLD !!! \n");
+         logme("Hello\n");
+    //NSApplicationLoad();
 
-genv = env;
+genv = env;                                       
 gobj = obj;
 gjavaSpecifiedPath = javaSpecifiedPath;
 
@@ -68,8 +70,8 @@ gjavaSpecifiedPath = javaSpecifiedPath;
 		printf( "Invalid path Specified\n!" );
 		return;
 	}
-	
-	printf("going to monitor %s\n", path);
+
+	logme(path);
 	
 	// cache these
 	jclass cls = (*env)->GetObjectClass(env, obj);
@@ -77,6 +79,7 @@ gjavaSpecifiedPath = javaSpecifiedPath;
 
 gcls = cls;
 gmid = mid;
+
 
 	if( mid == 0 ) {
 	      printf( "method callback is not valid!") ;
@@ -114,10 +117,15 @@ gmid = mid;
 	
 	
 void initMonitor() {
+        logme("Initializing");
 	myDirectory = getDirSnapshot(path);
+	    logme("snapshot obtained");
 	buildDirectoryBinTree(&myDirectory);
-	
-	createEventStreamWithCallback(path, &monitoringCallback);
+	    logme("dir bintree updated.");
+
+	//createEventStreamWithCallback(path, &monitoringCallback);
+      createEventStream(path);
+	    logme(" out of event stream");
 	
 }
 
@@ -166,6 +174,8 @@ void monitoringCallback(ConstFSEventStreamRef streamRef,
 							
 							}
 						}
+
+
 
 #ifdef __cplusplus
 }

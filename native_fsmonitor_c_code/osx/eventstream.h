@@ -33,3 +33,4 @@ void myCallbackFunction( ConstFSEventStreamRef streamRef,
 						 const FSEventStreamEventId eventIds[]);
 void createEventStream(const char path[]);						 
 void createEventStreamWithCallback(const char path[], FSEventStreamCallback callbackFunction);
+void logme(char *msg);

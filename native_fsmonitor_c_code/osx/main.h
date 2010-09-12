@@ -6,7 +6,7 @@
  *  Copyright 2010 __MyCompanyName__. All rights reserved.
  *
  */
- #include <eventstream.h>
+ #include <fseventstream.h>
  #include <treeutils.h>
 
 void testDirectoryStateNotifications(char *_dir) ;
@@ -19,4 +19,3 @@ void callbackNotice( ConstFSEventStreamRef streamRef,
 						 void *eventPaths,
 						 const FSEventStreamEventFlags eventFlags[],
 						 const FSEventStreamEventId eventIds[]);
-char * buffer;

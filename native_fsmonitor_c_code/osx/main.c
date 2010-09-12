@@ -8,16 +8,22 @@
  */
 
 #include "main.h"
-	
+//#include <AppKit/NSApplication.h>
+	       
 
 // Define structure for our Directory
 struct directory myDirectory;
+
+
 
 // treeUtils callback function 
 // Do something about the new file we just noticed. u
 void notice(const treeNode *tnode) {
 	if(tnode==NULL) return;
-		printf("Filename we noticed is: %s \n", tnode->d_name);//myFile.d_ino);	
+
+	char txtbuf[1024];
+		sprintf(txtbuf,"Filename we noticed is: %s \n", tnode->d_name);//myFile.d_ino);
+			logme(&txtbuf);
 }
 
 void callbackNotice( ConstFSEventStreamRef streamRef,
@@ -34,10 +40,14 @@ void callbackNotice( ConstFSEventStreamRef streamRef,
 						// TODO make sure we dont decend into sub-directories (req's path[i]==watchPath )
 						// printf("Callback called\n");
 						for(i = 0; i < numEvents; i++ ) {
-							
+
+
+							char txtbuf[1024];
+
 							/* flags are unsigned long, ids ARE ALL UINT64_T */
-							printf("Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
+							sprintf(txtbuf,"Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
 																	 eventFlags[i]);
+                            logme(&txtbuf);																	 
 							if( i==0 || (i>0 && strcmp(paths[i], paths[i-1])!=0) )
 								checkFileAdded(paths[i], &myDirectory,(void (*)(const void *))notice);
 						}
@@ -71,8 +81,8 @@ void myUglyCallbackFunction( ConstFSEventStreamRef streamRef,
 
 
 int main (int argc, const char * argv[]) {
-	
 	char defaultdir[50] = "/tmp/foo";
+	logme(&defaultdir);
 	testEventStreamStatusNotify(defaultdir);
 	//testDirectoryStateNotifications(defaultdir);
 	

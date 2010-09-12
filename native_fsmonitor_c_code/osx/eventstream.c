@@ -27,6 +27,25 @@
  #include <eventstream.h>
  #include <treeutils.h>								 
 
+
+//TODO : move me to a global include !                                                                                                       
+void logme(char *msg) {
+     FILE *newfile;
+
+if(msg == NULL) return;
+
+     if (  (newfile = fopen("/tmp/foobar","a+")) == NULL ) {
+
+        return;
+     }
+
+    fprintf(newfile, "LogLine: %s\n", msg);
+
+     fclose(newfile);
+
+}
+
+
 void createEventStream(const char path[]) 
 {
 	createEventStreamWithCallback(path, &myCallbackFunction);
@@ -48,7 +67,14 @@ void createEventStreamWithCallback(const char path[], FSEventStreamCallback call
      */
 	
 	const UInt8 *pptr = path;
-	printf("path is: %s\n", pptr);
+	//printf("path is: %s\n", pptr);
+	char pathtxt[100];
+	sprintf(pathtxt,"Path is: %s", pptr);
+	logme(&pathtxt);
+
+	CFRunLoopSourceRef myCFSource;
+	CFRunLoopRef    thisRunLoop;
+
     CFStringRef mypath = CFStringCreateWithBytes(kCFAllocatorDefault,
 												 pptr,
 												 sizeof(path),
@@ -81,12 +107,51 @@ void createEventStreamWithCallback(const char path[], FSEventStreamCallback call
         kFSEventStreamCreateFlagNone /* Flags explained in reference */
 
     );
-	
-	FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+
+
+    // Get current thread's runLoop
+     thisRunLoop = GetCFRunLoopFromEventLoop(GetCurrentEventLoop());//CFRunLoopGetCurrent();
+
+    // Obtain current Thread's runloop mode
+       CFStringRef thisRLMode = CFRunLoopCopyCurrentMode(thisRunLoop);
+    if(thisRLMode== NULL)
+        thisRLMode = kCFRunLoopDefaultMode;
+
+    // We want it to be true!
+    // This function is useful only to test the state of another thread’s run loop. When called with the current thread’s run loop, this function always returns false.
+        bool isCFWaiting = CFRunLoopIsWaiting(thisRunLoop);
+        char myresult[50];
+        sprintf(myresult,"iswaiting?%s", isCFWaiting?"true":"false" )  ;
+        logme(myresult);
+
+    // Create our own runloopSource to add to this thread's
+	   //CFRunLoopAddSource(thisRunLoop, myCFSource, thisRLMode);
+	       
+	FSEventStreamScheduleWithRunLoop(stream, thisRunLoop, thisRLMode);
+
 	FSEventStreamStart(stream);
+	logme("Entering CFRunLoopRun");
 	CFRunLoopRun();
 	
-	
+
+    //TODO: When complete, make this happen
+	CFRunLoopStop(thisRunLoop);
+
+	    
+	EventRef theEvent;
+    EventTargetRef theTarget;
+        theTarget = GetEventDispatcherTarget();
+        
+        while (ReceiveNextEvent(0, NULL,kEventDurationForever,true, &theEvent)== noErr)
+        {
+                logme("An Event has happened!");
+                SendEventToEventTarget (theEvent, theTarget);
+                ReleaseEvent(theEvent);
+
+        }
+
+    logme(" Outside of Event loop run");
+
 }
 
 
@@ -104,15 +169,24 @@ void myCallbackFunction( ConstFSEventStreamRef streamRef,
    
 						int i;
 						char **paths = eventPaths;
-						printf("%i events:\n", numEvents);
+
+						char eventtxt[5];
+						sprintf(&eventtxt,"%i", numEvents);
+						logme("Number of events are: ");
+                        logme(eventtxt);
+
+						//printf("%i events:\n", numEvents);
 						// printf("Callback called\n");
 						for(i = 0; i < numEvents; i++ ) {
 							//int count;
 							/* flags are unsigned long, ids ARE ALL UINT64_T */
-							printf("A Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
+							char eventlog[1024];
+							sprintf(&eventlog,"A Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
 																	 eventFlags[i]);
+                            logme(&eventlog);																	
+							//printf("A Change %llu in %s, flags %llu\n", eventIds[i], paths[i],
+							//										 eventFlags[i]);
 
    						}
 					}
-					
 					
